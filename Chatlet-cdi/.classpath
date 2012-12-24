@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Chatlet-api"/>
+	<classpathentry kind="lib" path="/ImseamLibs/logging/commons-logging.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ImseamCommon"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/chatpage"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/ImseamLibs/jboss-seam-jars/jbpm-3.1.4.jar" sourcepath="C:/workspace/jbpm-3.1.4"/>
+	<classpathentry kind="src" path="resource"/>
+	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/cdi/cdi-api.jar" sourcepath="/ImseamLibs/weld-final1.1/cdi/cdi-api-sources.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-api.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-api-sources.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-spi.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-spi-sources.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/el/el-api.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/el/jboss-el.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-core.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-core-sources.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/cdi/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/cdi/slf4j-ext-1.6.4.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-servlet.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-servlet-sources.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-servlet-core.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-servlet-core-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
