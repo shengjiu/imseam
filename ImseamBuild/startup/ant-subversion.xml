@@ -1,0 +1,33 @@
+<project name="ImseamSubversion" default="svn" basedir=".">
+	<!-- subversion -->
+	<property environment="env"/>
+	<property name="svn.rooturl" value="svn://192.168.1.5/"/>
+	<property name="svn.username" value="shengjiu"/>
+	<property name="svn.password" value="abcd1234"/>
+	<property name="svn.projecturl" value="${svn.rooturl}/imseam-projects"/>
+	<property name="svn.revision" value="HEAD"/>
+	<property name="svn.dest" value="${env.ImseamBuildRoot}"/>
+	
+	<!-- mails the result to administrator-->
+	<property name="MailLogger.mailhost" value="smtp.gmail.com" />
+	<property name="MailLogger.port" value="465" />
+	<property name="MailLogger.ssl" value="true" />
+	<property name="MailLogger.user" value="imseam.build@gmail.com" />
+	<property name="MailLogger.password" value="Imseam123" />
+	<property name="MailLogger.from" value="imseam.build@gmail.com" />
+	<property name="MailLogger.failure.notify" value="true" />
+	<property name="MailLogger.failure.subject" value="Imseam Checkout code failed" />
+	<property name="MailLogger.success.notify" value="false" />
+	<property name="MailLogger.failure.to"
+		value="shengjiu@gmail.com" />
+
+	<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask" />
+
+	<target name="svn">
+		<echo message="Number of Processors = ${svn.dest}"/>
+		<svn username="${svn.username}" password="${svn.password}">
+			<checkout url="${svn.projecturl}" revision="HEAD" destPath="${svn.dest}" />
+		</svn>
+	</target>
+
+</project>

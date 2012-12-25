@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:chatlet-app xmlns:ns2="http://www.imseam.com/">
+    <connections>
+    <!-- 
+        <connection service-ID="MSN" password="Password1" host-user-ID="SP005580" connector-ref="IncesoftMSN" connection-name="ShengjiuTest">
+        	<init-params>
+        		<param>
+        			<name>sphost</name>
+        			<value>msnbot.incesoft.com</value>
+        		</param>
+        		<param>
+        			<name>robotname</name>
+        			<value>imseam.test.shengjiu@hotmail.com</value>
+        		</param>
+        	</init-params>
+        </connection>
+     
+        <connection service-ID="YHO" password="Password1" host-user-ID="imseam.ymsg2" connector-ref="JYMSG" connection-name="YMSGTest"/>
+   
+        <connection service-ID="MSN" password="Password1" host-user-ID="imseam.jmsn2@hotmail.com" connector-ref="JMSN" connection-name="JMSNTest"/>
+        <connection service-ID="GTK" password="Password1" host-user-ID="imseam.gtalk1@gmail.com" connector-ref="XMPP" connection-name="GTalk">
+        	<init-params>
+        		<param>
+        			<name>host-ip</name>
+        			<value>talk.google.com</value>
+        		</param>
+        		<param>
+        			<name>host-port</name>
+        			<value>5222</value>
+        		</param>
+        		<param>
+        			<name>host-domain</name>
+        			<value>gmail.com</value>
+        		</param>        		        		
+        	</init-params>
+        </connection>
+   	<connection service-ID="IMS" password="bbb" host-user-ID="imseam-server" connector-ref="XMPP" connection-name="Imseam">
+           	<init-params>
+        		<param>
+        			<name>host-ip</name>
+        			<value>127.0.0.1</value>
+        		</param>
+        		<param>
+        			<name>host-port</name>
+        			<value>5222</value>
+        		</param>
+        		<param>
+        			<name>host-domain</name>
+        			<value>imseam</value>
+        		</param>        		        		
+        	</init-params>
+        </connection>
+
+    -->
+   	<connection service-ID="IMS" password="bbb" host-user-ID="chat4assist-server" connector-ref="MULTILINEXMPP" connection-name="Imseam">
+           	<init-params>
+        		<param>
+        			<name>host-ip</name>
+        			<value>127.0.0.1</value>
+        		</param>
+        		<param>
+        			<name>host-port</name>
+        			<value>5222</value>
+        		</param>
+        		<param>
+        			<name>host-domain</name>
+        			<value>chat4assist</value>
+        		</param>   
+        		<param>
+				<name>line-number</name>
+			        <value>5</value>
+        		</param>        
+        	</init-params>
+        </connection>
+
+        <connection service-ID="WEB"  connector-ref="GeneralMessengerConnector" connection-name="WebTest">
+        	<init-params>
+        		<param>
+        			<name>adapter-class</name>
+        			<value>com.imseam.webconnector.WebConnectorAdapter</value>
+        		</param>
+        	</init-params>
+        </connection>
+    </connections>
+    <listeners>
+        <!-- 
+		<listener name="conversation manager" listener-class="com.imseam.chat.ConversationManager"/>
+		-->
+	</listeners>
+    <chatlets>
+        <!-- 
+        <chatlet chatlet-class="com.imseam.chat.WelcomeChatlet"/>
+		-->
+    </chatlets>
+</ns2:chatlet-app>

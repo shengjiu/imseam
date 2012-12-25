@@ -1,0 +1,111 @@
+<project name="Build.Property" default="" basedir=".">
+	<property environment="env" />
+	<!-- directories -->
+	<property name="dir.current" value="${project::get-base-directory()}" />
+	<property name="dir.root" value="${env.ImseamBuildRoot}" />
+	<property name="build.number" value="${env.Label}" />
+
+
+	<!-- build directories -->
+	<property name="dir.build" value="${dir.root}\ImseamBuild" />
+
+	<!-- common output directories -->
+	<property name="BuildOutput" value="${dir.root}\BuildOutput" />
+	<property name="jboss.home" value="C:/working/jboss-4.0.5.GA" />
+	<property name="jboss.deploy.dir" value="${jboss.home}/server/default/deploy" />
+
+	<property name="dist.dir" value="dist" />
+	<property name="src.test.dir" value="src/test" />	
+	<property name="src.java.dir" value="src" />
+	
+	
+	
+	<property name="test.dir" value="build/test" />
+	<property name="javac.debug" value="true" />
+	<property name="javac.deprecation" value="false" />
+
+
+	<property name="mail.lib.dir" value="../ImseamLibs/mail" />
+	<property name="drools.lib.dir" value="../ImseamLibs/drools" />
+	<property name="chart.lib.dir" value="../ImseamLibs/chart" />
+	<property name="logging.lib.dir" value="../ImseamLibs/logging" />
+	<property name="jaxb.lib.dir" value="../ImseamLibs/jaxb" />
+	<property name="incesoft.lib.dir" value="../ImseamLibs/incesoft" />
+	<property name="smack.lib.dir" value="../ImseamLibs/smack" />
+	<property name="JYmsg.lib.dir" value="../ImseamLibs/JYMSG" />
+	<property name="JML.lib.dir" value="../ImseamLibs/msn_jml" />
+	<property name="imseam.seam.lib.dir" value="../ImseamLibs/imseam-seam-jars" />
+	<property name="jboss.seam.lib.dir" value="../ImseamLibs/jboss-seam-jars" />
+	<property name="generated.lib.dir" value="../ImseamLibs/generated-jars" />
+	<property name="testng.jar" value="${jboss.seam.lib.dir}/testng-4.5.1-jdk15.jar" />
+	<property name="ImseamCommon.jar" value="${generated.lib.dir}/ImseamCommon.jar" />
+	<property name="JMsnLib.jar" value="${generated.lib.dir}/JMsnLib.jar" />
+	<property name="JMLLib.jar" value="${JML.lib.dir}/jml.jar" />
+	<property name="javaAssist.jar" value="${imseam.seam.lib.dir}/javassist.jar" />
+	<property name="ImseamSeam.jar" value="${generated.lib.dir}/ImseamSeam.jar" />
+	<property name="ImseamWeb.jar" value="${generated.lib.dir}/ImseamWeb.jar" />
+
+	<fileset id="mail.libs" dir="${mail.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+	
+	<fileset id="chart.libs" dir="${chart.lib.dir}">
+			<include name="*.jar" />
+    </fileset>
+
+	<fileset id="logging.libs" dir="${logging.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="jaxb.libs" dir="${jaxb.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="generated.libs" dir="${generated.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="smack.libs" dir="${smack.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="incesoft.libs" dir="${incesoft.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="JYmsg.libs" dir="${JYmsg.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="JML.libs" dir="${JML.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+			
+	<fileset id="imseam.seam.libs" dir="${imseam.seam.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="jboss.seam.libs" dir="${jboss.seam.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="jboss.server.libs" dir="${jboss.home}/lib">
+		<include name="*.jar" />
+	</fileset>
+
+	<!-- mails the result to developers-->
+	<property name="MailLogger.mailhost" value="smtp.gmail.com" />
+	<property name="MailLogger.port" value="465" />
+	<property name="MailLogger.ssl" value="true" />
+	<property name="MailLogger.user" value="imseam.build@gmail.com" />
+	<property name="MailLogger.password" value="Imseam123" />
+	<property name="MailLogger.from" value="imseam.build@gmail.com" />
+	<property name="MailLogger.failure.notify" value="true" />
+	<property name="MailLogger.failure.subject" value="${env.Label}: Imseam Build failed" />
+	<property name="MailLogger.success.notify" value="true" />
+	<property name="MailLogger.success.subject" value="${env.Label}: Imseam Build Success" />
+	<property name="MailLogger.failure.to" value="shengjiu@gmail.com, wzg1123@gmail.com, jlpf_51@hotmail.com, xfwebs@163.com" />
+	<property name="MailLogger.success.to" value="shengjiu@gmail.com, wzg1123@gmail.com, jlpf_51@hotmail.com, xfwebs@163.com" />
+
+
+</project>
