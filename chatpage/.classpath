@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resource"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ImseamCommon"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Chatlet-api"/>
+	<classpathentry kind="lib" path="/ImseamLibs/logging/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/jboss-seam-jars/jbpm-3.1.4.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/imseam-seam-jars/thirdparty-all.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/el/jboss-el.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/el/el-api.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

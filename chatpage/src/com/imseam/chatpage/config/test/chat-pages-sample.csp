@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<chat-pages name="pageS name, may not useful" xmlns="http://www.imseam.com/">
+    <chat-page view-id="/page1">
+        <body>
+            <text render="text rendered">rc1_body_content_text1_value</text>
+            <foreach items="foreach item" var="foreach var" render="render">
+                <text render="text rendered">foreach_text1_value</text>
+            </foreach>
+            <text>rc1_body_content_text2_value</text>
+            <include view-id="include view page: rc1_body_include1"/>
+            <include view-id="include view page: rc1_body_include2"/>
+        </body>
+        <help>
+            <include view-id="include view page: rc1_help_include1"/>
+            <include view-id="include view page: rc1_help_include2"/>
+        </help>
+        <actions>
+            <action class="pageAction.class" outcome="pageAction.outcome">
+                <parsers>
+                    <regexp-parser pattern="page1.Yes|Y">
+                        <regexp-parseresult parameter-name="rc1_parser1_result1_g1" group-number="1"/>
+                        <regexp-parseresult parameter-name="rc1_parser1_result1_g2" group-number="2"/>
+                    </regexp-parser>
+                    <regexp-parser pattern="page1.No|N"/>
+                    <java-parser handler="page1.java.parser.handler">
+                        <params>
+                            <param value="value1" name="param1"/>
+                            <param value="value2" name="param2"/>
+                        </params>
+                    </java-parser>
+                    <parser-ref/>
+                    <string-parser pattern="string|parser"/>
+                </parsers>
+            </action>
+        </actions>
+        <params>
+            <param value="value1" name="param1"/>
+            <param value="value2" name="param2"/>
+        </params>
+    </chat-page>
+    <menu-page page-size="10" var="var" items="items expresion" view-id="menu page1 view id" menu-selected-action="item selected action">
+        <header>
+            <include view-id="include view page: menu_header_include1"/>
+            <text>menuHeader_content_text1_value</text>
+        </header>
+        <menu-item>
+            <include view-id="include view page: menu_items_include1"/>
+            <text>menuItems_content_text1_value</text>
+        </menu-item>
+        <footer>
+            <include view-id="include view page: menu_footer_include1"/>
+            <text>menufooter_content_text1_value</text>
+        </footer>
+        <actions>
+            <action class="pageAction.class" outcome="pageAction.outcome">
+                <parsers>
+                    <regexp-parser pattern="page2.Yes|Y"/>
+                    <regexp-parser pattern="page2.No|N"/>
+                    <java-parser handler="page2.java.parser.handler"/>
+                    <parser-ref/>
+                </parsers>
+            </action>
+        </actions>
+        <params>
+            <param value="value1" name="param1"/>
+            <param value="value2" name="param2"/>
+        </params>
+    </menu-page>
+    <command-filter component="filter1-component" class-type="filter1-class-type" filter-id="filter1">
+        <parsers>
+            <regexp-parser pattern="page1.Yes|Y">
+                <regexp-parseresult parameter-name="rc1_parser1_result1_g1" group-number="1"/>
+                <regexp-parseresult parameter-name="rc1_parser1_result1_g2" group-number="2"/>
+            </regexp-parser>
+        </parsers>
+    </command-filter>
+    <chat-page view-id="/page2">
+        <body>
+            <text>rc2_body_content_text1_value</text>
+            <include view-id="include view page: rc2_body_include1"/>
+            <include view-id="include view page: rc2_body_include2"/>
+        </body>
+        <help>
+            <include view-id="include view page: rc2_help_include1"/>
+            <include view-id="include view page: rc2_help_include2"/>
+        </help>
+        <actions>
+            <action class="pageAction.class" outcome="pageAction.outcome">
+                <parsers>
+                    <regexp-parser pattern="page2.Yes|Y"/>
+                    <regexp-parser pattern="page2.No|N"/>
+                    <java-parser handler="page2.java.parser.handler"/>
+                    <parser-ref/>
+                </parsers>
+            </action>
+        </actions>
+        <params>
+            <param value="value1" name="param1"/>
+            <param value="value2" name="param2"/>
+        </params>
+    </chat-page>
+    <command-filter component="filter2-component" class-type="filter2-class-type" filter-id="filter2">
+        <parsers>
+            <regexp-parser pattern="page1.Yes|Y">
+                <regexp-parseresult parameter-name="rc1_parser1_result1_g1" group-number="1"/>
+                <regexp-parseresult parameter-name="rc1_parser1_result1_g2" group-number="2"/>
+            </regexp-parser>
+        </parsers>
+        <params>
+            <param value="value1" name="param1"/>
+            <param value="value2" name="param2"/>
+        </params>
+    </command-filter>
+    <global-parsers>
+        <regexp-parser pattern="g.Yes|Y"/>
+        <regexp-parser pattern="g.No|N"/>
+        <java-parser handler="g.java.parser.handler"/>
+        <grouped-parser name="parsergroup">
+            <regexp-parser pattern="group.Yes|Y"/>
+            <regexp-parser pattern="group.No|N"/>
+            <java-parser handler="group.java.parser.handler"/>
+        </grouped-parser>
+    </global-parsers>
+    <command-filter-mapping path-pattern="mapping1-path-pattern*" filter-id="mapping1-filter1"/>
+    <command-filter-mapping path-pattern="mapping2-path-pattern*" filter-id="mapping2-filter1"/>
+</chat-pages>
+
