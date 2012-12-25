@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<project name="ImseamCommon" default="archive" basedir=".">
+
+	<!-- Give user a chance to override without editing this file or typing -D -->
+	<property file="${basedir}/build.properties" />
+	
+	<import file="../ImseamBuild/BuildProperty.xml" />
+
+	<!-- set global properties for this build -->
+	<property name="project.name" value="ImseamCommon"/>
+	<property name="jar.dir" value="${dist.dir}/${project.name}.jar" />
+	<property name="fd.dir" value="com/imseam/common/util" />
+	
+	<path id="build.classpath">
+		<fileset refid="mail.libs" />
+		<fileset refid="logging.libs" />
+		<pathelement location="${javaAssist.jar}"/>
+		<pathelement location ="${testng.jar}"/>
+	</path>
+
+	<target name="init" depends="clean" description="Initialize the build">
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${generated.lib.dir}" />
+	</target>
+
+	<target name="compile" depends="init" 
+			description="Compile the Java source code">
+		<javac classpathref="build.classpath" 
+			        destdir="${jar.dir}" 
+			          debug="${javac.debug}" 
+			    deprecation="${javac.deprecation}" 
+			        nowarn="on">
+			<src path="${src.java.dir}" />
+		</javac>
+		
+	</target>
+	
+	
+	
+
+	
+	<target name="archive" depends="compile" 
+			description="Package the archives">
+		<jar jarfile="${ImseamCommon.jar}" basedir="${jar.dir}"/>
+	</target>
+	
+	
+	
+	
+
+	<target name="clean" description="Cleans up the build directory">
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="test" depends="compile" description="Run the tests">
+
+		<taskdef resource="testngtasks" classpath="${testng.jar}" />
+		<copy todir="${test.dir}">
+			<fileset dir="${jar.dir}" />
+		</copy>
+
+
+		<copy todir="${test.dir}" flatten="true">
+			<fileset dir="${src.java.dir}">
+				<include name="**/*Test.xml" />
+			</fileset>
+		</copy>
+
+		<testng outputdir="${basedir}/testng-report">
+			<classpath path="${test.dir}" />
+			<classpath refid="build.classpath" />
+			<xmlfileset dir="${test.dir}" includes="*Test.xml" />
+		</testng>
+		
+	</target>
+	
+	<target name="imseam-build" depends="test, archive" description="Run the test and copy the jar">
+	</target>
+
+	
+</project>

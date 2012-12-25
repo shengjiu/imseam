@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/ImseamLibs/mail/activation.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/mail/dsn.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/mail/imap.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/mail/mailapi.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/mail/pop3.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/mail/smtp.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/jboss-seam-jars/testng-4.5.1-jdk15.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/logging/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/imseam-seam-jars/javassist.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

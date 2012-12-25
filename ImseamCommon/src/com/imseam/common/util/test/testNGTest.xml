@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="com.imseam.common.util">
+  <test verbose="2" name="com.imseam.ejb.entity.RegisteredUserTestNG" annotations="JDK">
+    <classes>
+      <class name="com.imseam.common.util.test.PasswordGeneratorTest"/>
+    </classes>
+  </test>
+</suite>
