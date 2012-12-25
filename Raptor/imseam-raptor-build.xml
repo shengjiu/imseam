@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+
+<project name="RaptorServer" default="deploy" basedir=".">
+
+	<!-- Give user a chance to override without editing this file or typing -D -->
+	<property file="${basedir}/build.properties" />
+
+	<import file="../ImseamBuild/BuildProperty.xml" />
+
+	<!-- set global properties for this build -->
+	<property name="project.name" value="RaptorServer" />
+
+
+	<property name="sar.dir" value="exploded-archives/${project.name}.sar" />
+	<property name="jar.dir" value="exploded-archives/${project.name}.jar" />
+	<property name="resources.dir" value="resources" />
+	<property name="sar.deploy.dir" value="${jboss.deploy.dir}/${project.name}.sar" />
+	<property name="jar.deploy.dir" value="${ear.deploy.dir}/${project.name}.jar" />
+	
+	<path id="build.classpath">
+		<fileset refid="logging.libs" />
+		<fileset refid="jaxb.libs" />
+		<fileset refid="incesoft.libs" />
+		<fileset refid="smack.libs" />
+		<fileset refid="JYmsg.libs" />
+		<fileset refid="JML.libs" />
+		<fileset refid="generated.libs" />
+		<fileset refid="jboss.server.libs" />
+		<fileset refid="jboss.server.libs" />
+		<pathelement location="${testng.jar}" />
+	</path>
+
+	<target name="init" depends="clean" description="Initialize the build">
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${generated.lib.dir}" />
+	</target>
+
+	<target name="compile" depends="init" description="Compile the Java source code">
+		<javac classpathref="build.classpath" destdir="${jar.dir}" debug="${javac.debug}" deprecation="${javac.deprecation}" nowarn="on" source="1.5">
+			<src path="${src.java.dir}" />
+		</javac>
+
+	</target>
+
+	<target name="jar" depends="compile" description="Build the distribution .jar file">
+		<copy todir="${jar.dir}">
+			<fileset dir="${src.java.dir}">
+				<include name="**/*.xsd" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="sar" description="Build the SAR">
+		<copy todir="${sar.dir}/META-INF">
+			<fileset dir="${basedir}/${resources.dir}/META-INF">
+				<include name="jboss-service.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${sar.dir}" file="${ImseamCommon.jar}" />
+		<copy todir="${sar.dir}" file="${ImseamSeam.jar}" />
+		<copy todir="${sar.dir}" file="${JMsnLib.jar}" />
+		<copy todir="${sar.dir}">
+			<fileset refid="jaxb.libs" />
+		</copy>
+		<copy todir="${sar.dir}">
+			<fileset refid="smack.libs" />
+			<fileset refid="JML.libs"/>
+		</copy>
+	</target>
+
+	<target name="archive" depends="jar,sar" description="Package the archives">
+		<jar jarfile="${dist.dir}/${project.name}.jar" basedir="${jar.dir}" />
+		<jar jarfile="${dist.dir}/${project.name}.sar">
+			<fileset dir="${sar.dir}" />
+			<fileset dir="${dist.dir}">
+				<include name="${project.name}.jar" />
+			</fileset>
+		</jar>
+	</target>
+
+
+
+	<target name="explode" depends="jar,sar" description="Deploy the exploded archive">
+		<fail unless="jboss.home">jboss.home not set</fail>
+
+		<mkdir dir="${jar.deploy.dir}" />
+
+		<copy todir="${jar.deploy.dir}">
+			<fileset dir="${jar.dir}" />
+		</copy>
+		<copy todir="${sar.deploy.dir}">
+			<fileset dir="${sar.dir}" />
+		</copy>
+	</target>
+
+	<target name="unexplode" description="Undeploy the exploded archive">
+		<delete failonerror="no">
+			<fileset dir="${sar.deploy.dir}">
+				<exclude name="**/*.jar" />
+			</fileset>
+		</delete>
+		<delete dir="${sar.deploy.dir}" failonerror="no" />
+	</target>
+
+	<target name="deploy" depends="archive" description="Deploy to JBoss AS">
+		<fail unless="jboss.home">jboss.home not set</fail>
+		<copy todir="${jboss.deploy.dir}" file="${dist.dir}/${project.name}.sar" />
+	</target>
+
+	<target name="undeploy" description="Undeploy the example from JBoss">
+		<delete file="${jboss.deploy.dir}/${project.name}.sar" />
+		<delete file="${jboss.deploy.dir}/${project.name}-ds.xml" />
+	</target>
+
+	<target name="clean" description="Cleans up the build directory">
+		<delete dir="${dist.dir}" />
+		<delete dir="${test.dir}" />
+		<delete dir="${sar.dir}" />
+		<delete dir="${jar.dir}" />
+	</target>
+
+	<target name="test" depends="compile" description="Run the tests">
+
+		<taskdef resource="testngtasks" classpath="${testng.jar}" />
+		<copy todir="${test.dir}">
+			<fileset dir="${jar.dir}" />
+		</copy>
+
+
+		<copy todir="${test.dir}" flatten="true">
+			<fileset dir="${src.java.dir}">
+				<include name="**/*Test.xml" />
+			</fileset>
+		</copy>
+
+		<testng outputdir="${basedir}/testng-report">
+			<classpath path="${test.dir}" />
+			<classpath refid="build.classpath" />
+			<xmlfileset dir="${test.dir}" includes="*Test.xml" />
+		</testng>
+
+	</target>
+
+	<target name="imseam-build" depends="test, deploy" description="Run the test and copy the jar">
+	</target>
+
+
+</project>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server>
+	<mbean code="com.imseam.raptor.xmbean.RaptorService"
+		name="Raptor:service=RaptorService">
+	<!--
+	<attribute name="JndiName" replace="true" trim="true">RaptorService</attribute>
+	-->
+	</mbean>
+	<loader-repository>
+		seam.jboss.org:loader=ImseamSuite
+		<loader-repository-config>java2ParentDelegation=true</loader-repository-config>
+	</loader-repository>
+
+</server>
