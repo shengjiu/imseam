@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.jbpm.ui"
+   name="JBoss jBPM Designer Plug-in"
+   version="3.0.9"
+   provider-name="JBoss Inc."
+   class="org.jbpm.ui.DesignerPlugin">
+   
+   <runtime>
+      <library name="ui.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/dom4j-1.4.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime" />
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.draw2d"/>
+      <import plugin="org.eclipse.gef"/>
+      <import plugin="org.eclipse.wst.sse.core"/>
+      <import plugin="org.eclipse.wst.xml.core"/>
+      <import plugin="org.eclipse.wst.xml.ui"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+      <import plugin="org.eclipse.wst.sse.ui"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.wst.common.ui"/>
+      <import plugin="org.eclipse.jdt.debug.ui"/>
+      <import plugin="org.eclipse.debug.core"/>
+   </requires>
+   <extension-point id="graphElements" name="Graph Element Extensions" schema="schema/graphElements.exsd"/>
+   <extension-point id="editPolicies" name="Edit Policy Extensions" schema="schema/editPolicies.exsd"/>
+   
+  <extension point = "org.eclipse.ui.editors">
+    <editor
+          class="org.jbpm.ui.editor.DesignerEditor"
+          contributorClass="org.jbpm.ui.editor.DesignerEditorActionBarContributor" 
+          icon="icons/full/obj16/par_obj.gif"
+          id="org.jbpm.ui.editor.DesignerEditor"
+          matchingStrategy="org.jbpm.ui.editor.DesignerEditorMatchingStrategy"
+          name="jBPM Graphical Process Designer">
+        <contentTypeBinding contentTypeId="org.jbpm.ui.processdefinition.xml" /> 
+        <contentTypeBinding contentTypeId="org.jbpm.ui.gpd.xml" /> 
+    </editor>
+    <editor
+          class="org.jbpm.ui.pageflow.editor.PageFlowEditor"
+          contributorClass="org.jbpm.ui.pageflow.editor.PageFlowEditorActionBarContributor" 
+          icon="icons/full/obj16/par_obj.gif"
+          id="org.jbpm.ui.pageflow.editor.PageFlowEditor"
+          matchingStrategy="org.jbpm.ui.pageflow.editor.PageFlowEditorMatchingStrategy"
+          name="jBPM Pageflow Designer">
+        <contentTypeBinding contentTypeId="org.jbpm.ui.jbpm-pageflow.gpi" /> 
+        <contentTypeBinding contentTypeId="org.jbpm.ui.jbpm-pageflow.xml" /> 
+    </editor>
+    <editor
+          class="org.jbpm.ui.chatflow.editor.ChatFlowEditor"
+          contributorClass="org.jbpm.ui.chatflow.editor.ChatFlowEditorActionBarContributor"
+          icon="icons/full/obj16/par_obj.gif"
+          id="org.jbpm.ui.chatflow.editor.ChatFlowEditor"
+          matchingStrategy="org.jbpm.ui.chatflow.editor.ChatFlowEditorMatchingStrategy"
+          name="jBPM Chatflow designer">
+       <contentTypeBinding contentTypeId="org.jbpm.ui.jbpm-chatflow.gpi"/>
+       <contentTypeBinding contentTypeId="org.jbpm.ui.jbpm-chatflow.xml"/>
+    </editor> 
+  </extension> 
+  	
+  <extension point="org.eclipse.core.runtime.contentTypes">
+  	<content-type id="gpd.xml" 	name="gpd-xml"
+		base-type="org.eclipse.core.runtime.xml"
+		default-charset="UTF-8">
+		<describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+			<parameter name="element" value="process-diagram"/>
+		</describer>
+	</content-type>
+  	<content-type id="processdefinition.xml" 	name="processdefinition-xml"
+		base-type="org.eclipse.core.runtime.xml"
+		default-charset="UTF-8">
+		<describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+			<parameter name="element" value="process-definition"/>
+		</describer>
+	</content-type>
+  	<content-type id="jbpm-pageflow.gpi" 	name="jbpm-pageflow-gpi"
+		base-type="org.eclipse.core.runtime.xml"
+		default-charset="UTF-8">
+		<describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+			<parameter name="element" value="pageflow-diagram"/>
+		</describer>
+	</content-type>
+  	<content-type id="jbpm-pageflow.xml" 	name="jbpm-pageflow-xml"
+		base-type="org.eclipse.core.runtime.xml"
+		default-charset="UTF-8">
+		<describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+			<parameter name="element" value="pageflow-definition"/>
+		</describer>
+	</content-type>
+   <content-type
+         base-type="org.eclipse.core.runtime.xml"
+         default-charset="UTF-8"
+         id="jbpm-chatflow.gpi"
+         name="jbpm-chatflow-gpi"
+         priority="normal">
+      <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+         <parameter
+               name="element"
+               value="chatflow-diagram"/>
+      </describer>
+   </content-type>
+   <content-type
+         base-type="org.eclipse.core.runtime.xml"
+         default-charset="UTF-8"
+         id="jbpm-chatflow.xml"
+         name="jbpm-chatflow-xml">
+      <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+         <parameter
+               name="element"
+               value="chatflow-definition"/>
+      </describer>
+   </content-type>
+  </extension>  
+  
+  <extension point="org.eclipse.ui.popupMenus">
+    <objectContribution id="org.jbpm.ui.addActions"
+        objectClass="org.jbpm.ui.part.GraphElementEditPart">
+      <filter
+            name="canAddActions"
+            value="true"/>
+      <action
+        class="org.jbpm.ui.action.AddActionDelegate"
+        id="addAction"
+        label="Add Action"
+        menubarPath="org.eclipse.gef.group.edit"
+        tooltip="Add an Action">
+      </action>
+    </objectContribution>
+    <objectContribution id="org.jbpm.ui.addProcessEvents"
+    	objectClass="org.jbpm.ui.part.GraphElementEditPart">
+      <filter
+            name="canAddProcessEvents"
+            value="true"/>
+    	<action
+           class="org.jbpm.ui.action.AddActionDelegate"
+           id="processEnd"
+           label="Process End"
+           menubarPath="org.jbpm.ui.popup.addActions/additions"
+           tooltip="Add a Process End Action">
+    	</action>
+    	<action
+           class="org.jbpm.ui.action.AddActionDelegate"
+           id="processStart"
+           label="Process Start"
+           menubarPath="org.jbpm.ui.popup.addActions/additions"
+           tooltip="Add a Process Start Action">
+    	</action>
+    </objectContribution>
+    <objectContribution id="org.jbpm.ui.addNodeEvents"
+    	objectClass="org.jbpm.ui.part.GraphElementEditPart">
+      <filter
+            name="canAddNodeEvents"
+            value="true"/>
+     <menu
+     	id="org.jbpm.ui.popup.addActions"
+     	label="Add Actions"
+     	path="org.eclipse.gef.group.edit">
+     	<separator name="additions" />
+     </menu>
+    	<action
+           class="org.jbpm.ui.action.AddActionDelegate"
+           id="nodeLeave"
+           label="Node Leave"
+           menubarPath="org.jbpm.ui.popup.addActions/additions"
+           tooltip="Add a Node Leave Action">
+    	</action>
+    	<action
+           class="org.jbpm.ui.action.AddActionDelegate"
+           id="nodeEnter"
+           label="Node Enter"
+           menubarPath="org.jbpm.ui.popup.addActions/additions"
+           tooltip="Add a Node Enter Action">
+    	</action>
+    	<action
+           class="org.jbpm.ui.action.AddActionDelegate"
+           id="afterSignal"
+           label="After Signal"
+           menubarPath="org.jbpm.ui.popup.addActions/additions"
+           tooltip="Add a After Signal Action">
+    	</action>
+    	<action
+           class="org.jbpm.ui.action.AddActionDelegate"
+           id="beforeSignal"
+           label="Before Signal"
+           menubarPath="org.jbpm.ui.popup.addActions/additions"
+           tooltip="Add a Before Signal Action">
+    	</action>
+    </objectContribution>
+    <objectContribution id="org.jbpm.ui.tasknode"
+    	objectClass="org.jbpm.ui.part.GraphElementEditPart">
+      <filter
+            name="nodeTagEqualsTo"
+            value="task-node"/> 
+    	<action
+           class="org.jbpm.ui.action.AddTaskDelegate"
+           id="addTask"
+           label="Add Task"
+           menubarPath="org.eclipse.gef.group.edit"
+           tooltip="Add a Task">
+    	</action>
+    </objectContribution>
+    <objectContribution id="org.jbpm.ui.startstate"
+    	objectClass="org.jbpm.ui.part.GraphElementEditPart">
+      <filter
+            name="nodeTagEqualsTo"
+            value="start-state"/> 
+      <filter
+            name="canAddTasks"
+            value="true"/>
+    	<action
+           class="org.jbpm.ui.action.AddTaskDelegate"
+           id="addTask"
+           label="Add Task"
+           menubarPath="org.eclipse.gef.group.edit"
+           tooltip="Add a Task">
+    	</action>
+    </objectContribution>
+    <objectContribution
+          adaptable="false"
+          id="org.jbpm.ui.graphElement"
+          objectClass="org.jbpm.ui.part.GraphElementEditPart">
+       <filter
+             name="nodeTagDifferentFrom"
+             value="event"/>  
+       <action
+             class="org.jbpm.ui.action.PropertyDialogActionDelegate"
+             id="properties"
+             label="Properties..."
+             menubarPath="org.eclipse.gef.group.edit"
+             tooltip="Edit the Graph Element&apos;s Properties"/>
+    </objectContribution>
+  </extension>
+  
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="JBoss jBPM"
+            id="org.jbpm.ui">
+      </category>
+      <category
+            name="JBoss Seam"
+            id="org.jboss.seam">
+      </category> 
+      <category
+            id="com.chat4assist.imseam"
+            name="Chat4assist Seam"/>      
+      <wizard
+            name="Process Definition"
+            icon="icons/full/obj16/process16.gif"
+            category="org.jbpm.ui"
+            class="org.jbpm.ui.wizard.NewProcessDefinitionWizard"
+            id="org.jbpm.ui.wizard.new.file">
+         <description>
+            A wizard that creates a process diagram
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+      <wizard
+            name="Page Flow"
+            icon="icons/full/obj16/page.gif"
+            category="org.jboss.seam"
+            class="org.jbpm.ui.pageflow.wizard.NewPageFlowWizard"
+            id="org.jboss.seam.ui.wizard.new.pageflow">
+         <description>
+            A wizard that creates a pageflow
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard> 
+      <wizard
+            name="Process Project"
+            icon="icons/full/obj16/process16.gif"
+            category="org.jbpm.ui"
+            class="org.jbpm.ui.wizard.NewProcessProjectWizard"
+            id="org.jbpm.ui.wizard.new.project"
+            project="true" >
+         <description>
+            A wizard that creates a new jBPM Project
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+      <wizard
+            category="com.chat4assist.imseam"
+            class="org.jbpm.ui.chatflow.wizard.NewChatFlowWizard"
+            icon="icons/full/obj16/chatpage.gif"
+            id="com.chat4assist.ui.wizard.new.chatflow"
+            name="Chat Flow">
+         <description/>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+   <extension
+         point="org.jbpm.ui.graphElements">
+      <graphElement
+            name="transition"
+            contributor="org.jbpm.ui.contributor.TransitionContributor">
+         <entry
+               category="org.jbpm.palette.3.BasicConnectionTools"
+               id="org.jbpm.ui.palette.1.Transition"
+               label="Transition"
+               tooltip="Creates a Transition"
+               type="connection"/>
+      </graphElement>
+      <graphElement
+            name="start-state"
+            contributor="org.jbpm.ui.contributor.StartStateContributor">
+         <entry
+               category="org.jbpm.palette.1.BasicNodeTools"
+               id="org.jbpm.ui.palette.1.StartState"
+               label="Start"
+               tooltip="Creates a Start node"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="state"
+            contributor="org.jbpm.ui.contributor.StateContributor">
+         <entry
+               category="org.jbpm.palette.1.BasicNodeTools"
+               id="org.jbpm.ui.palette.2.State"
+               label="State"
+               tooltip="Creates a State node"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="end-state"
+            contributor="org.jbpm.ui.contributor.EndStateContributor">
+         <entry
+               category="org.jbpm.palette.1.BasicNodeTools"
+               id="org.jbpm.ui.palette.3.EndState"
+               label="End"
+               tooltip="Creates a End Node"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="fork"
+            contributor="org.jbpm.ui.contributor.ForkContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.1.Fork"
+               label="Fork"
+               tooltip="Creates a Fork node"
+               type="node"/>
+      </graphElement>
+      <graphElement
+             name="join"
+            contributor="org.jbpm.ui.contributor.JoinContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.2.Join"
+               label="Join"
+               tooltip="Creates a Join"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="decision"
+            contributor="org.jbpm.ui.contributor.DecisionContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.3.Decision"
+               label="Decision"
+               tooltip="Creates a Decision"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="page"
+            contributor="org.jbpm.ui.contributor.PageContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.35.Page"
+               label="Page"
+               tooltip="Creates a Page"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="task-node"
+            contributor="org.jbpm.ui.contributor.TaskNodeContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.4.TaskNode"
+               label="Task Node"
+               tooltip="Creates a Task Node"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="process-state"
+            contributor="org.jbpm.ui.contributor.ProcessStateContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.5.ProcessState"
+               label="Process State"
+               tooltip="Creates a Process State"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="super-state"
+            contributor="org.jbpm.ui.contributor.SuperStateContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.6.SuperState"
+               label="Super State"
+               tooltip="Creates a Super State"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="node"
+            contributor="org.jbpm.ui.contributor.NodeContributor">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.4.Node"
+               label="Node"
+               tooltip="Creates a Node"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            name="action"
+            contributor="org.jbpm.ui.contributor.ActionContributor"/>
+      <graphElement  
+            name="event"
+            contributor="org.jbpm.ui.contributor.EventContributor"/>
+      <graphElement  
+            name="task"
+            contributor="org.jbpm.ui.contributor.TaskContributor"/>
+      <graphElement  
+            name="swimlane"
+            contributor="org.jbpm.ui.contributor.SwimlaneContributor"/>
+      <graphElement 
+            name="process-definition"
+            contributor="org.jbpm.ui.contributor.ProcessDefinitionContributor"/>
+      <graphElement 
+            name="pageflow-definition"
+            contributor="org.jbpm.ui.contributor.ProcessDefinitionContributor"/>
+      <graphElement
+            contributor="org.jbpm.ui.contributor.TransitionLabelContributor"
+            name="transitionLabel"/>
+      <graphElement
+            contributor="org.jbpm.ui.contributor.TaskListContributor"
+            name="taskList"/>
+      <graphElement
+            contributor="org.jbpm.ui.contributor.ChatPageContributor"
+            name="chatpage">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.35.ChatPage"
+               label="Chatpage"
+               tooltip="Creates a chatpage"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            contributor="org.jbpm.ui.contributor.ProcessDefinitionContributor"
+            name="chatflow-definition"/>
+      <graphElement
+            contributor="org.jbpm.ui.contributor.NoWaitChatPageContributor"
+            name="nowaitchatpage">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.35.NoWaitChatPage"
+               label="NowaitChatpage"
+               tooltip="Create a nowait chatpage"
+               type="node"/>
+      </graphElement>
+      <graphElement
+            contributor="org.jbpm.ui.contributor.NoWaitNodeContributor"
+            name="nowaitnode">
+         <entry
+               category="org.jbpm.palette.2.AdvancedNodeTools"
+               id="org.jbpm.ui.palette.35.NoWaitNode"
+               label="NoWaitNode"
+               tooltip="Create a nowait node"
+               type="node"/>
+      </graphElement>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jbpm.ui.util.JbpmClasspathContainerInitializer"
+            id="JBPM"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.jbpm.ui.prefs.MainPage"
+            id="org.jbpm.ui.prefs.view"
+            name="JBoss jBPM"/>
+   </extension>
+   
+   <extension point="org.eclipse.ui.propertyPages"> 
+        <page 
+            id="org.jbpm.ui.GraphElementGeneralPage" 
+            name="General" 
+            objectClass="org.jbpm.ui.model.GraphElement" 
+            class="org.jbpm.ui.properties.GraphElementGeneralPropertyPage"> 
+        </page> 
+        <page 
+            id="org.jbpm.ui.TaskAssignmentPage" 
+            name="Assignment" 
+            objectClass="org.jbpm.ui.model.Task" 
+            class="org.jbpm.ui.properties.TaskAssignmentPropertyPage"> 
+        </page> 
+        <page 
+            id="org.jbpm.ui.TaskControllerPage" 
+            name="Controller" 
+            objectClass="org.jbpm.ui.model.Task" 
+            class="org.jbpm.ui.properties.TaskControllerPropertyPage"> 
+        </page> 
+        <page 
+            id="org.jbpm.ui.TaskAdvancedPage" 
+            name="Advanced" 
+            objectClass="org.jbpm.ui.model.Task" 
+            class="org.jbpm.ui.properties.TaskAdvancedPropertyPage"> 
+        </page> 
+        <page 
+            id="org.jbpm.ui.ActionHandlerPage" 
+            name="Handler" 
+            objectClass="org.jbpm.ui.model.Action" 
+            class="org.jbpm.ui.properties.ActionHandlerPropertyPage"> 
+        </page> 
+        <page
+              class="org.jbpm.ui.properties.NodeActionPropertyPage"
+              id="org.jbpm.ui.NodeActionPage"
+              name="Handler"
+              objectClass="org.jbpm.ui.model.Node">
+           <filter
+                 name="nodeTagEqualsTo"
+                 value="node"/> 
+        </page> 
+    </extension>
+   <extension
+         point="org.jbpm.ui.editPolicies">
+      <editPolicy
+            id="org.jbpm.ui.tree.GraphElementComponentEditPolicy"
+            part="org.jbpm.ui.part.tree.ElementTreeEditPart"
+            policy="org.jbpm.ui.policy.GraphElementComponentEditPolicy"
+            role="ComponentEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.tree.ProcessDefinitionComponentEditPolicy"
+            part="org.jbpm.ui.part.tree.ProcessDefinitionTreeEditPart"
+            policy="org.jbpm.ui.policy.ProcessDefinitionComponentEditPolicy"
+            role="ComponentEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.tree.NodeComponentEditPolicy"
+            part="org.jbpm.ui.part.tree.NodeTreeEditPart"
+            policy="org.jbpm.ui.policy.NodeComponentEditPolicy"
+            role="ComponentEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.NodeComponentEditPolicy"
+            part="org.jbpm.ui.part.graph.NodeGraphicalEditPart"
+            policy="org.jbpm.ui.policy.NodeComponentEditPolicy"
+            role="ComponentEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.NodeGraphicalNodeEditPolicy"
+            part="org.jbpm.ui.part.graph.NodeGraphicalEditPart"
+            policy="org.jbpm.ui.policy.NodeGraphicalNodeEditPolicy"
+            role="GraphicalNodeEditPolciy"/>
+      <editPolicy
+            id="org.jbpm.ui.NodeDirectEditPolicy"
+            part="org.jbpm.ui.part.graph.NodeGraphicalEditPart"
+            policy="org.jbpm.ui.policy.NodeDirectEditPolicy"
+            role="DirectEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.TransitionConnectionEndpointsEditPolicy"
+            part="org.jbpm.ui.part.graph.TransitionGraphicalEditPart"
+            policy="org.jbpm.ui.policy.TransitionConnectionEndpointsEditPolicy"
+            role="Connection Endpoint Policy"/>
+      <editPolicy
+            id="org.jbpm.ui.TransitionConnectionEditPolicy"
+            part="org.jbpm.ui.part.graph.TransitionGraphicalEditPart"
+            policy="org.jbpm.ui.policy.TransitionConnectionEditPolicy"
+            role="ConnectionEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.TransitionConnectionBendpointEditPolicy"
+            part="org.jbpm.ui.part.graph.TransitionGraphicalEditPart"
+            policy="org.jbpm.ui.policy.TransitionConnectionBendpointEditPolicy"
+            role="Connection Bendpoint Policy"/>
+      <editPolicy
+            id="org.jbpm.ui.ProcessDefinitionXYLayoutEditPolicy"
+            part="org.jbpm.ui.part.graph.ProcessDefinitionGraphicalEditPart"
+            policy="org.jbpm.ui.policy.ProcessDefinitionXYLayoutEditPolicy"
+            role="LayoutEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.TransitionLabelGraphicalNodeEditPolicy"
+            part="org.jbpm.ui.part.graph.TransitionLabelGraphicalEditPart"
+            policy="org.jbpm.ui.policy.TransitionLabelGraphicalNodeEditPolicy"
+            role="GraphicalNodeEditPolciy"/>
+      <editPolicy
+            id="org.jbpm.ui.TransitionLabelDirectEditPolicy"
+            part="org.jbpm.ui.part.graph.TransitionLabelGraphicalEditPart"
+            policy="org.jbpm.ui.policy.TransitionLabelDirectEditPolicy"
+            role="DirectEditPolicy"/>
+      <editPolicy
+            id="org.jbpm.ui.TaskSelectionFeedbackEditPolicy"
+            part="org.jbpm.ui.part.graph.TaskGraphicalEditPart"
+            policy="org.jbpm.ui.policy.TaskSelectionFeedbackEditPolicy"
+            role="Selection Feedback"/>
+   </extension> 
+
+</plugin>

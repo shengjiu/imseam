@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process-definition 
+  xmlns="http://jbpm.org/3/jpdl"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://jbpm.org/3/jpdl http://jbpm.org/xsd/jpdl-3.0.xsd"
+  name="simple">
+   <start-state name="start">
+     <task>
+        <controller>
+          <variable name="color" />
+          <variable name="size" />
+        </controller>
+      </task>
+      <transition name="to_state" to="first">
+         <action name="action" class="com.sample.action.MessageActionHandler">
+            <message>Going to the first state!</message>
+         </action>
+      </transition>
+   </start-state>
+   <state name="first">
+      <transition name="to_end" to="end">
+         <action name="action" class="com.sample.action.MessageActionHandler">
+            <message>About to finish!</message>
+         </action>
+      </transition>
+   </state>
+   <end-state name="end"></end-state>
+</process-definition>

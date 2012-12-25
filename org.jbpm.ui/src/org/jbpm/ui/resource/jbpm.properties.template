@@ -1,0 +1,6 @@
+# resource path to a properties file that will overwrite all the hibernate 
+jbpm.hibernate.properties=hibernate.properties
+
+# uncomment the next line to use the file system instead of the database for 
+# storing files related to a process definition
+# jbpm.files.dir=c:/jbpm.data
