@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chatflow-definition
+  name="Performance-meeting-test">
+   <start-state name="startmeetingtest">
+      <transition name="online" to="welcome"></transition>
+   </start-state>
+   <chatpage name="meetingstarted">
+      <transition name="stopmeeting" to="meetingstopped"></transition>
+      <transition name="sendmessage" to="distributemessage">
+      	<action expression="#{hostMeetingActionHandler.distributeMessage}"/>
+      </transition>
+      <transition name="save2meetingcontext" to="savetomeetingcontext"></transition>
+      <transition name="addclients" to="moreclientsadded"></transition>
+      <transition name="startactivewindow" to="startactivemeeting"></transition>
+      <transition name="removemember" to="memberremoved"></transition>
+      <transition name="retrievefrommeetingcontext" to="retrievefrommeetingcontext"></transition>
+      <transition name="recievemessage" to="messagereceived">
+      	<action expression="#{clientMeetingActionHandler.messageRecieved}"/>
+      </transition>
+      <transition name="removed" to="removedfrommeeting"></transition>
+   </chatpage>
+   <chatpage name="welcome">
+      <transition name="startmeeting" to="meetingstarted" action="#{hostMeetingActionHandler.startMeeting}"></transition>
+      <transition name="joinedMeeting" to="meetingstarted"></transition>
+   </chatpage>
+   <chatpage name="meetingstopped">
+      <transition name="end" to="end"></transition>
+   </chatpage>
+   <nowaitchatpage name="gobacktomeetingstarted">
+      <transition name="goback" to="meetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="distributemessage">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="savetomeetingcontext">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="moreclientsadded">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="startactivemeeting">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="memberremoved">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <end-state name="end"></end-state>
+   <nowaitchatpage name="messagereceived">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="retrievefrommeetingcontext">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <chatpage name="removedfrommeeting">
+      <transition name="end" to="end"></transition>
+   </chatpage>
+</chatflow-definition>

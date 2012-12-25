@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-definition
+  name="Performance-meeting-test">
+   <start-state name="startmeetingtest">
+      <transition name="online" to="welcome"></transition>
+   </start-state>
+   <chatpage name="meetingstarted">
+	  <transition name="" to="meetingstarted"></transition>
+      <transition name="removed" to="removedfrommeeting"></transition>
+      <transition name="receivemessage" to="messagereceived"></transition>
+      <transition name="retrievefrommeetingcontext" to="retrievefrommeetingcontext"></transition>
+      <transition name="sendmessage" to="distributemessage"></transition>
+   </chatpage>
+   <chatpage name="welcome">
+      <transition name="startmeeting" to="meetingstarted"></transition>
+   </chatpage>
+   <chatpage name="removedfrommeeting">
+      <transition name="end" to="end"></transition>
+   </chatpage>
+   <nowaitchatpage name="gobacktomeetingstarted">
+      <transition name="goback" to="meetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="messagereceived">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="retrievefrommeetingcontext">
+      <transition name="goback" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <end-state name="end"></end-state>
+   <nowaitchatpage name="distributemessage">
+      <transition name="" to="gobacktomeetingstarted"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="nowaitchatpage1"></nowaitchatpage>
+</chatflow-definition>

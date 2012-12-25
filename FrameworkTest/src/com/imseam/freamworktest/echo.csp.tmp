@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<chat-pages name="pageS name, may not useful" xmlns="http://www.imseam.com/">
+    <chat-page view-id="welcome">
+        <body>
+            <text>Welcome ::n#{buddy.userId}</text>
+        </body>
+        <help>
+        	<text>Help welcome page</text>
+        </help>
+        <actions>
+            <action outcome="echo">
+                <parsers>
+                    <string-parser pattern="*"/>
+                </parsers>
+            </action>
+        </actions>
+    </chat-page>
+    <chat-page view-id="echo">
+        <body>
+        	<text>#{request.input}\t</text>
+        </body>
+        <help>
+        	<text>Echo page will echo the user's input</text>
+        </help>
+        <actions>
+            <action outcome="foreach">
+                <parsers>
+                    <string-parser pattern="foreach"/>
+                </parsers>
+            </action>
+            <action outcome="menu">
+                <parsers>
+                    <string-parser pattern="menu"/>
+                </parsers>
+            </action>
+            <action outcome="#{echoBean.echo}">
+                <parsers>
+                    <string-parser pattern="*"/>
+                </parsers>
+            </action>
+        </actions>
+    </chat-page>
+    <chat-page view-id="foreach">
+        <body>
+            <text>forech test header</text>
+            <foreach items="#{echoBean.foreachItems}" var="var">
+                <text>"the var value: #{var}"</text>
+            </foreach>
+            <text>foreach test footer</text>
+        </body>
+        <help>
+            <include view-id="welcome"/>
+        </help>
+        <actions>
+            <action outcome="echo">
+                <parsers>
+                    <string-parser pattern="echo"/>
+                </parsers>
+            </action>
+            <action outcome="menu">
+                <parsers>
+                    <string-parser pattern="menu"/>
+                </parsers>
+            </action>
+        </actions>
+    </chat-page>
+    <menu-page page-size="10" var="var" items="#{echoBean.menuItems}" view-id="menu" menu-selected-action="#{echoBean.menuSelected}">
+        <header>
+            <text>menu Header</text>
+        </header>
+        <menu-item>
+            <text>Menu item: #{var}::n</text>
+        </menu-item>
+        <footer>
+            <text>menu footer</text>
+        </footer>
+        <actions>
+            <action outcome="echo">
+                <parsers>
+                    <string-parser pattern="echo"/>
+                </parsers>
+            </action>
+            <action outcome="foreach">
+                <parsers>
+                    <string-parser pattern="foreach"/>
+                </parsers>
+            </action>
+        </actions>
+    </menu-page>    
+</chat-pages>
+

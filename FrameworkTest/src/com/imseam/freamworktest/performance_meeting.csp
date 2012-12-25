@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<chat-pages name="pageS name, may not useful" xmlns="http://www.imseam.com/">
+	<chat-page view-id="welcome">
+        <body>
+            <text>Welcome ::n#{buddy.userId}</text>
+        </body>
+        <help>
+        	<text>Help welcome page</text>
+        </help>
+        <actions>
+            <action outcome="startMeeting">
+                <parsers>
+                    <regexp-parser pattern="startMeeting:::(.*)">
+                        <regexp-parseresult parameter-name="buddies" group-number="1"/>
+                    </regexp-parser>                    
+                </parsers>
+            </action>
+        </actions>
+    </chat-page>
+    <chat-page view-id="meetingstarted">
+        <body>
+        	<text>meeting started:::#{request.input == null ? buddy.userId : request.input}</text>
+        </body>
+        <help>
+        	<text>Echo page will echo the user's input</text>
+        </help>
+        <actions>
+      		<action outcome="distributemessage">
+                <parsers>
+                    <regexp-parser pattern="send:::(.*)">
+                        <regexp-parseresult parameter-name="meetingTimestamp" group-number="1"/>
+                    </regexp-parser>                    
+                </parsers>
+			</action>
+		</actions>
+    </chat-page>
+    <chat-page view-id="distributemessage">
+        <body>
+            <text>#{request.input}</text>
+        </body>
+    </chat-page>
+    <chat-page view-id="messagereceived">
+        <body>
+            <text>#{request.receivedMessage}</text>
+        </body>
+    </chat-page>
+    <chat-page view-id="gobacktomeetingstarted">
+        <body>
+            <text></text>
+        </body>
+    </chat-page>    
+</chat-pages>
+

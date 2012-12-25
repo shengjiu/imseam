@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chatflow-definition
+  name="performance-test-chatflow">
+   <start-page name="start">
+      <transition name="welcome" to="welcome">
+      </transition>
+   </start-page>
+   <chatpage name="welcome" view-id="/com/imseam/freamworktest/welcome" timeout="60000">
+      <transition name="echoOrMeetingDecision" to="echoOrMeeting">
+      </transition>
+   </chatpage>
+   <page-decision name="echoOrMeeting" expression="#{testBean.checkEchoOrMeeting}">
+      <transition name="echo" to="echo">
+      </transition>
+      <transition name="meeting" to="meeting">
+      	<action expression="#{testBean.meeting}"/>
+      </transition>
+   </page-decision>
+   <chatpage name="echo" view-id="/com/imseam/freamworktest/echo" timeout="60000">
+      <transition name="echo" to="echo"></transition>
+      <transition name="meeting" to="meeting"></transition>
+   </chatpage>
+   <chatpage name="meeting" view-id="/com/imseam/freamworktest/meeting" timeout="60000">
+      <transition name="meeting" to="meeting"></transition>
+      <transition name="echo" to="echo"></transition>
+   </chatpage>
+</chatflow-definition>

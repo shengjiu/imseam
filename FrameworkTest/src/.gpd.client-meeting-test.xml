@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-diagram name="Performance-meeting-test" width="734" height="1116">
+  <node name="startmeetingtest" x="46" y="148" width="140" height="40">
+    <transition name="online">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="meetingstarted" x="40" y="356" width="140" height="40">
+    <transition name="">
+      <label x="5" y="-10"/>
+      <bendpoint w1="-50" h1="0" w2="-50" h2="18"/>
+      <bendpoint w1="-50" h1="-20" w2="-50" h2="-10"/>
+    </transition>
+    <transition name="removed">
+      <label x="5" y="-10"/>
+    </transition>
+    <transition name="receivemessage">
+      <label x="5" y="-10"/>
+    </transition>
+    <transition name="retrievefrommeetingcontext">
+      <label x="0" y="-94"/>
+    </transition>
+    <transition name="sendmessage">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="welcome" x="42" y="251" width="140" height="40">
+    <transition name="startmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="removedfrommeeting" x="20" y="490" width="189" height="40">
+    <transition name="end">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="gobacktomeetingstarted" x="579" y="403" width="140" height="40">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="messagereceived" x="306" y="587" width="234" height="40">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="retrievefrommeetingcontext" x="375" y="20" width="225" height="40">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="end" x="46" y="633" width="140" height="40"/>
+  <node name="distributemessage" x="334" y="283" width="-1" height="-1">
+    <transition name="">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="nowaitchatpage1" x="371" y="449" width="-1" height="-1"/>
+</chatflow-diagram>

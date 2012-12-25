@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-diagram name="Performance-meeting-test" width="997" height="1095">
+  <node name="startmeetingtest" x="146" y="55" width="157" height="40">
+    <transition name="online">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="meetingstarted" x="156" y="296" width="140" height="-1">
+    <transition name="">
+      <label x="5" y="-10"/>
+      <bendpoint w1="-50" h1="0" w2="-50" h2="18"/>
+      <bendpoint w1="-50" h1="-20" w2="-50" h2="-10"/>
+    </transition>
+    <transition name="stopmeeting">
+      <label x="-20" y="113"/>
+    </transition>
+    <transition name="sendmessage">
+      <label x="5" y="-10"/>
+    </transition>
+    <transition name="save2meetingcontext">
+      <label x="5" y="-10"/>
+    </transition>
+    <transition name="addclients">
+      <label x="5" y="-10"/>
+    </transition>
+    <transition name="startactivewindow">
+      <label x="4" y="23"/>
+    </transition>
+    <transition name="removemember">
+      <label x="-15" y="35"/>
+    </transition>
+    <transition name="retrievefrommeetingcontext">
+      <label x="-42" y="-93"/>
+    </transition>
+    <transition name="recievemessage">
+      <label x="-46" y="9"/>
+    </transition>
+    <transition name="removed">
+      <label x="-50" y="-4"/>
+    </transition>
+  </node>
+  <node name="welcome" x="155" y="157" width="140" height="-1">
+    <transition name="startmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="meetingstopped" x="327" y="633" width="140" height="-1">
+    <transition name="end">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="gobacktomeetingstarted" x="804" y="321" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="distributemessage" x="452" y="247" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="savetomeetingcontext" x="481" y="357" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="moreclientsadded" x="448" y="122" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="startactivemeeting" x="480" y="435" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="memberremoved" x="479" y="524" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="end" x="194" y="833" width="140" height="-1"/>
+  <node name="messagereceived" x="463" y="688" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="retrievefrommeetingcontext" x="411" y="15" width="-1" height="-1">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="removedfrommeeting" x="109" y="529" width="196" height="41">
+    <transition name="end">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+</chatflow-diagram>

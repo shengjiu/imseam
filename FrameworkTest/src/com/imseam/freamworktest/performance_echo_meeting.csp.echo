@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<chat-pages name="pageS name, may not useful" xmlns="http://www.imseam.com/">
+	<chat-page view-id="welcome">
+        <body>
+            <text>Welcome ::n#{buddy.userId}</text>
+        </body>
+        <help>
+        	<text>Help welcome page</text>
+        </help>
+        <actions>
+            <action outcome="echoOrMeetingDecision">
+                <parsers>
+                    <string-parser pattern="*"/>
+                </parsers>
+            </action>
+        </actions>
+    </chat-page>
+    <chat-page view-id="echo">
+        <body>
+        	<text>#{request.input}</text>
+        </body>
+        <help>
+        	<text>Echo page will echo the user's input</text>
+        </help>
+        <actions>
+            <action outcome="meeting">
+                <parsers>
+                    <string-parser pattern="meeting"/>
+                </parsers>
+            </action>
+            <action outcome="#{testBean.echo}">
+                <parsers>
+                    <string-parser pattern="*"/>
+                </parsers>
+            </action>
+        </actions>
+    </chat-page>
+    <chat-page view-id="meeting">
+        <body>
+            <text>#{request.input}</text>
+        </body>
+        <help>
+        	<text>Meeting page help</text>
+        </help>
+        <actions>
+            <action outcome="echo">
+                <parsers>
+                    <string-parser pattern="echo"/>
+                </parsers>
+            </action>
+            <action outcome="#{testBean.meeting}">
+                <parsers>
+                    <string-parser pattern="*"/>
+                </parsers>
+            </action>
+        </actions>
+    </chat-page>
+</chat-pages>
+
