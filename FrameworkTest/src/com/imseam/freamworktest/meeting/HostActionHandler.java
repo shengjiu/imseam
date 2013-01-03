@@ -13,16 +13,24 @@ public class HostActionHandler {
 	
 	private @Inject Instance<CDIMeeting> meeting; 
 	private @Inject Instance<IUserRequest> request;
+	private String connectionId = (char)("NettyTest".length() + 1) + "NettyTest" + "server1";
 	
 	public void startMeeting(){
-		String buddies= request.get().getParameter("buddies");
-	
-		meeting.get().startMeetingWithBuddy(buddies.split(":::"));
+		String[] buddies= request.get().getParameter("buddies").split(":::");
+		for(int i = 0; i < buddies.length; i++){
+			buddies[i] = constructBuddyUid(buddies[i]);
+		}
+		meeting.get().startMeetingWithBuddy(buddies);
 	}
 	
 	public void distributeMessage(){
 		meeting.get().send(request.get().getInput());
-		
+	}
+
+
+	private String constructBuddyUid(String buddyId){
+		char connectionUidLength = (char)(connectionId.length() + 1);
+		return connectionUidLength + connectionId + buddyId;
 	}
 	
 

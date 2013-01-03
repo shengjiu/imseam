@@ -234,7 +234,13 @@ public class ChatpageContext implements IAttributes {
 		
 		ValueExpression valueExp = expFactory.createValueExpression(this.getELContext(), expression, Object.class);
 		
-		return valueExp.getValue(this.getELContext());
+		try{
+			return valueExp.getValue(this.getELContext());
+		}catch(Exception exp){
+			log.warning(exp.getMessage());
+			exp.printStackTrace();
+		}
+		return null;
 	}
 	
 	public String evaluateStringExp(String expression){

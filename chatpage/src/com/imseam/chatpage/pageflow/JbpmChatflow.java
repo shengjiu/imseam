@@ -34,6 +34,12 @@ public class JbpmChatflow implements Serializable {
 	private int counter;
 
 	private ProcessInstance processInstance;
+	
+	private String chatflowDefinitionName = null;
+
+	public String getChatflowDefinitionName() {
+		return chatflowDefinitionName;
+	}
 
 	public boolean isInProcess() {
 		return processInstance != null;
@@ -116,14 +122,14 @@ public class JbpmChatflow implements Serializable {
 		return StringUtil.isNullOrEmptyAfterTrim(outcome) ? node.getDefaultLeavingTransition() != null : node.getLeavingTransition(outcome) != null;
 	}
 
-	public void navigate(String outcome) {
+	public void navigate(IAttributes request, IMessageSender responseSender, String outcome) {
 		assert (!StringUtil.isNullOrEmptyAfterTrim(outcome));
 
 		ProcessInstance currentProcessInstance = this.getCurrentProcessIntance(processInstance);
 
 		Node node = getNode(currentProcessInstance);
 
-		navigate(null, null, null, outcome, currentProcessInstance, node);
+		navigate(null, request, responseSender, outcome, currentProcessInstance, node);
 
 	}
 

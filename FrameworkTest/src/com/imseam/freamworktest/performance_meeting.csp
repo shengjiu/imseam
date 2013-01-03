@@ -8,7 +8,7 @@
         	<text>Help welcome page</text>
         </help>
         <actions>
-            <action outcome="startMeeting">
+            <action outcome="startmeeting">
                 <parsers>
                     <regexp-parser pattern="startMeeting:::(.*)">
                         <regexp-parseresult parameter-name="buddies" group-number="1"/>

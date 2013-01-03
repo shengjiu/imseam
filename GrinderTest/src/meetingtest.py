@@ -98,7 +98,7 @@ class Site:
         self.clients=[]
         self.siteNumber = siteNumber
         self.syncEvent= Event()
-        self.syncEvent.set()
+        self.syncEvent.clear()
         
     
             
@@ -116,10 +116,11 @@ class TestUser:
 
     def wait(self):
         log('wait user: ' + str(self.userNumber) +', operator numbers:' + str(len(self.site.operators)) + ', client numbers: ' + str(len(self.site.clients)))
+        
         if (( len(self.site.operators) + len(self.site.clients)) != siteUserNumber):
             self.site.syncEvent.wait()
         else:
-            self.site.syncEvent.clear()
+            self.site.syncEvent.set()
 
     def startMeeting(self, buddies):
         expectedResponses = []
@@ -132,9 +133,12 @@ class TestUser:
         window = self.window
         log('start meeting message:' + message)
         window.sendMsg(message)
-        messagesFromBuddy = [window.waitForTextMessage(0)]
+        startmeetingResponse = window.waitForTextMessage(0).content.strip()
+        log(self.userNumber +' startmeetingResponse:' + startmeetingResponse) 
+        messagesFromBuddy = [startmeetingResponse]
         for i in range(len(buddies)):
-            responseMessage =window.waitForTextMessage(0)
+            responseMessage =window.waitForTextMessage(0).content.strip()
+            log(self.userNumber +' startmeeting responseMessage from buddies:' + responseMessage)
             messagesFromBuddy.append(responseMessage)
             expectedResponses.remove(responseMessage)
         if(len(expectedResponses) > 0) :
@@ -151,7 +155,8 @@ class TestUser:
         window.sendMsg(message)
         messagesFromBuddy = []
         for i in range(len(buddies)):
-            responseMessage =window.waitForTextMessage(0)
+            responseMessage =window.waitForTextMessage(0).content.strip()
+            log(self.userNumber +' sendTimesatmpMessage response:' + responseMessage)
             messagesFromBuddy.append(responseMessage)
             expectedResponses.remove(responseMessage)
         if(len(expectedResponses) > 0) :
@@ -180,7 +185,7 @@ class TestRunner:
         userName = "Test user " + userNumber
 
         window = startChatTest("localhost", 17001, userName, "no password", Constants.online, None)
-        user = TestUser(window, isOperator(grinder.threadNumber), userNumber, site)
+        user = TestUser(window, isOperator(grinder.threadNumber), userName, site)
         user.wait()
         
         if(user.isOperator):
@@ -195,9 +200,10 @@ class TestRunner:
                 stats.report
         else:
             while True:
-                recievedMessage = window.waitForTextMessage(0)
-                if(not recievedMessage.start('meeting started')):
-                    if(not recievedMessage.start('stop')):
+                recievedMessage = window.waitForTextMessage(0).content.strip()
+                log(userNumber +' client recievedMessage:' + recievedMessage)
+                if(not recievedMessage.startswith('meeting started')):
+                    if(not recievedMessage.startswith('stop')):
                         window.sendMsg('recieved:::'+recievedMessage+':::'+userName)
                     else:
                         break;

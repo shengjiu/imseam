@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chatflow-definition
-  name="Performance-meeting-test">
-   <start-state name="startmeetingtest">
-      <transition name="online" to="welcome"></transition>
-   </start-state>
-   <chatpage name="meetingstarted">
+  name="performance-meeting-test">
+   <start-page name="startmeetingtest">
+      <transition name="welcome" to="welcome"></transition>
+   </start-page>
+   <chatpage name="meetingstarted" view-id="/com/imseam/freamworktest/meetingstarted">
       <transition name="stopmeeting" to="meetingstopped"></transition>
       <transition name="sendmessage" to="distributemessage">
       	<action expression="#{hostMeetingActionHandler.distributeMessage}"/>
@@ -19,39 +19,41 @@
       </transition>
       <transition name="removed" to="removedfrommeeting"></transition>
    </chatpage>
-   <chatpage name="welcome">
-      <transition name="startmeeting" to="meetingstarted" action="#{hostMeetingActionHandler.startMeeting}"></transition>
+   <chatpage name="welcome" view-id="/com/imseam/freamworktest/welcome">
+      <transition name="startmeeting" to="meetingstarted">
+	      <action expression="#{hostMeetingActionHandler.startMeeting}"/>
+      </transition>
       <transition name="joinedMeeting" to="meetingstarted"></transition>
    </chatpage>
-   <chatpage name="meetingstopped">
+   <chatpage name="meetingstopped" view-id="/com/imseam/freamworktest/meetingstopped">
       <transition name="end" to="end"></transition>
    </chatpage>
-   <nowaitchatpage name="gobacktomeetingstarted">
+   <nowaitchatpage name="gobacktomeetingstarted" view-id="/com/imseam/freamworktest/gobacktomeetingstarted">
       <transition name="goback" to="meetingstarted"></transition>
    </nowaitchatpage>
-   <nowaitchatpage name="distributemessage">
+   <nowaitchatpage name="distributemessage" view-id="/com/imseam/freamworktest/distributemessage">
       <transition name="goback" to="gobacktomeetingstarted"></transition>
    </nowaitchatpage>
-   <nowaitchatpage name="savetomeetingcontext">
+   <nowaitchatpage name="savetomeetingcontext" view-id="/com/imseam/freamworktest/savetomeetingcontext">
       <transition name="goback" to="gobacktomeetingstarted"></transition>
    </nowaitchatpage>
-   <nowaitchatpage name="moreclientsadded">
+   <nowaitchatpage name="moreclientsadded" view-id="/com/imseam/freamworktest/moreclientsadded">
       <transition name="goback" to="gobacktomeetingstarted"></transition>
    </nowaitchatpage>
-   <nowaitchatpage name="startactivemeeting">
+   <nowaitchatpage name="startactivemeeting" view-id="/com/imseam/freamworktest/startactivemeeting">
       <transition name="goback" to="gobacktomeetingstarted"></transition>
    </nowaitchatpage>
-   <nowaitchatpage name="memberremoved">
+   <nowaitchatpage name="memberremoved" view-id="/com/imseam/freamworktest/memberremoved">
       <transition name="goback" to="gobacktomeetingstarted"></transition>
    </nowaitchatpage>
    <end-state name="end"></end-state>
-   <nowaitchatpage name="messagereceived">
+   <nowaitchatpage name="messagereceived" view-id="/com/imseam/freamworktest/messagereceived">
       <transition name="goback" to="gobacktomeetingstarted"></transition>
    </nowaitchatpage>
-   <nowaitchatpage name="retrievefrommeetingcontext">
+   <nowaitchatpage name="retrievefrommeetingcontext" view-id="/com/imseam/freamworktest/retrievefrommeetingcontext">
       <transition name="goback" to="gobacktomeetingstarted"></transition>
    </nowaitchatpage>
-   <chatpage name="removedfrommeeting">
+   <chatpage name="removedfrommeeting" view-id="/com/imseam/freamworktest/removedfrommeeting">
       <transition name="end" to="end"></transition>
    </chatpage>
 </chatflow-definition>

@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<chatflow-diagram name="Performance-meeting-test" width="1545" height="1217">
-  <node name="startmeetingtest" x="62" y="59" width="140" height="40">
-    <transition name="online">
-      <label x="5" y="-10"/>
-    </transition>
-  </node>
+<chatflow-diagram name="performance-meeting-test" width="1416" height="1044">
   <node name="meetingstarted" x="46" y="522" width="140" height="40">
     <transition name="stopmeeting">
       <label x="-86" y="-3"/>

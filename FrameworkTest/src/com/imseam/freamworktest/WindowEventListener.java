@@ -26,8 +26,9 @@ public class WindowEventListener {
 //		}
 		
 		
-		chatflow.get().begin("performance-test-chatflow", event, "welcome");
+//		chatflow.get().begin("performance-test-chatflow", event, "welcome");
 		
+		chatflow.get().begin("performance-meeting-test", event, "welcome");
 		//System.out.println("Window: "+ event.getWindow() + ", " + event.getWindow().getUid() + ", JbpmChatflow: " + chatflow);
 		
 	}

@@ -13,7 +13,8 @@ public class EventListener {
 	
 	public void onApplicationInitialized(@Observes @ApplicationInitialized ApplicationEvent event) throws Exception{
 		//JbpmFlowDefinitionManager.getInstance().startup("echo-foreach-menu-chatflow.xml");
-		JbpmManager.getInstance().startup("performancetest-chatflow.xml");
+//		JbpmManager.getInstance().startup("performancetest-chatflow.xml");
+		JbpmManager.getInstance().startup("meeting-test.xml");
 	}
 	
 
