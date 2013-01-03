@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import com.imseam.cdi.chatlet.ChatflowRequestProcessor;
 import com.imseam.cdi.context.IMWindowScoped;
 import com.imseam.chatlet.IAttributes;
+import com.imseam.chatlet.IMessageSender;
 import com.imseam.chatlet.IWindow;
 import com.imseam.common.util.StringUtil;
 
@@ -17,9 +18,9 @@ public class Chatflow {
 	
 	private @Inject Instance<ChatflowRequestProcessor> chatflowRequestProcessor; 
 	
-	public void navigate(String outcome) {
+	public void navigate(IAttributes request, IMessageSender responseSender, String outcome) {
 		assert (!StringUtil.isNullOrEmptyAfterTrim(outcome));
-		chatflowRequestProcessor.get().getChatflow().navigate(outcome);
+		chatflowRequestProcessor.get().getChatflow().navigate(request, responseSender, outcome);
 	}
 	
 	public void begin(String chatflowDefinitionName, IAttributes request, String welcome) {

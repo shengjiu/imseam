@@ -5,8 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.weld.Container;
 import org.jboss.weld.bootstrap.api.Service;
 import org.jboss.weld.context.AbstractBoundContext;
-import org.jboss.weld.context.beanstore.BeanStore;
-import org.jboss.weld.context.beanstore.ConcurrentHashMapBeanStore;
 
 import com.imseam.cdi.chatlet.components.CDIRequestObjectInThreadHolder;
 import com.imseam.cdi.chatlet.event.ConnectionErrorCallbackRequest;
@@ -19,9 +17,9 @@ import com.imseam.cdi.context.IMMeetingContext;
 import com.imseam.cdi.context.IMRequestContext;
 import com.imseam.cdi.context.IMSessionContext;
 import com.imseam.cdi.context.IMWindowContext;
-import com.imseam.cdi.context.beanstore.AttributesBackedBeanStore;
 import com.imseam.chatlet.IApplication;
 import com.imseam.chatlet.IAttributes;
+import com.imseam.chatlet.IMeeting;
 import com.imseam.chatlet.IMessageSender;
 import com.imseam.chatlet.IUserRequest;
 import com.imseam.chatlet.IWindow;
@@ -505,6 +503,10 @@ public class ChatletLifecycle implements Service {
 		}
 		CDIRequestObjectInThreadHolder.getInstance().setRequestObjectInThread(event);
 	}	
+	
+	public void meetingCreated(IMeeting meeting){
+		activateContext(meetingContext(), meeting);
+	}
 
 	public void windowInitializedEventDone(WindowEvent event) {
 		log.debug(">>> End window intialize event: " + event.getWindow().getUid());

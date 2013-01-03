@@ -17,5 +17,6 @@ import javax.inject.Qualifier;
 @Documented
 @Qualifier
 public @interface UserLeaveWindow {
-
+	String state() default "all";
+	String chatflow() default "all";
 }

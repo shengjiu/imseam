@@ -17,5 +17,6 @@ import javax.inject.Qualifier;
 @Documented
 @Qualifier
 public @interface SessionStopped {
-
+	String state() default "*";
+	String chatflow() default "*";
 }

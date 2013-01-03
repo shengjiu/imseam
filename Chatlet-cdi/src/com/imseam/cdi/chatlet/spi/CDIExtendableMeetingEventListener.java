@@ -27,22 +27,22 @@ public abstract class CDIExtendableMeetingEventListener implements IMeetingEvent
 //	}
 	
 	
-	public void onEventReceived(IWindow window, IEvent event){
-		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", ReceivedMeetingEvent.class));
-	}
-	
-	
-	public void onOtherWindowLeftMeeting(IWindow window, String sourceWindowId, String kickoutWindowUid){
-		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", OtherWindowLeftMeeting.class));
-	}
-	
-	public void onOtherWindowJoinedMeeting(IWindow window, String sourceWindowId, String newWindowUid){
-		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", OtherWindowJoinedMeeting.class));
-	}
-	
-	public void onJoinedMeeting(IWindow window, String sourceWindowUid){
-		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", JoinedMeeting.class));
-	}
+//	public void onEventReceived(IWindow window, IEvent event){
+//		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", ReceivedMeetingEvent.class));
+//	}
+//	
+//	
+//	public void onOtherWindowLeftMeeting(IWindow window, String sourceWindowId, String kickoutWindowUid){
+//		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", OtherWindowLeftMeeting.class));
+//	}
+//	
+//	public void onOtherWindowJoinedMeeting(IWindow window, String sourceWindowId, String newWindowUid){
+//		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", OtherWindowJoinedMeeting.class));
+//	}
+//	
+//	public void onJoinedMeeting(IWindow window, String sourceWindowUid){
+//		ExceptionUtil.createRuntimeException(String.format("Must be extended, the bean can be defined by a chatpage state qualifier annotation and %s annotation", JoinedMeeting.class));
+//	}
 	
 	public boolean beforeInviteWindow(IWindow window){
 		return window.getMeeting() == null;
@@ -53,21 +53,21 @@ public abstract class CDIExtendableMeetingEventListener implements IMeetingEvent
 		return true;
 	}
 
-	@Override
-	public void initialize(Object source, Map<String, String> params) {
-		ExceptionUtil.createRuntimeException("Should not call or extended");
-
-	}
-
-	@Override
-	public void onKickedoutFromMeeting(IWindow window, String sourceWindowId,
-			String meetingUid) {
-		ExceptionUtil.createRuntimeException("Should not call or extended");
-	}
-
-	@Override
-	public void onMeetingStopped(IWindow window, String sourceWindowUid) {
-		ExceptionUtil.createRuntimeException("Should not call or extended");
-	}
+//	@Override
+//	public void initialize(Object source, Map<String, String> params) {
+//		ExceptionUtil.createRuntimeException("Should not call or extended");
+//
+//	}
+//
+//	@Override
+//	public void onKickedoutFromMeeting(IWindow window, String sourceWindowId,
+//			String meetingUid) {
+//		ExceptionUtil.createRuntimeException("Should not call or extended");
+//	}
+//
+//	@Override
+//	public void onMeetingStopped(IWindow window, String sourceWindowUid) {
+//		ExceptionUtil.createRuntimeException("Should not call or extended");
+//	}
 
 }

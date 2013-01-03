@@ -17,5 +17,6 @@ import javax.inject.Qualifier;
 @Documented
 @Qualifier
 public @interface MeetingStopped {
-
+	String state() default "all";
+	String chatflow() default "all";
 }

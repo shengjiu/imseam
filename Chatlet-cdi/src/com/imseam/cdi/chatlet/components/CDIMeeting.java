@@ -5,7 +5,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.weld.Container;
 
+import com.imseam.cdi.chatlet.ChatletLifecycle;
 import com.imseam.cdi.chatlet.Id;
 import com.imseam.cdi.chatlet.spi.AbstractCDIErrorCallback;
 import com.imseam.cdi.chatlet.spi.Func;
@@ -33,8 +35,9 @@ public class CDIMeeting {
 			log.warn("window is already in a meeting, startMeetingWithBuddy cancelled");
 			return null;
 		}
-
-		return window.get().startMeetingWithBuddy(errorCallback, buddyUids);
+		IMeeting meeting = window.get().startMeetingWithBuddy(errorCallback, buddyUids);
+		setMeetingContext(meeting);
+		return meeting;
 	}
 
 	public IMeeting startMeetingWithWindow(AbstractCDIErrorCallback errorCallback, String... windowUids) throws WindowInOtherMeetingException, IdentifierNotExistingException{
@@ -42,9 +45,13 @@ public class CDIMeeting {
 			log.warn("window is already in a meeting, startMeetingWithWindow cancelled");
 			return null;
 		}
-
-		
-		return window.get().startMeetingWithWindow(errorCallback, windowUids);
+		IMeeting meeting = window.get().startMeetingWithWindow(errorCallback, windowUids);
+		setMeetingContext(meeting);
+		return meeting;
+	}
+	
+	private void setMeetingContext(IMeeting meeting){
+		Container.instance().services().get(ChatletLifecycle.class).meetingCreated(meeting);
 	}
 
 	public void leaveMeeting(AbstractCDIErrorCallback errorCallback) throws NoMeetingException{

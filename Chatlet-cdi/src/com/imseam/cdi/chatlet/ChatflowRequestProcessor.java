@@ -38,10 +38,34 @@ public class ChatflowRequestProcessor {
 		return jbpmChatflow.getChatPageNode(); 
 	}
 	
-	public boolean processSystemEventForChatflow(String eventType){
-		return jbpmChatflow.processSystemEvent(eventType);
+	private boolean processSystemEventForChatflow(ChatflowEventEnum event){
+		return jbpmChatflow.processSystemEvent(event.toString());
 	}
 
+	public boolean processKickoutFromMeetingEvent(){
+		return processSystemEventForChatflow(ChatflowEventEnum.KickedoutFromMeeting);
+	}
+	
+	public boolean processMeetingStoppedEvent(){
+		return processSystemEventForChatflow(ChatflowEventEnum.MeetingStopped);
+	}
+	
+	public boolean processJoinedMeetingEvent(){
+		return processSystemEventForChatflow(ChatflowEventEnum.JoinedMeeting);
+	}
+	
+	public boolean processUserJoinWindowEvent(){
+		return processSystemEventForChatflow(ChatflowEventEnum.UserJoinWindow);
+	}
+	
+	public boolean processUserLeaveWindowEvent(){
+		return processSystemEventForChatflow(ChatflowEventEnum.UserLeaveWindow);
+	}
+	
+	public boolean processSessionStoppedEvent(){
+		return processSystemEventForChatflow(ChatflowEventEnum.SessionStopped);
+	}
+	
 	private String getStringInput(IUserRequest chatRequest) {
 		if (chatRequest.getRequestContent().getMessageContent() instanceof String) {
 			return (String)chatRequest.getRequestContent().getMessageContent();
@@ -49,9 +73,10 @@ public class ChatflowRequestProcessor {
 			log.warn("Chat Request type is not supported");
 			return null;
 		}
-
 	}
 
+	
+	
 	public static ChatflowRequestProcessor instance() {
 		ChatflowRequestProcessor instance = WeldEngineHelper.getInstance().getInstanceFromWeldEngine(ChatflowRequestProcessor.class);
 		if(instance == null){
@@ -59,6 +84,14 @@ public class ChatflowRequestProcessor {
 			instance = WeldEngineHelper.getInstance().getInstanceFromWeldEngine(ChatflowRequestProcessor.class);
 		}
 		return instance;
+	}
+	
+	public String getChatflowName(){
+		return jbpmChatflow.getChatflowDefinitionName();
+	}
+	
+	public String getState(){
+		return jbpmChatflow.getChatPageNode().getName();
 	}
 	
 	

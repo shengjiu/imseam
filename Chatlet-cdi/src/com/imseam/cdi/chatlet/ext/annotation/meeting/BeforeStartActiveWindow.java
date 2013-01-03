@@ -17,5 +17,7 @@ import javax.inject.Qualifier;
 @Documented
 @Qualifier
 public @interface BeforeStartActiveWindow {
+	String state() default "all";
+	String chatflow() default "all";
 
 }
