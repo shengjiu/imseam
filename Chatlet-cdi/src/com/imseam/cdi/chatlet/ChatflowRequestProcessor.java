@@ -1,5 +1,7 @@
 package com.imseam.cdi.chatlet;
 
+import java.lang.annotation.Annotation;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,33 +40,39 @@ public class ChatflowRequestProcessor {
 		return jbpmChatflow.getChatPageNode(); 
 	}
 	
-	private boolean processSystemEventForChatflow(ChatflowEventEnum event){
-		return jbpmChatflow.processSystemEvent(event.toString());
+//	private boolean processSystemEventForChatflow(ChatflowEventEnum event){
+//		return jbpmChatflow.processSystemEvent(event.toString());
+//	}
+
+	public boolean processSystemEventForChatflow(Annotation annotation){
+		
+		return jbpmChatflow.processSystemEvent(annotation.toString());
 	}
 
-	public boolean processKickoutFromMeetingEvent(){
-		return processSystemEventForChatflow(ChatflowEventEnum.KickedoutFromMeeting);
-	}
 	
-	public boolean processMeetingStoppedEvent(){
-		return processSystemEventForChatflow(ChatflowEventEnum.MeetingStopped);
-	}
-	
-	public boolean processJoinedMeetingEvent(){
-		return processSystemEventForChatflow(ChatflowEventEnum.JoinedMeeting);
-	}
-	
-	public boolean processUserJoinWindowEvent(){
-		return processSystemEventForChatflow(ChatflowEventEnum.UserJoinWindow);
-	}
-	
-	public boolean processUserLeaveWindowEvent(){
-		return processSystemEventForChatflow(ChatflowEventEnum.UserLeaveWindow);
-	}
-	
-	public boolean processSessionStoppedEvent(){
-		return processSystemEventForChatflow(ChatflowEventEnum.SessionStopped);
-	}
+//	public boolean processKickoutFromMeetingEvent(){
+//		return processSystemEventForChatflow(ChatflowEventEnum.KickedoutFromMeeting);
+//	}
+//	
+//	public boolean processMeetingStoppedEvent(){
+//		return processSystemEventForChatflow(ChatflowEventEnum.MeetingStopped);
+//	}
+//	
+//	public boolean processJoinedMeetingEvent(){
+//		return processSystemEventForChatflow(ChatflowEventEnum.JoinedMeeting);
+//	}
+//	
+//	public boolean processUserJoinWindowEvent(){
+//		return processSystemEventForChatflow(ChatflowEventEnum.UserJoinWindow);
+//	}
+//	
+//	public boolean processUserLeaveWindowEvent(){
+//		return processSystemEventForChatflow(ChatflowEventEnum.UserLeaveWindow);
+//	}
+//	
+//	public boolean processSessionStoppedEvent(){
+//		return processSystemEventForChatflow(ChatflowEventEnum.SessionStopped);
+//	}
 	
 	private String getStringInput(IUserRequest chatRequest) {
 		if (chatRequest.getRequestContent().getMessageContent() instanceof String) {

@@ -4,7 +4,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
 import com.imseam.cdi.chatlet.event.ConnectionRequest;
-import com.imseam.cdi.chatlet.event.FromMeetingRequest;
+import com.imseam.cdi.chatlet.event.MeetingEvent;
 import com.imseam.cdi.context.IMRequestScoped;
 import com.imseam.chatlet.IApplication;
 import com.imseam.chatlet.IBuddy;
@@ -63,8 +63,8 @@ public class CDIContextObjectProducer {
 	
     @Produces
     @IMRequestScoped
-	public FromMeetingRequest getFromMeetingRequest(){
-    	return getRequestObject(FromMeetingRequest.class);
+	public MeetingEvent getFromMeetingRequest(){
+    	return getRequestObject(MeetingEvent.class);
 	}
 	
     @Produces
@@ -104,7 +104,7 @@ public class CDIContextObjectProducer {
     	if(windowEvent != null){
     		return new WindowEventContextProducer(windowEvent);
     	}
-    	FromMeetingRequest fromMeetingRequest = getFromMeetingRequest();
+    	MeetingEvent fromMeetingRequest = getFromMeetingRequest();
     	if(fromMeetingRequest != null){
     		return new FromMeetingRequestContextProducer(fromMeetingRequest);
     	}
@@ -303,8 +303,8 @@ public class CDIContextObjectProducer {
 
     class FromMeetingRequestContextProducer extends ContextProducer{
 
-    	private FromMeetingRequest fromMeetingRequest;
-    	FromMeetingRequestContextProducer(FromMeetingRequest fromMeetingRequest){
+    	private MeetingEvent fromMeetingRequest;
+    	FromMeetingRequestContextProducer(MeetingEvent fromMeetingRequest){
     		this.fromMeetingRequest = fromMeetingRequest;
     	}
 		@Override

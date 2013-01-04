@@ -9,7 +9,7 @@ import org.jboss.weld.context.AbstractBoundContext;
 import com.imseam.cdi.chatlet.components.CDIRequestObjectInThreadHolder;
 import com.imseam.cdi.chatlet.event.ConnectionErrorCallbackRequest;
 import com.imseam.cdi.chatlet.event.ConnectionRequest;
-import com.imseam.cdi.chatlet.event.FromMeetingRequest;
+import com.imseam.cdi.chatlet.event.MeetingEvent;
 import com.imseam.cdi.chatlet.event.WindowErrorCallbackRequest;
 import com.imseam.cdi.context.IMChannelContext;
 import com.imseam.cdi.context.IMConnectionContext;
@@ -210,7 +210,7 @@ public class ChatletLifecycle implements Service {
 		return request.getRequestFromChannel().getWindow();
 	}
 	
-	public void beginRequest(FromMeetingRequest request) {
+	public void beginRequest(MeetingEvent request) {
 		log.debug(">>> Begin request from meeting for window: " + request.getWindow().getUid());
 		
 		IWindow window = request.getWindow();
@@ -226,7 +226,7 @@ public class ChatletLifecycle implements Service {
 		CDIRequestObjectInThreadHolder.getInstance().setRequestObjectInThread(request);
 	}
 	
-	public void endRequest(FromMeetingRequest request) {
+	public void endRequest(MeetingEvent request) {
 		log.debug(">>> End request from meeting for window: " + request.getWindow().getUid());
 		IWindow window = request.getWindow();
 		destroyContext(requestContext());

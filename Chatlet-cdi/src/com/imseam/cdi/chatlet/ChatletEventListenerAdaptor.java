@@ -12,7 +12,7 @@ import org.jboss.weld.Container;
 import org.jbpm.JbpmContext;
 
 import com.imseam.cdi.chatlet.event.ConnectionRequest;
-import com.imseam.cdi.chatlet.event.FromMeetingRequest;
+import com.imseam.cdi.chatlet.event.MeetingEvent;
 import com.imseam.cdi.chatlet.ext.annotation.ApplicationInitialized;
 import com.imseam.cdi.chatlet.ext.annotation.BeforeApplicationDestroyed;
 import com.imseam.cdi.chatlet.ext.annotation.BuddyAdded;
@@ -310,8 +310,9 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		EventContext eventContext = null;
 		try{
 			eventContext = createEventContext(event, event.getChannel());
-			this.fireEvent(event, this.<UserJoinWindow>getQualifier());
-			getChatflowRequestProcessor().processUserJoinWindowEvent();
+			Annotation annotation = this.<UserJoinWindow>getQualifier(); 
+			this.fireEvent(event, annotation);
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 		}finally{
 			getLifecycle().userJoinWindowEventDestroyed(event);
 			eventContext.release();
@@ -327,8 +328,9 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		EventContext eventContext = null;
 		try{
 			eventContext = createEventContext(event, event.getChannel());
+			Annotation annotation = this.<UserLeaveWindow>getQualifier();
 			this.fireEvent(event, this.<UserLeaveWindow>getQualifier());
-			getChatflowRequestProcessor().processUserLeaveWindowEvent();
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 		}finally{
 			getLifecycle().userJoinWindowEventDestroyed(event);
 			eventContext.release();
@@ -357,8 +359,9 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		EventContext eventContext = null;
 		try{
 			eventContext = createEventContext(event);
-			this.fireEvent(event, this.<SessionStopped>getQualifier());
-			getChatflowRequestProcessor().processSessionStoppedEvent();
+			Annotation annotation = this.<SessionStopped>getQualifier();
+			this.fireEvent(event, annotation);
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 
 		}finally{
 			getLifecycle().sessionDestroyedEventDone(event);
@@ -396,16 +399,17 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	public void onKickedoutFromMeeting(IWindow window, String sourceWindowUid, String meetingUid) {
 		checkWeldContainer();
 
-		FromMeetingRequest request = new FromMeetingRequest(window, sourceWindowUid, meetingUid);
+		MeetingEvent event = new MeetingEvent(window, sourceWindowUid, meetingUid);
 		
-		getLifecycle().beginRequest(request);
+		getLifecycle().beginRequest(event);
 		EventContext eventContext = null;
 		try{
-			eventContext = createEventContext(request, window);
-			this.fireEvent(request, this.<KickedoutFromMeeting>getQualifier());
-			getChatflowRequestProcessor().processKickoutFromMeetingEvent();
+			eventContext = createEventContext(event, window);
+			Annotation annotation = this.<KickedoutFromMeeting>getQualifier();
+			this.fireEvent(event, annotation);
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 		}finally{
-			getLifecycle().endRequest(request);
+			getLifecycle().endRequest(event);
 			eventContext.release();
 		}
 	}
@@ -414,16 +418,17 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	public void onMeetingStopped(IWindow window, String sourceWindowUid) {
 		checkWeldContainer();
 
-		FromMeetingRequest request = new FromMeetingRequest(window, sourceWindowUid);
+		MeetingEvent event = new MeetingEvent(window, sourceWindowUid);
 		
-		getLifecycle().beginRequest(request);
+		getLifecycle().beginRequest(event);
 		EventContext eventContext = null;
 		try{
-			eventContext = createEventContext(request, window);
-			this.fireEvent(request, this.<MeetingStopped>getQualifier());
-			getChatflowRequestProcessor().processMeetingStoppedEvent();
+			eventContext = createEventContext(event, window);
+			Annotation annotation = this.<MeetingStopped>getQualifier();
+			this.fireEvent(event, annotation);
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 		}finally{
-			getLifecycle().endRequest(request);
+			getLifecycle().endRequest(event);
 			eventContext.release();
 		}		
 	}
@@ -487,29 +492,31 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	@Override
 	public void onEventReceived(IWindow window, IEvent event) {
 		checkWeldContainer();
-		FromMeetingRequest request = new FromMeetingRequest(window, event);
-		getLifecycle().beginRequest(request);
+		MeetingEvent meetingEvent = new MeetingEvent(window, event);
+		getLifecycle().beginRequest(meetingEvent);
 		EventContext eventContext = null;
 		try{
 			eventContext = createEventContext(event, window);
-			this.fireEvent(request, this.<ReceivedMeetingEvent>getQualifier());
+			this.fireEvent(event, this.<ReceivedMeetingEvent>getQualifier());
 		}finally{
-			getLifecycle().endRequest(request);
+			getLifecycle().endRequest(meetingEvent);
 			eventContext.release();
 		}
-
 	}
+
 	@Override
 	public void onOtherWindowLeftMeeting(IWindow window, String sourceWindowId, String kickoutWindowUid) {
 		checkWeldContainer();
-		FromMeetingRequest request = new FromMeetingRequest(window, sourceWindowId);
-		getLifecycle().beginRequest(request);
+		MeetingEvent event = new MeetingEvent(window, sourceWindowId);
+		getLifecycle().beginRequest(event);
 		EventContext eventContext = null;
 		try{
-			eventContext = createEventContext(request, window);
-			this.fireEvent(request, this.<OtherWindowLeftMeeting>getQualifier());
+			eventContext = createEventContext(event, window);
+			Annotation annotation = this.<OtherWindowLeftMeeting>getQualifier();
+			this.fireEvent(event, annotation);
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 		}finally{
-			getLifecycle().endRequest(request);
+			getLifecycle().endRequest(event);
 			eventContext.release();
 		}
 	}
@@ -517,15 +524,17 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	@Override
 	public void onOtherWindowJoinedMeeting(IWindow window, String sourceWindowId, String newWindowUid) {
 		checkWeldContainer();		
-		FromMeetingRequest request = new FromMeetingRequest(window, sourceWindowId);
+		MeetingEvent event = new MeetingEvent(window, sourceWindowId);
 		
-		getLifecycle().beginRequest(request);
+		getLifecycle().beginRequest(event);
 		EventContext eventContext = null;
 		try{
-			eventContext = createEventContext(request, window);
-			this.fireEvent(request, this.<OtherWindowJoinedMeeting>getQualifier());
+			eventContext = createEventContext(event, window);
+			Annotation annotation = this.<OtherWindowJoinedMeeting>getQualifier();
+			this.fireEvent(event, annotation);
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 		}finally{
-			getLifecycle().endRequest(request);
+			getLifecycle().endRequest(event);
 			eventContext.release();
 		}		
 	}
@@ -533,16 +542,17 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	@Override
 	public void onJoinedMeeting(IWindow window, String sourceWindowUid) {
 		checkWeldContainer();
-		FromMeetingRequest request = new FromMeetingRequest(window, sourceWindowUid);
-		getLifecycle().beginRequest(request);
+		MeetingEvent event = new MeetingEvent(window, sourceWindowUid);
+		getLifecycle().beginRequest(event);
 		
 		EventContext eventContext = null;
 		try{
-			eventContext = createEventContext(request, window);
-			this.fireEvent(request, this.<JoinedMeeting>getQualifier());
-			getChatflowRequestProcessor().processJoinedMeetingEvent();
+			eventContext = createEventContext(event, window);
+			Annotation annotation = this.<JoinedMeeting>getQualifier();
+			this.fireEvent(event, annotation);
+			getChatflowRequestProcessor().processSystemEventForChatflow(annotation);
 		}finally{
-			getLifecycle().endRequest(request);
+			getLifecycle().endRequest(event);
 			eventContext.release();
 		}
 		
@@ -551,7 +561,7 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	@Override
 	public boolean beforeInviteWindow(IWindow window) {
 		checkWeldContainer();
-		FromMeetingRequest request = new FromMeetingRequest(window);
+		MeetingEvent request = new MeetingEvent(window);
 		getLifecycle().beginRequest(request);
 		
 		EventContext eventContext = null;

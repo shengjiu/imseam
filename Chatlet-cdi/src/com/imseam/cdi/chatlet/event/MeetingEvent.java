@@ -11,27 +11,27 @@ import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.listener.event.IEvent;
 import com.imseam.common.util.StringUtil;
 
-public class FromMeetingRequest  implements IAttributes {
+public class MeetingEvent  implements IAttributes {
 	
 	@SuppressWarnings("unused")
-	private static Log log = LogFactory.getLog(FromMeetingRequest.class);
+	private static Log log = LogFactory.getLog(MeetingEvent.class);
 	private IAttributes attributes = new AttributesWrapper();
 	private IWindow window;
 	private String sourceWindowUid;
 	private String meetingUid;
 	
-	public FromMeetingRequest(){
+	public MeetingEvent(){
 		
 	}
-	public FromMeetingRequest(IWindow window){
+	public MeetingEvent(IWindow window){
 		this(window, null, null);
 	}
 	
-	public FromMeetingRequest(IWindow window, String sourceWindowUid){
+	public MeetingEvent(IWindow window, String sourceWindowUid){
 		this(window, sourceWindowUid, null);
 	}
 
-	public FromMeetingRequest(IWindow window, String sourceWindowUid, String meetingUid){
+	public MeetingEvent(IWindow window, String sourceWindowUid, String meetingUid){
 		this.window = window;
 		this.sourceWindowUid = sourceWindowUid;
 		this.meetingUid = meetingUid;
@@ -40,7 +40,7 @@ public class FromMeetingRequest  implements IAttributes {
 		}
 	}
 	
-	public FromMeetingRequest(IWindow window,IEvent event){
+	public MeetingEvent(IWindow window,IEvent event){
 		this.window = window;
 		this.attributes = event;
 	}
