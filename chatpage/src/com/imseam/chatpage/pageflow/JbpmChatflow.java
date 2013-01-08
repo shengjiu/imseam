@@ -231,21 +231,21 @@ public class JbpmChatflow implements Serializable {
 	// }
 	// }
 
-	public boolean processSystemEvent(String eventType) {
-		assert (!StringUtil.isNullOrEmptyAfterTrim(eventType));
+	public boolean signalTransition(String transition) {
+		assert (!StringUtil.isNullOrEmptyAfterTrim(transition));
 
 		ProcessInstance currentProcessInstance = this.getCurrentProcessIntance(processInstance);
 		ChatPageNode chatPageNode = getChatPageNode(currentProcessInstance);
 
-		if (!isInProcess() || !hasTransition(chatPageNode, eventType)) {
+		if (!isInProcess() || !hasTransition(chatPageNode, transition)) {
 			log.debug(String.format("The conversation is NOT in a chatflow process(isInProcess:%s) or No transition found(hasTransition:%s), Event type: %s", isInProcess(),
-					hasTransition(chatPageNode, eventType), eventType));
+					hasTransition(chatPageNode, transition), transition));
 			return false;
 		}
 
 		// trigger the named transition
-		log.debug("Find transition for systemevent, signal it:" + eventType);
-		signal(currentProcessInstance, eventType);
+		log.debug("Find transition for systemevent, signal it:" + transition);
+		signal(currentProcessInstance, transition);
 		if (processInstance.hasEnded()) {
 			// Events.instance().raiseEvent(
 			// "com.imseam.seam.endchatflow."
@@ -276,6 +276,8 @@ public class JbpmChatflow implements Serializable {
 		if (log.isDebugEnabled()) {
 			log.debug("beginning chatflow: " + chatflowDefinitionName);
 		}
+		
+		this.chatflowDefinitionName = chatflowDefinitionName;
 
 		processInstance = newChatflowInstance(JbpmManager.getInstance().getChatflowProcessDefinition(chatflowDefinitionName));
 

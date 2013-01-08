@@ -1,4 +1,4 @@
-package com.imseam.cdi.chatlet.ext.annotation;
+package com.imseam.cdi.chatlet.annotations;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -10,21 +10,33 @@ import java.lang.reflect.Type;
 import com.imseam.cdi.chatlet.spi.Constants;
 import com.imseam.common.util.StringUtil;
 
-public abstract class ChatflowAnnotationLiteral<T extends Annotation> 
+public class AbstractChatletEventAnnotation<T extends Annotation>
 implements Annotation, Serializable{
 
-	private static final long serialVersionUID = 8670103057152225935L;
+	private static final long serialVersionUID = -6715717440072025095L;
 	private String chatflow;
 	private String state;
 	private transient Class<T> annotationType;
 	private transient Method[] members;
 
 	
-	protected ChatflowAnnotationLiteral(String chatflow, String state) {
+	protected AbstractChatletEventAnnotation(){
+	}
+
+	public void setChatflowAndState(String chatflow, String state){
 		this.chatflow = chatflow;
 		this.state = state;
 		assert(!StringUtil.isNullOrEmptyAfterTrim(chatflow));
 		assert(!StringUtil.isNullOrEmptyAfterTrim(state));
+	}
+	
+
+	public String chatflow() {
+		return chatflow;
+	}
+
+	public String state() {
+		return state;
 	}
 
 	private Method[] getMembers() {
@@ -43,7 +55,7 @@ implements Annotation, Serializable{
 
 	private static Class<?> getAnnotationLiteralSubclass(Class<?> clazz) {
 		Class<?> superclass = clazz.getSuperclass();
-		if (superclass.equals(ChatflowAnnotationLiteral.class)) {
+		if (superclass.equals(AbstractChatletEventAnnotation.class)) {
 			return clazz;
 		} else if (superclass.equals(Object.class)) {
 			return null;

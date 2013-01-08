@@ -130,7 +130,7 @@ public class CDIMeeting {
 		}
 
 		
-		 try {
+		try {
 			return startMeetingWithBuddy(null, buddyUids);
 		} catch (WindowInOtherMeetingException e) {
 			log.warn(buddyUids, e);

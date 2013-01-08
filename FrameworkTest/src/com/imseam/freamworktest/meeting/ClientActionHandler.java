@@ -5,21 +5,17 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.imseam.cdi.chatlet.components.CDIMeeting;
-import com.imseam.cdi.chatlet.components.Chatflow;
+import com.imseam.cdi.chatlet.event.MeetingEvent;
 import com.imseam.cdi.chatlet.ext.annotation.meeting.JoinedMeeting;
-import com.imseam.cdi.chatlet.spi.CDIExtendableMeetingEventListener;
 import com.imseam.cdi.context.IMWindowScoped;
 import com.imseam.chatlet.IUserRequest;
-import com.imseam.chatlet.IWindow;
 
 @IMWindowScoped 
 @Named("clientMeetingActionHandler")
-@JoinedMeeting
-public class ClientActionHandler extends CDIExtendableMeetingEventListener{
+public class ClientActionHandler{
 	
 	private @Inject Instance<CDIMeeting> meeting; 
 	private @Inject Instance<IUserRequest> request;
-	private @Inject Instance<Chatflow> chatflow;
 	
 	private String meetingHost;
 	
@@ -27,9 +23,9 @@ public class ClientActionHandler extends CDIExtendableMeetingEventListener{
 		meeting.get().send("recieved:::" +request.get().getInput(), meetingHost);
 	}
 	
-	public void onJoinedMeeting(IWindow window, String sourceWindowUid){
-		meetingHost = sourceWindowUid;
-		chatflow.get().navigate("joinedMeeting");
+	public void onJoinedMeeting(@JoinedMeeting MeetingEvent meetingEvent){
+		System.out.println(String.format("client action handler get joinmeeting event: ", meetingEvent.getWindow().getUid(), meetingEvent.getSourceWindowId()));
+		
 	}
 	
 	

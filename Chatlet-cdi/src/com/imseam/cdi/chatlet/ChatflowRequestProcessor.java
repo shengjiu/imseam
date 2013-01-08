@@ -44,9 +44,9 @@ public class ChatflowRequestProcessor {
 //		return jbpmChatflow.processSystemEvent(event.toString());
 //	}
 
-	public boolean processSystemEventForChatflow(Annotation annotation){
+	public boolean signalTransition(Annotation annotation){
 		
-		return jbpmChatflow.processSystemEvent(annotation.toString());
+		return jbpmChatflow.signalTransition(annotation.toString());
 	}
 
 	
