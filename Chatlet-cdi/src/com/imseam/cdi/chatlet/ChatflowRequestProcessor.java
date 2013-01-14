@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.imseam.cdi.chatlet.annotations.AbstractChatletEventAnnotation;
 import com.imseam.cdi.context.IMWindowScoped;
 import com.imseam.cdi.weld.WeldEngineHelper;
 import com.imseam.chatlet.IMessageSender;
@@ -44,9 +45,9 @@ public class ChatflowRequestProcessor {
 //		return jbpmChatflow.processSystemEvent(event.toString());
 //	}
 
-	public boolean signalTransition(Annotation annotation){
+	public boolean signalTransition(String transitionName){
 		
-		return jbpmChatflow.signalTransition(annotation.toString());
+		return jbpmChatflow.signalTransition(transitionName);
 	}
 
 	

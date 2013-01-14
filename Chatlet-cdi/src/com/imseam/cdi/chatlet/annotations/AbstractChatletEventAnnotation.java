@@ -18,6 +18,7 @@ implements Annotation, Serializable{
 	private String state;
 	private transient Class<T> annotationType;
 	private transient Method[] members;
+	public final static String ALL = "*"; 
 
 	
 	protected AbstractChatletEventAnnotation(){
@@ -95,6 +96,10 @@ implements Annotation, Serializable{
 		StringBuilder string = new StringBuilder();
 		string.append('@').append(annotationType().getName()).append('(').append(chatflow).append('-').append(state).append(')');
 		return string.toString();
+	}
+	
+	public String getTransitionName(){
+		return annotationType().getSimpleName();
 	}
 
 

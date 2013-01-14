@@ -17,6 +17,6 @@ import javax.inject.Qualifier;
 @Documented
 @Qualifier
 public @interface KickedoutFromMeeting {
-	String state() default "all";
-	String chatflow() default "all";
+	String state() default "*";
+	String chatflow() default "*";
 }
