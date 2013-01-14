@@ -23,8 +23,10 @@ public interface IMeetingEventListener extends IInitable{
 	
 	void onEventReceived(IWindow window, IEvent event);
 	
+	//not synchrozied
 	boolean beforeInviteWindow(IWindow window);
 	
+	//not synchrozied
 	boolean beforeStartActiveWindow(IConnection conneciton, String buddyUid)throws BuddyNotAvailableForChatException, StartActiveWindowException;
 	
 }
