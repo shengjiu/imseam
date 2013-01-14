@@ -22,6 +22,7 @@ public class MessageSender implements IMessageSender {
 		for(IChatletMessage message : responseMessages){
 			if(message instanceof MessengerTextMessage){
 				textBuffer.append(message.getMessageContent());
+//				System.out.println("send message:" + message.getMessageContent());
 			}else{
 				messengerWindow.sendResponse(message);
 			}
@@ -33,6 +34,7 @@ public class MessageSender implements IMessageSender {
 		if(message != null){
 			
 			textBuffer.append(message.replace("::n", "\n"));
+			System.out.println("send server message:" +message);
 //			textBuffer.append(message);
 ////			textBuffer.append("\n");
 		}
@@ -46,6 +48,7 @@ public class MessageSender implements IMessageSender {
 	public void flush() {
 		if(textBuffer.length() <=0 ) return;
 		textBuffer.append("\n");
+		System.out.println("flush server message:" +textBuffer.toString());
 		messengerWindow.sendResponse(new MessengerTextMessage(textBuffer.toString()));
 		textBuffer.delete(0,textBuffer.length());
 	}

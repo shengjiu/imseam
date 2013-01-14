@@ -6,6 +6,8 @@ import java.util.Set;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 import redis.clients.util.SafeEncoder;
 
 import com.imseam.chatlet.IMeeting;
@@ -61,7 +63,11 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		Jedis jedis = null;
 		try{
 			jedis = JedisInstance.getJedisFromPool();
-			Set<String> windowUidSet = jedis.smembers(meetingUid);	
+			Transaction transaction = jedis.multi();
+			Response<Set<String>> windowUidSetResponse = transaction.smembers(meetingUid);
+			transaction.exec();
+			Set<String> windowUidSet = windowUidSetResponse.get();
+			
 			if(windowUidSet != null && windowUidSet.size() > 0){
 				return new MeetingContext(application, meetingUid);
 			}
@@ -95,8 +101,14 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		Jedis jedis = null;
 		try{
 			jedis = JedisInstance.getJedisFromPool();
-			originalBytes = jedis.hget(meetingObjectHashMapKey, keyBytes);
-			jedis.hset(meetingObjectHashMapKey, keyBytes, SerializerUtil.serialize(obj));
+			Transaction transaction = jedis.multi();
+			
+			Response<byte[]> response = transaction.hget(meetingObjectHashMapKey, keyBytes);
+			transaction.hset(meetingObjectHashMapKey, keyBytes, SerializerUtil.serialize(obj));
+			transaction.exec();
+			
+			originalBytes = response.get();
+			
 			if(originalBytes != null){
 				originalObject = SerializerUtil.deserialize(originalBytes);
 			}
@@ -115,8 +127,13 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		Jedis jedis = null;
 		try{
 			jedis = JedisInstance.getJedisFromPool();
-			originalBytes = jedis.hget(meetingObjectHashMapKey, keyBytes);
-			jedis.hdel(meetingObjectHashMapKey, keyBytes);
+			Transaction transaction = jedis.multi();
+			
+			Response<byte[]> response = transaction.hget(meetingObjectHashMapKey, keyBytes);
+			transaction.hdel(meetingObjectHashMapKey, keyBytes);
+			transaction.exec();
+			originalBytes = response.get();
+
 			if(originalBytes != null){
 				originalObject = SerializerUtil.deserialize(originalBytes);
 			}
@@ -136,7 +153,11 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		Jedis jedis = null;
 		try{
 			jedis = JedisInstance.getJedisFromPool();
-			originalBytes = jedis.hget(meetingObjectHashMapKey, keyBytes);
+			Transaction transaction = jedis.multi();
+			Response<byte[]> response = transaction.hget(meetingObjectHashMapKey, keyBytes);
+			transaction.exec();
+			originalBytes = response.get();
+			
 			if(originalBytes != null){
 				originalObject = (T)SerializerUtil.deserialize(originalBytes);
 			}
@@ -152,7 +173,13 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		Jedis jedis = null;
 		try{
 			jedis = JedisInstance.getJedisFromPool();
-			meetingWindowUidSet = jedis.smembers(meetingUid);
+			Transaction transaction = jedis.multi();
+
+			Response<Set<String>> windowUidSetResponse = transaction.smembers(meetingUid);
+			transaction.exec();
+			meetingWindowUidSet = windowUidSetResponse.get();
+			
+			
 			if(meetingWindowUidSet == null){
 				return null;
 			}
@@ -206,7 +233,12 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		Jedis jedis = null;
 		try{
 			jedis = JedisInstance.getJedisFromPool();
-			Set<byte[]> meetingObjectMapBytesKeySet = jedis.hkeys(meetingObjectHashMapKey);
+			Transaction transaction = jedis.multi();
+			
+			Response<Set<byte[]>> response = transaction.hkeys(meetingObjectHashMapKey);
+			transaction.exec();
+			Set<byte[]> meetingObjectMapBytesKeySet = response.get();
+			
 			
 			if(meetingObjectMapBytesKeySet != null && meetingObjectMapBytesKeySet.size() > 0){
 				meetingObjectMapKeySet = new HashSet<String>();
@@ -219,7 +251,4 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		}	
 		return meetingObjectMapKeySet;	
 	}
-
-
-
 }

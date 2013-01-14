@@ -12,10 +12,12 @@ import com.imseam.chatlet.IEventErrorCallback;
 import com.imseam.chatlet.IMeeting;
 import com.imseam.chatlet.IStartActiveWindowCallback;
 import com.imseam.chatlet.IWindow;
-import com.imseam.chatlet.exception.IdentifierNotExistingException;
+import com.imseam.chatlet.exception.WindowInOtherMeetingException;
+import com.imseam.common.util.ExceptionUtil;
 import com.imseam.raptor.IChatletApplication;
 import com.imseam.raptor.chatlet.WindowContext;
 import com.imseam.raptor.cluster.IClusterInvocation;
+import com.imseam.raptor.cluster.invocation.exception.MeetingNotExistingException;
 
 public class BuddyAddedToMeetingInvocation implements IClusterInvocation<IConnection>, IStartActiveWindowCallback{
 	
@@ -51,14 +53,19 @@ public class BuddyAddedToMeetingInvocation implements IClusterInvocation<IConnec
 			Set<IWindow> activeWindowSet = connection.getBuddyActiveWindowSet(buddyUid);
 			
 			for(IWindow window : activeWindowSet){
-				if(window.getMeeting() == null){
-					IMeeting meeting = application.getMeetingStorage().getExistingMeeting(meetingUid);
-					if (meeting != null && application.getMeetingEventListener().beforeInviteWindow(window) ) {
-						
+				IMeeting meeting = application.getMeetingStorage().getExistingMeeting(meetingUid);
+				if (meeting != null){
+					try{
 						((WindowContext)window).setMeeting(meeting);
-						addWindowToMeeting(application, window);
-						return;
+					}catch(WindowInOtherMeetingException windowInOtherMeetingException){
+						continue;
 					}
+					WindowAddedToMeetingInvocation request = new WindowAddedToMeetingInvocation(meetingUid, window.getUid(), sourceWindowUid, timeStamp);		
+					application.getClusterInvocationDistributor().distributeWindowRequest(handler, request, window.getUid());
+					return;
+				}else{
+					//todo no meeting existing
+					InvocationErrorHandler.sendExceptionBack(application, new MeetingNotExistingException(meetingUid), handler, timeStamp, sourceWindowUid, buddyUid);
 				}
 			}
 			
@@ -72,27 +79,40 @@ public class BuddyAddedToMeetingInvocation implements IClusterInvocation<IConnec
 			log.warn("Exception when invite window to meeting.", exception);
 			InvocationErrorHandler.sendExceptionBack(application, exception, handler, timeStamp, sourceWindowUid, buddyUid);
 		}
-		
-
 	}
 	
-	private void addWindowToMeeting(IChatletApplication application, IWindow window) {
-
-		application.getMeetingEventListener().onJoinedMeeting(window, sourceWindowUid);
-		OtherWindowAddedToMeetingInvocation invocation = new OtherWindowAddedToMeetingInvocation(meetingUid, sourceWindowUid, window.getUid(), new Date());
-		Set<String> windowUidSet = application.getMeetingStorage().getReadOnlyWindowUidSet(meetingUid);
-		try {
-			application.getClusterInvocationDistributor().distributeWindowRequest(null, invocation, windowUidSet.toArray(new String[windowUidSet.size()]));
-		} catch (IdentifierNotExistingException e) {
-			log.warn("Error when trying to send window added to meeting", e);
-		}
-		application.getMeetingStorage().addWindowsToMeeting(meetingUid, window.getUid());
-	}
+//	private void addWindowToMeeting(IChatletApplication application, String windowUid, String meetingUid) throws Exception{
+//		
+//	
+//
+//		((WindowContext)window).setMeeting(meeting);
+//		application.getMeetingEventListener().onJoinedMeeting(window, sourceWindowUid);
+//		OtherWindowAddedToMeetingInvocation invocation = new OtherWindowAddedToMeetingInvocation(meetingUid, sourceWindowUid, window.getUid(), new Date());
+//		Set<String> windowUidSet = application.getMeetingStorage().getReadOnlyWindowUidSet(meetingUid);
+//		try {
+//			application.getClusterInvocationDistributor().distributeWindowRequest(null, invocation, windowUidSet.toArray(new String[windowUidSet.size()]));
+//		} catch (IdentifierNotExistingException e) {
+//			log.warn("Error when trying to send window added to meeting", e);
+//		}
+//		application.getMeetingStorage().addWindowsToMeeting(meetingUid, window.getUid());
+//	}
 	
 	
 	@Override
 	public void windowStarted(IChannel channel) {
-		addWindowToMeeting(application, channel.getWindow());
+		try {
+			IMeeting meeting = application.getMeetingStorage().getExistingMeeting(meetingUid);
+			try{
+				((WindowContext)channel.getWindow()).setMeeting(meeting);
+			}catch(WindowInOtherMeetingException windowInOtherMeetingException){
+				ExceptionUtil.createRuntimeException("Shouldn't happen");
+			}
+			String windowUid = channel.getWindow().getUid();
+			WindowAddedToMeetingInvocation request = new WindowAddedToMeetingInvocation(meetingUid, windowUid, sourceWindowUid, timeStamp);		
+			application.getClusterInvocationDistributor().distributeWindowRequest(errorCallBack, request, windowUid);
+		} catch (Exception cause) {
+			InvocationErrorHandler.sendExceptionBack(application, cause, errorCallBack, timeStamp, sourceWindowUid, buddyUid);
+		}
 	}
 
 
@@ -100,7 +120,5 @@ public class BuddyAddedToMeetingInvocation implements IClusterInvocation<IConnec
 	public void startWindowFailed(Exception cause) {
 		InvocationErrorHandler.sendExceptionBack(application, cause, errorCallBack, timeStamp, sourceWindowUid, buddyUid);
 	}
-
-
 	
 }

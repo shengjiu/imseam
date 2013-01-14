@@ -204,7 +204,7 @@ public class NettyConnection extends AbstractConnection  {
 			getWindow(windowId)
 					.requestReceived(messageWrapper, message.getFrom());
 			
-//			System.out.println("message user: " + message.getFrom() + ", window owner: " + getWindow(windowId) + message.getContent());
+//			System.out.println("client received message user: " + message.getFrom() + ", window owner: " + getWindow(windowId) + message.getContent());
 		}
 
 		@Override
