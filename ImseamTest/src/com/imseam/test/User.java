@@ -178,6 +178,7 @@ public class User {
 		public void onTextMessage(TextMessage message) {
 			
 			getReceivedMessagsForWindow(message.windowId()).add(message);
+			System.out.println("client received message user: " + message.getFrom() + ", window owner: " + message.getTargetId() + ", "+message.getContent());
 		}
 	
 		@Override

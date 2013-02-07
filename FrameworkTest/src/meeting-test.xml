@@ -23,7 +23,7 @@
       <transition name="startmeeting" to="meetingstarted">
 	      <action expression="#{hostMeetingActionHandler.startMeeting}"/>
       </transition>
-      <transition name="joinedMeeting" to="meetingstarted"></transition>
+      <transition name="JoinedMeeting" to="meetingstarted"></transition>
    </chatpage>
    <chatpage name="meetingstopped" view-id="/com/imseam/freamworktest/meetingstopped">
       <transition name="end" to="end"></transition>

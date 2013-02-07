@@ -7,7 +7,9 @@ import com.imseam.chatlet.IEventErrorCallback;
 import com.imseam.chatlet.IMeeting;
 import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.exception.IdentifierNotExistingException;
+import com.imseam.chatlet.exception.WindowInOtherMeetingException;
 import com.imseam.raptor.IChatletApplication;
+import com.imseam.raptor.chatlet.WindowContext;
 import com.imseam.raptor.cluster.IClusterInvocation;
 import com.imseam.raptor.cluster.invocation.exception.BeforeStartMeetingFailedException;
 import com.imseam.raptor.cluster.invocation.exception.MeetingNotExistingException;
@@ -50,8 +52,15 @@ public class WindowAddedToMeetingInvocation implements IClusterInvocation<IWindo
 
 		if (window.getMeeting() != null && !window.getMeeting().getUid().equals(meetingUid)) {
 //			log.warn("Exception when invite window to meeting, and meeting already existing: " + window.getMeeting().getUid());
-			InvocationErrorHandler.sendExceptionBack(application, null, handler, timeStamp, sourceWindowUid, buddyUid);
 		}
+		
+		
+		try{
+			((WindowContext)window).setMeeting(meeting);
+		}catch(WindowInOtherMeetingException windowInOtherMeetingException){
+			InvocationErrorHandler.sendExceptionBack(application, windowInOtherMeetingException, handler, timeStamp, sourceWindowUid, buddyUid);
+		}
+		
 		
 		application.getMeetingEventListener().onJoinedMeeting(window, sourceWindowUid);
 		OtherWindowAddedToMeetingInvocation invocation = new OtherWindowAddedToMeetingInvocation(meetingUid, sourceWindowUid, window.getUid(), new Date());

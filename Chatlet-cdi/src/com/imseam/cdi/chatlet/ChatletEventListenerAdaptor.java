@@ -2,6 +2,7 @@ package com.imseam.cdi.chatlet;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.Set;
 
 import javax.el.ELContextListener;
 import javax.enterprise.util.AnnotationLiteral;
@@ -12,18 +13,21 @@ import org.jboss.weld.Container;
 import org.jbpm.JbpmContext;
 
 import com.imseam.cdi.chatlet.annotations.AbstractChatletEventAnnotation;
-import com.imseam.cdi.chatlet.annotations.AbstractChatletEventAnnotation;
 import com.imseam.cdi.chatlet.annotations.BeforeInviteWindowAnnotation;
 import com.imseam.cdi.chatlet.annotations.BeforeStartActiveWindowAnnotation;
+import com.imseam.cdi.chatlet.annotations.BuddySignOffAnnotation;
+import com.imseam.cdi.chatlet.annotations.BuddyStatusChangeAnnotation;
 import com.imseam.cdi.chatlet.annotations.JoinedMeetingAnnotation;
 import com.imseam.cdi.chatlet.annotations.KickedoutFromMeetingAnnotation;
 import com.imseam.cdi.chatlet.annotations.MeetingStoppedAnnotation;
 import com.imseam.cdi.chatlet.annotations.OtherWindowJoinedMeetingAnnotation;
 import com.imseam.cdi.chatlet.annotations.OtherWindowLeftMeetingAnnotation;
 import com.imseam.cdi.chatlet.annotations.ReceivedMeetingEventAnnotation;
+import com.imseam.cdi.chatlet.annotations.ReceivedWindowEventAnnotation;
 import com.imseam.cdi.chatlet.annotations.SessionStoppedAnnotation;
 import com.imseam.cdi.chatlet.annotations.UserJoinWindowAnnotation;
 import com.imseam.cdi.chatlet.annotations.UserLeaveWindowAnnotation;
+import com.imseam.cdi.chatlet.annotations.WindowStoppedAnnotation;
 import com.imseam.cdi.chatlet.event.ConnectionRequest;
 import com.imseam.cdi.chatlet.event.MeetingEvent;
 import com.imseam.cdi.chatlet.ext.annotation.ApplicationInitialized;
@@ -31,13 +35,10 @@ import com.imseam.cdi.chatlet.ext.annotation.BeforeApplicationDestroyed;
 import com.imseam.cdi.chatlet.ext.annotation.BuddyAdded;
 import com.imseam.cdi.chatlet.ext.annotation.BuddyRemoved;
 import com.imseam.cdi.chatlet.ext.annotation.BuddySignIn;
-import com.imseam.cdi.chatlet.ext.annotation.BuddySignOff;
-import com.imseam.cdi.chatlet.ext.annotation.BuddyStatusChange;
 import com.imseam.cdi.chatlet.ext.annotation.ConnectionStarted;
 import com.imseam.cdi.chatlet.ext.annotation.ConnectionStopped;
 import com.imseam.cdi.chatlet.ext.annotation.SessionStarted;
 import com.imseam.cdi.chatlet.ext.annotation.WindowStarted;
-import com.imseam.cdi.chatlet.ext.annotation.WindowStopped;
 import com.imseam.cdi.chatlet.ext.annotation.meeting.ExtendedMeetingListener;
 import com.imseam.cdi.chatlet.services.ChatletServices;
 import com.imseam.cdi.chatlet.spi.CDIExtendableMeetingEventListener;
@@ -50,9 +51,11 @@ import com.imseam.chatlet.IMessageSender;
 import com.imseam.chatlet.IUserRequest;
 import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.exception.BuddyNotAvailableForChatException;
+import com.imseam.chatlet.exception.IdentifierNotExistingException;
 import com.imseam.chatlet.exception.StartActiveWindowException;
 import com.imseam.chatlet.listener.IMeetingEventListener;
 import com.imseam.chatlet.listener.ISystemEventListener;
+import com.imseam.chatlet.listener.event.AbstractEvent;
 import com.imseam.chatlet.listener.event.ApplicationEvent;
 import com.imseam.chatlet.listener.event.BuddyEvent;
 import com.imseam.chatlet.listener.event.ConnectionEvent;
@@ -64,6 +67,7 @@ import com.imseam.chatpage.ChatPageManager;
 import com.imseam.chatpage.context.ChatpageContext;
 import com.imseam.chatpage.pageflow.JbpmManager;
 import com.imseam.common.util.ClassUtil;
+import com.imseam.common.util.ExceptionUtil;
 
 public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISystemEventListener, IChatlet {
 
@@ -208,33 +212,87 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 
 	@Override
 	public void onBuddySignOff(BuddyEvent event) {
-		checkWeldContainer();
-		getLifecycle().buddyEventInitialized(event);
-		EventContext eventContext = null;
-		try{
-			eventContext = createEventContext(event);
-			this.fireEvent(event, new AnnotationLiteral<BuddySignOff>() {
-			});
-		}finally{
-			getLifecycle().buddyEventDestroyed(event);
-			eventContext.release();
-		}		
-	}
-
-	@Override
-	public void onBuddyStatusChange(BuddyEvent event) {
 		checkWeldContainer();		
+		
 		getLifecycle().buddyEventInitialized(event);
+		
 		EventContext eventContext = null;
 		try{
 			eventContext = createEventContext(event);
-			this.fireEvent(event, new AnnotationLiteral<BuddyStatusChange>() {
-			});
+			AbstractChatletEventAnnotation<? extends Annotation> annotation = new BuddySignOffAnnotation();
+			annotation.setChatflowAndState(null, null);
+			this.fireEvent(event, annotation);
 		}finally{
 			getLifecycle().buddyEventDestroyed(event);
 			eventContext.release();
 		}
+		
+		Set<IWindow> windowSet = event.getConnection().getBuddyActiveWindowSet(event.getBuddy().getUid());
+		if(windowSet != null){
+			for(IWindow window :windowSet){
+				BuddyEvent copiedBuddyEvent = new BuddyEvent(event.getSource(), event.getConnection(), event.getBuddy());
+				wrappToWindowEvent(window.getUid(), copiedBuddyEvent, WrappedToWindowEventType.OnBuddySignoff);
+			}
+		}
 	}
+	
+	private void onBuddySignOff(IWindow window, BuddyEvent event) {
+		getLifecycle().buddyStatusChangeInitialized(window, event);
+		
+		EventContext eventContext = null;
+		try{
+			eventContext = createEventContext(event);
+			AbstractChatletEventAnnotation<? extends Annotation> annotation = new BuddySignOffAnnotation();
+			this.fireChatflowEvent(event, annotation);		
+			window.getMessageSender().flush();
+		}finally{
+			getLifecycle().buddyStatusChangeDestroyed(window, event);
+			eventContext.release();
+		}
+	}
+
+
+	@Override
+	public void onBuddyStatusChange(BuddyEvent event) {
+		checkWeldContainer();		
+		
+		getLifecycle().buddyEventInitialized(event);
+		
+		EventContext eventContext = null;
+		try{
+			eventContext = createEventContext(event);
+			AbstractChatletEventAnnotation<? extends Annotation> annotation = new BuddyStatusChangeAnnotation();
+			annotation.setChatflowAndState(null, null);
+			this.fireEvent(event, annotation);
+		}finally{
+			getLifecycle().buddyEventDestroyed(event);
+			eventContext.release();
+		}
+		
+		Set<IWindow> windowSet = event.getConnection().getBuddyActiveWindowSet(event.getBuddy().getUid());
+		if(windowSet != null){
+			for(IWindow window :windowSet){
+				BuddyEvent copiedBuddyEvent = new BuddyEvent(event.getSource(), event.getConnection(), event.getBuddy());
+				wrappToWindowEvent(window.getUid(), copiedBuddyEvent, WrappedToWindowEventType.OnBuddyChangedStatus);
+			}
+		}
+	}
+
+	private void onBuddyStatusChange(IWindow window, BuddyEvent event) {
+		getLifecycle().buddyStatusChangeInitialized(window, event);
+		
+		EventContext eventContext = null;
+		try{
+			eventContext = createEventContext(event);
+			AbstractChatletEventAnnotation<? extends Annotation> annotation = new BuddyStatusChangeAnnotation();
+			this.fireChatflowEvent(event, annotation);		
+			window.getMessageSender().flush();
+		}finally{
+			getLifecycle().buddyStatusChangeDestroyed(window, event);
+			eventContext.release();
+		}
+	}
+
 
 	@Override
 	public void onConnectionStarted(ConnectionEvent event) {
@@ -265,9 +323,24 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			eventContext.release();
 		}
 	}
+	
+	private void wrappToWindowEvent(String windowUid, IEvent event, WrappedToWindowEventType type){
+		
+		WrappedToWindowEvent wrappedToWindowEvent = new WrappedToWindowEvent(event, type);
+		try {
+			this.lifecycle.getApplication().fireSystemEventToWinodw(windowUid, wrappedToWindowEvent, null, "ChatletEventListenerAdapter", null);
+		} catch (IdentifierNotExistingException e) {
+			ExceptionUtil.wrapRuntimeException(e);
+		}
+		
+	}
 
 	@Override
-	public void onWindowStarted(WindowEvent event) {
+	public void onWindowStarted(final WindowEvent event) {
+		wrappToWindowEvent(event.getWindow().getUid(), event, WrappedToWindowEventType.OnWindowStarted);
+	}
+
+	private void onWrappedWindowStarted(WindowEvent event) {
 		checkWeldContainer();
 		getLifecycle().windowInitialized(event);
 		EventContext eventContext = null;
@@ -275,26 +348,61 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			eventContext = createEventContext(event, event.getWindow());
 			this.fireEvent(event, new AnnotationLiteral<WindowStarted>() {
 			});
+			event.getWindow().getMessageSender().flush();
 		}finally{
 			getLifecycle().windowInitializedEventDone(event);
 			eventContext.release();
 		}
 	}
-
+	
+	
 	@Override
 	public void onWindowStopped(WindowEvent event) {
+		wrappToWindowEvent(event.getWindow().getUid(), event, WrappedToWindowEventType.OnWindowStopped);
+	}
+	
+	
+	private void onWrappedWindowStopped(WindowEvent event) {
 		checkWeldContainer();
 		getLifecycle().windowDestroyed(event);
 		EventContext eventContext = null;
 		try{
 			eventContext = createEventContext(event);
-			this.fireEvent(event, new AnnotationLiteral<WindowStopped>() {
-			});
+			AbstractChatletEventAnnotation<? extends Annotation> annotation = new WindowStoppedAnnotation();
+			this.fireChatflowEvent(event, annotation);			
+		
 		}finally{
 			getLifecycle().windowDestroyedEventDone(event);
 			eventContext.release();
 		}
 	}
+
+	
+
+	@Override
+	public void onWindowEventReceived(IWindow window, IEvent event) {
+		if(event instanceof WrappedToWindowEvent){
+			((WrappedToWindowEvent)event).process(window);
+		}
+		
+		checkWeldContainer();
+		
+		getLifecycle().windowEventRecievedInitialized(window, event);
+		EventContext eventContext = null;
+		try{
+			eventContext = createEventContext(event, window.getDefaultChannel());
+			AbstractChatletEventAnnotation<? extends Annotation> annotation = new ReceivedWindowEventAnnotation();
+			this.fireChatflowEvent(event, annotation);
+			window.getMessageSender().flush();
+			
+		}finally{
+			getLifecycle().windowEventRecievedDestroyed(window, event);
+			eventContext.release();
+		}				
+		
+	}
+	
+	
 	
 	private  void fireChatflowEvent(Object event, AbstractChatletEventAnnotation chatflowAnnotation){
 		String chatflow = getChatflowRequestProcessor().getChatflowName();
@@ -302,16 +410,16 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 
 		try{
 			chatflowAnnotation.setChatflowAndState(chatflow, state);
-			weldEngine.getManager().fireEvent(event, chatflowAnnotation);
+			this.fireEvent(event, chatflowAnnotation);
 
 			chatflowAnnotation.setChatflowAndState("*", state);
-			weldEngine.getManager().fireEvent(event, chatflowAnnotation);
+			this.fireEvent(event, chatflowAnnotation);
 
 			chatflowAnnotation.setChatflowAndState(chatflow, "*");
-			weldEngine.getManager().fireEvent(event, chatflowAnnotation);
+			this.fireEvent(event, chatflowAnnotation);
 
 			chatflowAnnotation.setChatflowAndState("*", "*");
-			weldEngine.getManager().fireEvent(event, chatflowAnnotation);
+			this.fireEvent(event, chatflowAnnotation);
 
 		}catch(RuntimeException rExp){
 			rExp.printStackTrace();
@@ -329,6 +437,10 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 
 	@Override
 	public void onUserJoinWindow(UserJoinWindowEvent event) {
+		wrappToWindowEvent(event.getChannel().getWindow().getUid(), event, WrappedToWindowEventType.onUserJoinWindow);
+	}
+
+	private void onWrappedUserJoinWindow(UserJoinWindowEvent event) {
 		checkWeldContainer();
 		getLifecycle().userJoinWindowEventInitialized(event);
 		EventContext eventContext = null;
@@ -343,11 +455,15 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			eventContext.release();
 		}		
 	}
-	
+
 	
 
 	@Override
 	public void onUserLeaveWindow(UserJoinWindowEvent event) {
+		wrappToWindowEvent(event.getChannel().getWindow().getUid(), event, WrappedToWindowEventType.onUserLeaveWindow);
+	}
+	
+	private void onWrappedUserLeaveWindow(UserJoinWindowEvent event) {
 		checkWeldContainer();
 		getLifecycle().userJoinWindowEventInitialized(event);
 		EventContext eventContext = null;
@@ -362,7 +478,9 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			eventContext.release();
 		}		
 	}
-
+	
+	
+	
 	@Override
 	public void onSessionStarted(SessionEvent event) {
 		checkWeldContainer();
@@ -512,7 +630,8 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 //	}
 
 	@Override
-	public void onEventReceived(IWindow window, IEvent event) {
+	public void onEventReceivedInMeeting(IWindow window, IEvent event) {
+		
 		checkWeldContainer();
 		MeetingEvent meetingEvent = new MeetingEvent(window, event);
 		getLifecycle().beginRequest(meetingEvent);
@@ -703,6 +822,81 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
     		chatpageContext.release();
     		jbpmContext.close();
     	}
+    	
+    }
+    
+    static enum WrappedToWindowEventType{
+    	OnWindowStarted{
+			@Override
+			public void processEvent(IWindow window, IEvent event) {
+				ChatletEventListenerAdaptor.instance().onWrappedWindowStarted((WindowEvent) event);
+			}
+    	},
+    	OnWindowStopped{
+			@Override
+			public void processEvent(IWindow window, IEvent event) {
+				ChatletEventListenerAdaptor.instance().onWrappedWindowStopped((WindowEvent) event);
+			}
+    	},
+    	OnBuddyChangedStatus{
+			@Override
+			public void processEvent(IWindow window, IEvent event) {
+				ChatletEventListenerAdaptor.instance().onBuddyStatusChange(window, (BuddyEvent) event);
+			}
+    	},
+
+    	OnBuddySignoff{
+			@Override
+			public void processEvent(IWindow window, IEvent event) {
+				ChatletEventListenerAdaptor.instance().onBuddySignOff(window, (BuddyEvent) event);
+			}
+    	},
+    	
+    	onUserJoinWindow{
+			@Override
+			public void processEvent(IWindow window, IEvent event) {
+				ChatletEventListenerAdaptor.instance().onWrappedUserJoinWindow((UserJoinWindowEvent) event);
+			}
+    	},
+
+    	
+    	onUserLeaveWindow{
+			@Override
+			public void processEvent(IWindow window, IEvent event) {
+				ChatletEventListenerAdaptor.instance().onWrappedUserLeaveWindow((UserJoinWindowEvent) event);			}
+    	};
+    	
+    	public abstract void processEvent(IWindow window, IEvent originalEvent);
+
+    }
+    
+    static private class WrappedToWindowEvent extends AbstractEvent{
+    	
+		private static final long serialVersionUID = -8610841020029227588L;
+
+		private IEvent originalEvent;
+		
+		private WrappedToWindowEventType type;
+		
+		WrappedToWindowEvent(IEvent originalEvent, WrappedToWindowEventType type){
+    		this.originalEvent = originalEvent;
+    		this.type = type;
+    	}
+		
+		void process(IWindow window){
+			type.processEvent(window, originalEvent);
+		}
+    	
+    	
+		@Override
+		public String getUid() {
+			return this.originalEvent.getUid();
+		}
+
+		@Override
+		public UidType getUidType() {
+			return UidType.WINDOW;
+		}
     	
     }
 	

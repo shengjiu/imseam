@@ -11,6 +11,8 @@ import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.exception.IdentifierNotExistingException;
 import com.imseam.chatlet.listener.event.IEvent;
 import com.imseam.raptor.IChatletApplication;
+import com.imseam.raptor.chatlet.EventTypeEnum;
+import com.imseam.raptor.chatlet.ToWindowEventWrapper;
 import com.imseam.raptor.cluster.IClusterInvocation;
 
 public class EventInvocationWrapper implements IClusterInvocation<IWindow>{
@@ -48,11 +50,12 @@ public class EventInvocationWrapper implements IClusterInvocation<IWindow>{
 				throw new IdentifierNotExistingException(UidType.WINDOW, targetWindowUid);
 			}
 
-			if(application.getMeetingEventListener() == null){
+			if(application.getEventListenerManager() == null){
 				log.warn(String.format("No event listener for window(%s), source(%s:%s)",  targetWindowUid, sourceUidType, sourceUid));
 				return;
 			}
-			application.getMeetingEventListener().onEventReceived(window, event);
+			
+			application.getEventListenerManager().fireEvent(EventTypeEnum.WindowEventRecieved, new ToWindowEventWrapper(window,event));
 		}catch(Exception exception){
 			try {
 				ErrorHandlerInvocation request = new ErrorHandlerInvocation(handler, exception, timeStamp, window.getUid());

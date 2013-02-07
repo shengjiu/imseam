@@ -108,6 +108,7 @@ public class BuddyAddedToMeetingInvocation implements IClusterInvocation<IConnec
 				ExceptionUtil.createRuntimeException("Shouldn't happen");
 			}
 			String windowUid = channel.getWindow().getUid();
+			
 			WindowAddedToMeetingInvocation request = new WindowAddedToMeetingInvocation(meetingUid, windowUid, sourceWindowUid, timeStamp);		
 			application.getClusterInvocationDistributor().distributeWindowRequest(errorCallBack, request, windowUid);
 		} catch (Exception cause) {

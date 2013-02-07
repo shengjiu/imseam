@@ -21,6 +21,7 @@ public class HostActionHandler {
 			buddies[i] = constructBuddyUid(buddies[i]);
 		}
 		meeting.get().startMeetingWithBuddy(buddies);
+		request.get().setAttribute("host", Boolean.TRUE);
 	}
 	
 	public void distributeMessage(){

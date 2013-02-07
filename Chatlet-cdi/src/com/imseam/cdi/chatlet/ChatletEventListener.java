@@ -124,8 +124,8 @@ public class ChatletEventListener implements IMeetingEventListener, ISystemEvent
 
 	
 	@Override
-	public void onEventReceived(IWindow window, IEvent event) {
-		ChatletEventListenerAdaptor.instance().onEventReceived(window, event);
+	public void onEventReceivedInMeeting(IWindow window, IEvent event) {
+		ChatletEventListenerAdaptor.instance().onEventReceivedInMeeting(window, event);
 	}
 
 	@Override
@@ -151,6 +151,12 @@ public class ChatletEventListener implements IMeetingEventListener, ISystemEvent
 	@Override
 	public boolean beforeStartActiveWindow(IConnection connection, String buddyUid) throws BuddyNotAvailableForChatException, StartActiveWindowException {
 		return ChatletEventListenerAdaptor.instance().beforeStartActiveWindow(connection, buddyUid);
+	}
+
+
+	@Override
+	public void onWindowEventReceived(IWindow window, IEvent event) {
+		ChatletEventListenerAdaptor.instance().onWindowEventReceived(window, event);
 	}
 
 }

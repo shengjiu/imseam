@@ -5,10 +5,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.listener.ISystemEventListener;
 import com.imseam.chatlet.listener.event.ApplicationEvent;
 import com.imseam.chatlet.listener.event.BuddyEvent;
 import com.imseam.chatlet.listener.event.ConnectionEvent;
+import com.imseam.chatlet.listener.event.IEvent;
 import com.imseam.chatlet.listener.event.SessionEvent;
 import com.imseam.chatlet.listener.event.UserJoinWindowEvent;
 import com.imseam.chatlet.listener.event.WindowEvent;
@@ -116,6 +118,12 @@ public class JedisSystemEventListener implements ISystemEventListener {
 	public void onUserLeaveWindow(UserJoinWindowEvent event) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void onWindowEventReceived(IWindow window, IEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

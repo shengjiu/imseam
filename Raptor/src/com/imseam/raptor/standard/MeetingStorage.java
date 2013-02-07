@@ -1,7 +1,7 @@
 package com.imseam.raptor.standard;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -162,7 +162,8 @@ public class MeetingStorage implements IMeetingStorage {
 			log.warn(String.format("Trying to get key set from a not existing meeting(%s)", meetingUid));
 			return null;
 		}
-		return  meetingObjectMap.keySet();
+		Set<String> keySet = meetingObjectMap.keySet(); 
+		return keySet == null ? new HashSet<String>() : keySet;
 	}
 
 }

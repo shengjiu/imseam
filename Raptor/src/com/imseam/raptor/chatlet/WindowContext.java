@@ -170,7 +170,8 @@ public class WindowContext extends AbstractContext
 	    	 if(this.meeting == null){
 	    		 this.meeting = meeting;
 	    	 }else{
-	    		 throw new WindowInOtherMeetingException("Cannot set a new meeting , when a meeting is existing", this.getUid(), meeting.getUid());
+	    		 if(!this.meeting.getUid().equals(meeting.getUid()))
+	    			 throw new WindowInOtherMeetingException("Cannot set a new meeting , when a meeting is existing", this.getUid(), meeting.getUid());
 	    	 }
 	     } finally {
 	       meetingLock.unlock();

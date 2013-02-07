@@ -249,6 +249,6 @@ public class JedisMeetingStorage implements IMeetingStorage {
 		}finally{
 			JedisInstance.returnToPool(jedis);
 		}	
-		return meetingObjectMapKeySet;	
+		return meetingObjectMapKeySet == null ? new HashSet<String>() : meetingObjectMapKeySet;	
 	}
 }

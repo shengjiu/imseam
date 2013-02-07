@@ -16,7 +16,7 @@ import javax.inject.Qualifier;
 @Retention(RUNTIME)
 @Documented
 @Qualifier
-public @interface WindowStopped {
+public @interface ReceivedWindowEvent {
 	String state() default "*";
 	String chatflow() default "*";
 }

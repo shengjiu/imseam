@@ -1,5 +1,6 @@
 package com.imseam.freamworktest.meeting;
 
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,14 +18,14 @@ public class ClientActionHandler{
 	private @Inject Instance<CDIMeeting> meeting; 
 	private @Inject Instance<IUserRequest> request;
 	
-	private String meetingHost;
+	private String meetingHostBuddy;
 	
 	public void messageRecieved(){
-		meeting.get().send("recieved:::" +request.get().getInput(), meetingHost);
+		meeting.get().send("recieved:::" +request.get().getInput(), meetingHostBuddy);
 	}
 	
-	public void onJoinedMeeting(@JoinedMeeting MeetingEvent meetingEvent){
-		System.out.println(String.format("client action handler get joinmeeting event: ", meetingEvent.getWindow().getUid(), meetingEvent.getSourceWindowId()));
+	public void onJoinedMeeting(@Observes @JoinedMeeting MeetingEvent meetingEvent){
+		System.out.println(String.format("client action handler get joinmeeting event, window: %s, source window:%s", meetingEvent.getWindow().getUid(), meetingEvent.getSourceWindowId()));
 		
 	}
 	

@@ -212,6 +212,8 @@ public class NettyClientManager {
     	String messageFor = message.getTargetId();
     	IEventListener eventListener = this.eventListenerMap.get(messageFor);
     	
+//    	System.out.println("message received, message for " +  messageFor);
+    	
     	if(message instanceof InvitationMessage){
     		eventListener.onInvitation((InvitationMessage)message);
     		return;

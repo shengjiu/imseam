@@ -185,6 +185,8 @@ class TestRunner:
         userName = "Test user " + userNumber
 
         window = startChatTest("localhost", 17001, userName, "no password", Constants.online, None)
+        recievedMessage = window.waitForTextMessage(0).content.strip()
+        log(userNumber +' welcome message:' + recievedMessage)
         user = TestUser(window, isOperator(grinder.threadNumber), userName, site)
         user.wait()
         
@@ -202,10 +204,12 @@ class TestRunner:
             while True:
                 recievedMessage = window.waitForTextMessage(0).content.strip()
                 log(userNumber +' client recievedMessage:' + recievedMessage)
-                if(not recievedMessage.startswith('meeting started')):
-                    if(not recievedMessage.startswith('stop')):
+                if('meeting started' not in recievedMessage):
+                    log(' got meeting started:' + recievedMessage)
+                    if('stop' not in recievedMessage):
                         window.sendMsg('recieved:::'+recievedMessage+':::'+userName)
                     else:
                         break;
                 else:
+                    log(' No meeting started found:' + recievedMessage)
                     log('meeting started:' + recievedMessage)

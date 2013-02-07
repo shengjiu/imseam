@@ -19,7 +19,7 @@
     </chat-page>
     <chat-page view-id="meetingstarted">
         <body>
-        	<text>meeting started:::#{request.input == null ? buddy.userId : request.input}</text>
+        	<text>meeting started:::#{requestScope['host'] ? request.input : buddy.userId}</text>
         </body>
         <help>
         	<text>Echo page will echo the user's input</text>

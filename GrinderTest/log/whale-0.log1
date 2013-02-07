@@ -1,35 +1,28 @@
-2013-01-07 02:34:15,981 INFO  whale-0 : The Grinder version 3.10
-2013-01-07 02:34:15,987 INFO  whale-0 : Java(TM) SE Runtime Environment 1.6.0_20-b02: Java HotSpot(TM) 64-Bit Server VM (16.3-b01, mixed mode) on Windows 7 amd64 6.1
-2013-01-07 02:34:15,989 INFO  whale-0 : time zone is MST (-0700)
-2013-01-07 02:34:16,074 INFO  whale-0 : worker process 0
-2013-01-07 02:34:16,122 INFO  whale-0 : instrumentation agents: byte code transforming instrumenter for Jython 2.5; byte code transforming instrumenter for Java
-2013-01-07 02:34:17,974 INFO  whale-0 : running "meetingtest.py" using Jython 2.5.2 (Release_2_5_2:7206, Mar 2 2011, 23:12:06) 
+2013-02-02 22:14:18,563 INFO  whale-0 : The Grinder version 3.10
+2013-02-02 22:14:18,569 INFO  whale-0 : Java(TM) SE Runtime Environment 1.6.0_20-b02: Java HotSpot(TM) 64-Bit Server VM (16.3-b01, mixed mode) on Windows 7 amd64 6.1
+2013-02-02 22:14:18,630 INFO  whale-0 : time zone is MST (-0700)
+2013-02-02 22:14:18,778 INFO  whale-0 : worker process 0
+2013-02-02 22:14:18,917 INFO  whale-0 : instrumentation agents: byte code transforming instrumenter for Jython 2.5; byte code transforming instrumenter for Java
+2013-02-02 22:14:22,806 INFO  whale-0 : running "meetingtest.py" using Jython 2.5.2 (Release_2_5_2:7206, Mar 2 2011, 23:12:06) 
 [Java HotSpot(TM) 64-Bit Server VM (Sun Microsystems Inc.)]
-2013-01-07 02:34:17,990 INFO  whale-0 thread-0: starting, will do 1 run
-2013-01-07 02:34:17,990 INFO  whale-0 thread-2: starting, will do 1 run
-2013-01-07 02:34:17,990 INFO  whale-0 thread-1: starting, will do 1 run
-2013-01-07 02:34:17,990 INFO  whale-0 : start time is 1357551257990 ms since Epoch
-2013-01-07 02:34:17,992 INFO  whale-0 thread-2 [ run-0 ]: siteNumber: 0
-2013-01-07 02:34:17,992 INFO  whale-0 thread-1 [ run-0 ]: siteNumber: 0
-2013-01-07 02:34:17,992 INFO  whale-0 thread-0 [ run-0 ]: siteNumber: 0
-2013-01-07 02:34:18,278 INFO  whale-0 thread-1 [ run-0 ]: wait user: Test user 0-1-0, operator numbers:0, client numbers: 1
-2013-01-07 02:34:18,283 INFO  whale-0 thread-2 [ run-0 ]: wait user: Test user 0-2-0, operator numbers:0, client numbers: 2
-2013-01-07 02:34:18,295 INFO  whale-0 thread-0 [ run-0 ]: wait user: Test user 0-0-0, operator numbers:1, client numbers: 2
-2013-01-07 02:34:18,297 INFO  whale-0 thread-0 [ run-0, test-2 ]: start meeting message:startMeeting:::Test user 0-1-0:::Test user 0-2-0
-2013-01-07 02:34:23,818 INFO  whale-0 thread-0 [ run-0, test-2 ]: Test user 0-0-0 startmeetingResponse:Welcome 
-Test user 0-0-0meeting started:::startMeeting:::Test user 0-1-0:::Test user 0-2-0
-2013-01-07 02:35:21,324 INFO  whale-0 : communication shut down
-2013-01-07 02:35:31,336 INFO  whale-0 : elapsed time is 73346 ms
-2013-01-07 02:35:31,336 INFO  whale-0 : Final statistics for this process:
-2013-01-07 02:35:31,351 INFO  whale-0 : 
+2013-02-02 22:14:22,824 INFO  whale-0 thread-0: starting, will do 1 run
+2013-02-02 22:14:22,824 INFO  whale-0 thread-1: starting, will do 1 run
+2013-02-02 22:14:22,824 INFO  whale-0 thread-2: starting, will do 1 run
+2013-02-02 22:14:22,825 INFO  whale-0 : start time is 1359868462824 ms since Epoch
+2013-02-02 22:14:22,827 INFO  whale-0 thread-0 [ run-0 ]: siteNumber: 0
+2013-02-02 22:14:22,827 INFO  whale-0 thread-1 [ run-0 ]: siteNumber: 0
+2013-02-02 22:14:22,827 INFO  whale-0 thread-2 [ run-0 ]: siteNumber: 0
+2013-02-03 01:04:38,276 INFO  whale-0 : communication shut down
+2013-02-03 01:04:48,291 INFO  whale-0 : elapsed time is 10225286 ms
+2013-02-03 01:04:48,291 INFO  whale-0 : Final statistics for this process:
+2013-02-03 01:04:48,314 INFO  whale-0 : 
              Tests        Errors       Mean Test    Test Time    TPS          Mean         
                                        Time (ms)    Standard                  delivery     
                                                     Deviation                 time         
                                                     (ms)                                   
 
-Test 1       1            0            298.00       0.00         0.01         0.00          "start chat"
 
-Totals       1            0            298.00       0.00         0.01         0.00         
+Totals       0            0            ?            0.00         0.00         ?            
 
   Tests resulting in error only contribute to the Errors column.          
   Statistics for individual tests can be found in the data file, including

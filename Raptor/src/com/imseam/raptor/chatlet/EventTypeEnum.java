@@ -135,7 +135,19 @@ public enum EventTypeEnum {
 		public void fireEvent(ISystemEventListener listener, IEvent event){
 			listener.onUserLeaveWindow((UserJoinWindowEvent)event);
 		}
+	},
+	
+	WindowEventRecieved {
+		public Class<IEvent> getEventObjectClass() {
+			return IEvent.class;
+		}
+		public void fireEvent(ISystemEventListener listener, IEvent event){
+			ToWindowEventWrapper wrappedEvent = (ToWindowEventWrapper)event;
+			listener.onWindowEventReceived(wrappedEvent.getWindow(), wrappedEvent.getEvent());
+		}
 	};
+
+	
 //	BeforeKickedoutFromMeeting {
 //		public Class<WindowEvent> getEventObjectClass() {
 //			return WindowEvent.class;

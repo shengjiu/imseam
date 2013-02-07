@@ -1,9 +1,11 @@
 package com.imseam.chatlet.listener;
 
 import com.imseam.chatlet.IInitable;
+import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.listener.event.ApplicationEvent;
 import com.imseam.chatlet.listener.event.BuddyEvent;
 import com.imseam.chatlet.listener.event.ConnectionEvent;
+import com.imseam.chatlet.listener.event.IEvent;
 import com.imseam.chatlet.listener.event.SessionEvent;
 import com.imseam.chatlet.listener.event.UserJoinWindowEvent;
 import com.imseam.chatlet.listener.event.WindowEvent;
@@ -39,5 +41,7 @@ public interface ISystemEventListener extends IInitable {
 	void onUserJoinWindow(UserJoinWindowEvent event);
 
 	void onUserLeaveWindow(UserJoinWindowEvent event);
+	
+	void onWindowEventReceived(IWindow window, IEvent event);
 	
 }

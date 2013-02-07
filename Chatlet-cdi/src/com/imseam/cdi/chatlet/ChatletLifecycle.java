@@ -26,6 +26,7 @@ import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.listener.event.ApplicationEvent;
 import com.imseam.chatlet.listener.event.BuddyEvent;
 import com.imseam.chatlet.listener.event.ConnectionEvent;
+import com.imseam.chatlet.listener.event.IEvent;
 import com.imseam.chatlet.listener.event.SessionEvent;
 import com.imseam.chatlet.listener.event.UserJoinWindowEvent;
 import com.imseam.chatlet.listener.event.WindowEvent;
@@ -437,7 +438,33 @@ public class ChatletLifecycle implements Service {
 //		
 //	}
 	
+	public void windowEventRecievedInitialized(IWindow window, IEvent event){
+		log.debug(">>> Begin windowEventRecieved: " + window.getDefaultChannel().getBuddy().getUid());
+		activateContext(requestContext(), event);
+		activateContext(sessionContext(), window.getDefaultChannel().getUserSession());
+		activateContext(channelContext(), window.getDefaultChannel());
+		activateContext(connectionContext(), window.getConnection());
+		activateContext(windowContext(), window);
+		if(window.getMeeting() != null){		
+			activateContext(meetingContext(), window.getMeeting());
+		}
+		CDIRequestObjectInThreadHolder.getInstance().setRequestObjectInThread(event);
+	}
+	
+	public void windowEventRecievedDestroyed(IWindow window, IEvent event){
+		log.debug(">>> End windowEventRecieved: " + window.getDefaultChannel().getBuddy().getUid());
+		destroyContext(requestContext());
+		deactivateContext(sessionContext(), window.getDefaultChannel().getUserSession());
+		deactivateContext(channelContext(), window.getDefaultChannel());
+		deactivateContext(connectionContext(), window.getConnection());
+		deactivateContext(windowContext(), window);
+		if(window.getMeeting() != null){		
+			deactivateContext(meetingContext(), window.getMeeting());
+		}
+	}
+
 	public void userJoinWindowEventInitialized(UserJoinWindowEvent event) {
+		
 		log.debug(">>> Begin channel added: " + event.getChannel().getBuddy().getUid());
 		activateContext(requestContext(), event);
 		activateContext(sessionContext(), event.getChannel().getUserSession());
@@ -587,7 +614,36 @@ public class ChatletLifecycle implements Service {
 		destroyContext(requestContext());
 		deactivateContext(connectionContext(), buddyEvent.getConnection());
 	}
+
+	public void buddyStatusChangeInitialized(IWindow window, BuddyEvent buddyEvent) {
+		log.debug(">>> Begin buddy status change event: " + buddyEvent.getBuddy().getUid());
+		activateContext(requestContext(), buddyEvent);
+		activateContext(sessionContext(), window.getDefaultChannel().getUserSession());
+		activateContext(channelContext(), window.getDefaultChannel());
+		activateContext(connectionContext(), window.getConnection());
+		activateContext(windowContext(), window);
+		if(window.getMeeting() != null){		
+			activateContext(meetingContext(), window.getMeeting());
+		}
+		
+		CDIRequestObjectInThreadHolder.getInstance().setRequestObjectInThread(buddyEvent);
+		
+		
+
 	
+	}
+	
+	public void buddyStatusChangeDestroyed(IWindow window, BuddyEvent buddyEvent) {
+		log.debug(">>> End buddy status change event: " + buddyEvent.getBuddy().getUid());
+		destroyContext(requestContext());
+		deactivateContext(sessionContext(), window.getDefaultChannel().getUserSession());
+		deactivateContext(channelContext(), window.getDefaultChannel());
+		deactivateContext(connectionContext(), window.getConnection());
+		deactivateContext(windowContext(), window);
+		if(window.getMeeting() != null){		
+			deactivateContext(meetingContext(), window.getMeeting());
+		}
+	}	
 	
 	private void destroyContext(AbstractBoundContext<IAttributes> context) {
 		context.invalidate();

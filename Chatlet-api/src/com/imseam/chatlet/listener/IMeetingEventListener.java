@@ -21,7 +21,7 @@ public interface IMeetingEventListener extends IInitable{
 	
 	void onMeetingStopped(IWindow window, String sourceWindowUid);
 	
-	void onEventReceived(IWindow window, IEvent event);
+	void onEventReceivedInMeeting(IWindow window, IEvent event);
 	
 	//not synchrozied
 	boolean beforeInviteWindow(IWindow window);

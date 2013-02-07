@@ -108,7 +108,7 @@ public class RPCConnection implements Connection {
 		Message message = new TextMessage(msg, username, windowId);
 		NettyClientManager.instance().sendMessage(username, message);		
 		
-		System.out.println("Username: " + username +", message: " + msg);
+//		System.out.println("send message, Username: " + username +", message: " + msg);
 		 
 	}
 	@Override
