@@ -159,4 +159,16 @@ public class ChatletEventListener implements IMeetingEventListener, ISystemEvent
 		ChatletEventListenerAdaptor.instance().onWindowEventReceived(window, event);
 	}
 
+
+	@Override
+	public void onBuddySignOff(IWindow window, BuddyEvent event) {
+		ChatletEventListenerAdaptor.instance().onBuddySignOff(window, event);
+	}
+
+
+	@Override
+	public void onBuddyStatusChange(IWindow window, BuddyEvent event) {
+		ChatletEventListenerAdaptor.instance().onBuddyStatusChange(window, event);
+	}
+
 }

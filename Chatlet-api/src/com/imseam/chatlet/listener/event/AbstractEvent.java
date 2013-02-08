@@ -1,5 +1,6 @@
 package com.imseam.chatlet.listener.event;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,6 +18,8 @@ public abstract class AbstractEvent implements IEvent {
     protected Object  source;
 
 	private Map<String, Object> attributeMap = new HashMap<String, Object>();
+	
+	private Date timesttamp = new Date();
 	
 	public AbstractEvent(){
 	}
@@ -68,6 +71,11 @@ public abstract class AbstractEvent implements IEvent {
 	public Iterator<String> iterator() {
 		return attributeMap.keySet().iterator();
 	}
+    
+    @Override
+    public Date getTimestamp(){
+    	return this.timesttamp;
+    }
 	
 	
 

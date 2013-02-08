@@ -27,8 +27,12 @@ public interface ISystemEventListener extends IInitable {
 	void onBuddySignIn(BuddyEvent event);
 
 	void onBuddySignOff(BuddyEvent event);
-
+	
+	void onBuddySignOff(IWindow window, BuddyEvent event);
+	
 	void onBuddyStatusChange(BuddyEvent event);
+	
+	void onBuddyStatusChange(IWindow window, BuddyEvent event);
 
 	void onConnectionStarted(ConnectionEvent event);
 

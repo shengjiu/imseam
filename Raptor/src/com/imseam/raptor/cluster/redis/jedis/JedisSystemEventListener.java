@@ -126,4 +126,16 @@ public class JedisSystemEventListener implements ISystemEventListener {
 		
 	}
 
+	@Override
+	public void onBuddySignOff(IWindow window, BuddyEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBuddyStatusChange(IWindow window, BuddyEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

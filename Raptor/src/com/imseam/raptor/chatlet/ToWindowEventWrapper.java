@@ -1,5 +1,6 @@
 package com.imseam.raptor.chatlet;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -70,8 +71,12 @@ public class ToWindowEventWrapper implements IEvent {
 
 	@Override
 	public Object getSource() {
-		// TODO Auto-generated method stub
-		return null;
+		return event.getSource();
+	}
+
+	@Override
+	public Date getTimestamp() {
+		return event.getTimestamp();
 	}
 
 }

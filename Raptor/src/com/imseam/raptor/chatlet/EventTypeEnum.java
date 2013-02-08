@@ -1,5 +1,8 @@
 package com.imseam.raptor.chatlet;
 
+import java.util.Set;
+
+import com.imseam.chatlet.IWindow;
 import com.imseam.chatlet.listener.ISystemEventListener;
 import com.imseam.chatlet.listener.event.ApplicationEvent;
 import com.imseam.chatlet.listener.event.BuddyEvent;
@@ -8,6 +11,8 @@ import com.imseam.chatlet.listener.event.IEvent;
 import com.imseam.chatlet.listener.event.SessionEvent;
 import com.imseam.chatlet.listener.event.UserJoinWindowEvent;
 import com.imseam.chatlet.listener.event.WindowEvent;
+import com.imseam.raptor.threading.PrioritizedTask;
+import com.imseam.raptor.threading.RaptorTaskQueue;
 
 public enum EventTypeEnum {
 	
@@ -69,14 +74,36 @@ public enum EventTypeEnum {
 		}
 		public void fireEvent(ISystemEventListener listener, IEvent event){
 			listener.onBuddySignIn((BuddyEvent)event);
+			
+			
 		}
 	},
 	BuddySignOff {
 		public Class<BuddyEvent> getEventObjectClass() {
 			return BuddyEvent.class;
 		}
-		public void fireEvent(ISystemEventListener listener, IEvent event){
-			listener.onBuddySignOff((BuddyEvent)event);
+		public void fireEvent(final ISystemEventListener listener, final IEvent event){
+			BuddyEvent buddyEvent = (BuddyEvent)event;
+			listener.onBuddySignOff(buddyEvent);
+			Set<IWindow> windowSet = buddyEvent.getConnection().getBuddyActiveWindowSet(buddyEvent.getBuddy().getUid());
+			if(windowSet != null){
+				for(final IWindow window :windowSet){
+					final BuddyEvent copiedBuddyEvent = new BuddyEvent(event.getSource(), buddyEvent.getConnection(), buddyEvent.getBuddy());
+					RaptorTaskQueue.getInstance(window.getUid()).addTask(new PrioritizedTask <Object, Long>(){
+						@Override
+						public Object call() throws Exception {
+							listener.onBuddySignOff(window, copiedBuddyEvent);
+							return null;
+						}
+
+						@Override
+						public Long getPriority() {
+							return event.getTimestamp().getTime();
+						}
+					});
+				}
+			}
+
 		}
 		
 	},
@@ -84,8 +111,30 @@ public enum EventTypeEnum {
 		public Class<BuddyEvent> getEventObjectClass() {
 			return BuddyEvent.class;
 		}
-		public void fireEvent(ISystemEventListener listener, IEvent event){
-			listener.onBuddyStatusChange((BuddyEvent)event);
+		public void fireEvent(final ISystemEventListener listener, final IEvent event){
+			BuddyEvent buddyEvent = (BuddyEvent)event;
+			listener.onBuddyStatusChange(buddyEvent);
+			
+			Set<IWindow> windowSet = buddyEvent.getConnection().getBuddyActiveWindowSet(buddyEvent.getBuddy().getUid());
+			if(windowSet != null){
+				for(final IWindow window :windowSet){
+					final BuddyEvent copiedBuddyEvent = new BuddyEvent(event.getSource(), buddyEvent.getConnection(), buddyEvent.getBuddy());
+					RaptorTaskQueue.getInstance(window.getUid()).addTask(new PrioritizedTask <Object, Long>(){
+						@Override
+						public Object call() throws Exception {
+							listener.onBuddyStatusChange(window, copiedBuddyEvent);
+							return null;
+						}
+
+						@Override
+						public Long getPriority() {
+							return event.getTimestamp().getTime();
+						}
+					});
+				
+					
+				}
+			}
 		}
 	},
 	ConnectionStarted {
@@ -108,32 +157,82 @@ public enum EventTypeEnum {
 		public Class<WindowEvent> getEventObjectClass() {
 			return WindowEvent.class;
 		}
-		public void fireEvent(ISystemEventListener listener, IEvent event){
-			listener.onWindowStarted((WindowEvent)event);
+		public void fireEvent(final ISystemEventListener listener, final IEvent event){
+			WindowEvent windowEvent = (WindowEvent)event;
+			RaptorTaskQueue.getInstance(windowEvent.getUid()).addTask(new PrioritizedTask <Object, Long>(){
+				@Override
+				public Object call() throws Exception {
+					listener.onWindowStarted((WindowEvent)event);
+					return null;
+				}
+
+				@Override
+				public Long getPriority() {
+					return event.getTimestamp().getTime();
+				}
+			});
 		}
 	},
 	windowStopped {
 		public Class<WindowEvent> getEventObjectClass() {
 			return WindowEvent.class;
 		}
-		public void fireEvent(ISystemEventListener listener, IEvent event){
-			listener.onWindowStopped((WindowEvent)event);
+		public void fireEvent(final ISystemEventListener listener, final IEvent event){
+			WindowEvent windowEvent = (WindowEvent)event;
+			RaptorTaskQueue.getInstance(windowEvent.getUid()).addTask(new PrioritizedTask <Object, Long>(){
+				@Override
+				public Object call() throws Exception {
+					listener.onWindowStopped((WindowEvent)event);
+					return null;
+				}
+
+				@Override
+				public Long getPriority() {
+					return event.getTimestamp().getTime();
+				}
+			});
 		}
 	},
 	UserJoinWindow {
 		public Class<UserJoinWindowEvent> getEventObjectClass() {
 			return UserJoinWindowEvent.class;
 		}
-		public void fireEvent(ISystemEventListener listener, IEvent event){
-			listener.onUserJoinWindow((UserJoinWindowEvent)event);
+		public void fireEvent(final ISystemEventListener listener, final IEvent event){
+			UserJoinWindowEvent userJoinWindowEvent = (UserJoinWindowEvent)event;
+			RaptorTaskQueue.getInstance(userJoinWindowEvent.getChannel().getWindow().getUid()).addTask(new PrioritizedTask <Object, Long>(){
+				@Override
+				public Object call() throws Exception {
+					listener.onUserJoinWindow((UserJoinWindowEvent)event);
+					return null;
+				}
+
+				@Override
+				public Long getPriority() {
+					return event.getTimestamp().getTime();
+				}
+			});
 		}
 	},
 	UserLeaveWindow {
 		public Class<UserJoinWindowEvent> getEventObjectClass() {
 			return UserJoinWindowEvent.class;
 		}
-		public void fireEvent(ISystemEventListener listener, IEvent event){
-			listener.onUserLeaveWindow((UserJoinWindowEvent)event);
+		public void fireEvent(final ISystemEventListener listener, final IEvent event){
+			
+			UserJoinWindowEvent userJoinWindowEvent = (UserJoinWindowEvent)event;
+			RaptorTaskQueue.getInstance(userJoinWindowEvent.getChannel().getWindow().getUid()).addTask(new PrioritizedTask <Object, Long>(){
+				@Override
+				public Object call() throws Exception {
+					listener.onUserLeaveWindow((UserJoinWindowEvent)event);
+					return null;
+				}
+
+				@Override
+				public Long getPriority() {
+					return event.getTimestamp().getTime();
+				}
+			});
+			
 		}
 	},
 	
@@ -184,4 +283,5 @@ public enum EventTypeEnum {
 	public abstract Class<? extends IEvent> getEventObjectClass();
 	
 	public abstract void fireEvent(ISystemEventListener listener, IEvent event);
+	
 }

@@ -226,17 +226,12 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			getLifecycle().buddyEventDestroyed(event);
 			eventContext.release();
 		}
-		
-		Set<IWindow> windowSet = event.getConnection().getBuddyActiveWindowSet(event.getBuddy().getUid());
-		if(windowSet != null){
-			for(IWindow window :windowSet){
-				BuddyEvent copiedBuddyEvent = new BuddyEvent(event.getSource(), event.getConnection(), event.getBuddy());
-				wrappToWindowEvent(window.getUid(), copiedBuddyEvent, WrappedToWindowEventType.OnBuddySignoff);
-			}
-		}
+	
 	}
 	
-	private void onBuddySignOff(IWindow window, BuddyEvent event) {
+	public void onBuddySignOff(IWindow window, BuddyEvent event) {
+		checkWeldContainer();		
+		
 		getLifecycle().buddyStatusChangeInitialized(window, event);
 		
 		EventContext eventContext = null;
@@ -262,23 +257,16 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		try{
 			eventContext = createEventContext(event);
 			AbstractChatletEventAnnotation<? extends Annotation> annotation = new BuddyStatusChangeAnnotation();
-			annotation.setChatflowAndState(null, null);
+			annotation.setChatflowAndState("null", "null");
 			this.fireEvent(event, annotation);
 		}finally{
 			getLifecycle().buddyEventDestroyed(event);
 			eventContext.release();
 		}
-		
-		Set<IWindow> windowSet = event.getConnection().getBuddyActiveWindowSet(event.getBuddy().getUid());
-		if(windowSet != null){
-			for(IWindow window :windowSet){
-				BuddyEvent copiedBuddyEvent = new BuddyEvent(event.getSource(), event.getConnection(), event.getBuddy());
-				wrappToWindowEvent(window.getUid(), copiedBuddyEvent, WrappedToWindowEventType.OnBuddyChangedStatus);
-			}
-		}
 	}
 
-	private void onBuddyStatusChange(IWindow window, BuddyEvent event) {
+	public void onBuddyStatusChange(IWindow window, BuddyEvent event) {
+		checkWeldContainer();		
 		getLifecycle().buddyStatusChangeInitialized(window, event);
 		
 		EventContext eventContext = null;
@@ -324,23 +312,8 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		}
 	}
 	
-	private void wrappToWindowEvent(String windowUid, IEvent event, WrappedToWindowEventType type){
-		
-		WrappedToWindowEvent wrappedToWindowEvent = new WrappedToWindowEvent(event, type);
-		try {
-			this.lifecycle.getApplication().fireSystemEventToWinodw(windowUid, wrappedToWindowEvent, null, "ChatletEventListenerAdapter", null);
-		} catch (IdentifierNotExistingException e) {
-			ExceptionUtil.wrapRuntimeException(e);
-		}
-		
-	}
-
 	@Override
 	public void onWindowStarted(final WindowEvent event) {
-		wrappToWindowEvent(event.getWindow().getUid(), event, WrappedToWindowEventType.OnWindowStarted);
-	}
-
-	private void onWrappedWindowStarted(WindowEvent event) {
 		checkWeldContainer();
 		getLifecycle().windowInitialized(event);
 		EventContext eventContext = null;
@@ -354,15 +327,9 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			eventContext.release();
 		}
 	}
-	
-	
+
 	@Override
 	public void onWindowStopped(WindowEvent event) {
-		wrappToWindowEvent(event.getWindow().getUid(), event, WrappedToWindowEventType.OnWindowStopped);
-	}
-	
-	
-	private void onWrappedWindowStopped(WindowEvent event) {
 		checkWeldContainer();
 		getLifecycle().windowDestroyed(event);
 		EventContext eventContext = null;
@@ -376,15 +343,10 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			eventContext.release();
 		}
 	}
-
 	
 
 	@Override
 	public void onWindowEventReceived(IWindow window, IEvent event) {
-		if(event instanceof WrappedToWindowEvent){
-			((WrappedToWindowEvent)event).process(window);
-		}
-		
 		checkWeldContainer();
 		
 		getLifecycle().windowEventRecievedInitialized(window, event);
@@ -437,10 +399,7 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 
 	@Override
 	public void onUserJoinWindow(UserJoinWindowEvent event) {
-		wrappToWindowEvent(event.getChannel().getWindow().getUid(), event, WrappedToWindowEventType.onUserJoinWindow);
-	}
-
-	private void onWrappedUserJoinWindow(UserJoinWindowEvent event) {
+		
 		checkWeldContainer();
 		getLifecycle().userJoinWindowEventInitialized(event);
 		EventContext eventContext = null;
@@ -454,16 +413,13 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 			getLifecycle().userJoinWindowEventDestroyed(event);
 			eventContext.release();
 		}		
+		
 	}
 
 	
 
 	@Override
 	public void onUserLeaveWindow(UserJoinWindowEvent event) {
-		wrappToWindowEvent(event.getChannel().getWindow().getUid(), event, WrappedToWindowEventType.onUserLeaveWindow);
-	}
-	
-	private void onWrappedUserLeaveWindow(UserJoinWindowEvent event) {
 		checkWeldContainer();
 		getLifecycle().userJoinWindowEventInitialized(event);
 		EventContext eventContext = null;
@@ -824,80 +780,5 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
     	}
     	
     }
-    
-    static enum WrappedToWindowEventType{
-    	OnWindowStarted{
-			@Override
-			public void processEvent(IWindow window, IEvent event) {
-				ChatletEventListenerAdaptor.instance().onWrappedWindowStarted((WindowEvent) event);
-			}
-    	},
-    	OnWindowStopped{
-			@Override
-			public void processEvent(IWindow window, IEvent event) {
-				ChatletEventListenerAdaptor.instance().onWrappedWindowStopped((WindowEvent) event);
-			}
-    	},
-    	OnBuddyChangedStatus{
-			@Override
-			public void processEvent(IWindow window, IEvent event) {
-				ChatletEventListenerAdaptor.instance().onBuddyStatusChange(window, (BuddyEvent) event);
-			}
-    	},
 
-    	OnBuddySignoff{
-			@Override
-			public void processEvent(IWindow window, IEvent event) {
-				ChatletEventListenerAdaptor.instance().onBuddySignOff(window, (BuddyEvent) event);
-			}
-    	},
-    	
-    	onUserJoinWindow{
-			@Override
-			public void processEvent(IWindow window, IEvent event) {
-				ChatletEventListenerAdaptor.instance().onWrappedUserJoinWindow((UserJoinWindowEvent) event);
-			}
-    	},
-
-    	
-    	onUserLeaveWindow{
-			@Override
-			public void processEvent(IWindow window, IEvent event) {
-				ChatletEventListenerAdaptor.instance().onWrappedUserLeaveWindow((UserJoinWindowEvent) event);			}
-    	};
-    	
-    	public abstract void processEvent(IWindow window, IEvent originalEvent);
-
-    }
-    
-    static private class WrappedToWindowEvent extends AbstractEvent{
-    	
-		private static final long serialVersionUID = -8610841020029227588L;
-
-		private IEvent originalEvent;
-		
-		private WrappedToWindowEventType type;
-		
-		WrappedToWindowEvent(IEvent originalEvent, WrappedToWindowEventType type){
-    		this.originalEvent = originalEvent;
-    		this.type = type;
-    	}
-		
-		void process(IWindow window){
-			type.processEvent(window, originalEvent);
-		}
-    	
-    	
-		@Override
-		public String getUid() {
-			return this.originalEvent.getUid();
-		}
-
-		@Override
-		public UidType getUidType() {
-			return UidType.WINDOW;
-		}
-    	
-    }
-	
 }
