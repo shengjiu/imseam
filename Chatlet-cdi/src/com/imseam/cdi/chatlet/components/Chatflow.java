@@ -17,11 +17,15 @@ public class Chatflow {
 	private @Inject Instance<ChatflowRequestProcessor> chatflowRequestProcessor; 
 	
 	public void signal(String transition){
-		chatflowRequestProcessor.get().getChatflow().signalTransition(transition);
+		chatflowRequestProcessor.get().signalTransition(transition);
 	}
 	
 	public void begin(String chatflowDefinitionName, IAttributes request, String welcome) {
-		chatflowRequestProcessor.get().getChatflow().begin(chatflowDefinitionName, request, window.get(), welcome);
+		chatflowRequestProcessor.get().begin(chatflowDefinitionName, request, window.get(), welcome);
+	}
+	
+	public void end(){
+		chatflowRequestProcessor.get().end();
 	}
 
 
