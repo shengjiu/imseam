@@ -176,7 +176,7 @@ public class JbpmChatflow implements Serializable {
 
 		final IChatPage chatPage = ChatPageManager.getInstance().getChatPage(chatPageNode.getFullPathViewId());
 
-		String outcome = chatPage.parseAndProcessInput(input, request);
+		String outcome = chatPage.parseAndProcessInput(request);
 		
 
 		if (!StringUtil.isNullOrEmptyAfterTrim(outcome)) {
@@ -287,6 +287,12 @@ public class JbpmChatflow implements Serializable {
 		
 		if (hasTransition(node, welcome)) {
 			this.navigate(null, request, window.getMessageSender(), welcome, processInstance, node);
+		}
+	}
+	
+	public void end(){
+		if(this.isInProcess()){
+			processInstance.end();
 		}
 	}
 

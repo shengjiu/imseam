@@ -27,8 +27,8 @@ public class ChatPageWrapper implements IChatPage{
 	}
 
 	@Override
-	public String parseAndProcessInput(String input, IUserRequest request) {
-		return chatPage.parseAndProcessInput(input, request);
+	public String parseAndProcessInput(IUserRequest request) {
+		return chatPage.parseAndProcessInput(request);
 	}
 
 	@Override

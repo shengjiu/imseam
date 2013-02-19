@@ -77,7 +77,8 @@ public abstract class AbstractChatPage implements IChatPage{
 		return this.fullPathViewID;
 	}
 	
-	public String parseAndProcessInput(String input, IUserRequest request) {
+	public String parseAndProcessInput(IUserRequest request) {
+		String input = request.getInput();
 		if(this.actionList == null){
 			return null;
 		}

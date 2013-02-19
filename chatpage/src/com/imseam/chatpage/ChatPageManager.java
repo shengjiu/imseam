@@ -61,6 +61,10 @@ public class ChatPageManager {
 		return chatPageMap.get(fullPathViewID);
 	}
 	
+	public IChatPage getChatPage(String parentPath, String viewId){
+		return chatPageMap.get(parentPath + IChatPage.PathSeperator + viewId);
+	}
+
 	public Collection<String> getViewIDSet(){
 		return Collections.unmodifiableCollection(chatPageMap.keySet());
 	}

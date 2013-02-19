@@ -30,9 +30,9 @@ public class ChatflowParser extends JpdlXmlReader {
     super.readNodes(nodeCollectionElement, nodeCollection);
     
     if ("chatflow-definition".equals(nodeCollectionElement.getName())) {
-      String startPageName = nodeCollectionElement.attributeValue("start-page");
+      String startPageName = nodeCollectionElement.attributeValue("start-node");
       if (startPageName==null) {
-        Element startPageElement = nodeCollectionElement.element("start-page");
+        Element startPageElement = nodeCollectionElement.element("start-node");
         if (startPageElement!=null) {
           startPageName = startPageElement.attributeValue("name");
         }

@@ -11,7 +11,7 @@ public interface IChatPage {
 	void redenerBody(String input, IAttributes request, IMessageSender responseSender)  throws ChatPageRenderException;
 	void redenerHelp(String input, IAttributes request, IMessageSender responseSender)  throws ChatPageRenderException;
 
-	String parseAndProcessInput(String input, IUserRequest request);
+	String parseAndProcessInput(IUserRequest request);
 	
 	String getParentPath();
 	String getFullPathViewID();

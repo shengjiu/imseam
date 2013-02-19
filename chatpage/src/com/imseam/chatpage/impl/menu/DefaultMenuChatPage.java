@@ -129,20 +129,20 @@ public class DefaultMenuChatPage extends AbstractChatPage {
 	 * @see com.imseam.chatpage.ChatPage#parseInput(java.lang.String)
 	 */
 	@Override
-	public String parseAndProcessInput(String input, IUserRequest request) {
+	public String parseAndProcessInput(IUserRequest request) {
 		
-		String outcome = super.parseAndProcessInput(input, request);
+		String outcome = super.parseAndProcessInput(request);
 		
 		if(outcome != null) return outcome;
 		
-		MenuCommandEnum commandEnum = parseInput(input, request);
+		MenuCommandEnum commandEnum = parseInput(request);
 		
 		if(commandEnum == null){
 			//todo add warning
 			return null;
 		}
 		
-		String processResult = commandEnum.process(input, request, this);
+		String processResult = commandEnum.process(request.getInput(), request, this);
 		
 		return processResult;
 	}
@@ -151,7 +151,8 @@ public class DefaultMenuChatPage extends AbstractChatPage {
 		return menuItemSelectedAction;
 	}
 	
-	private MenuCommandEnum parseInput(String input, IUserRequest request){
+	private MenuCommandEnum parseInput(IUserRequest request){
+		String input = request.getInput();
 		
 		for(Map.Entry<IParser, MenuCommandEnum> parserCommandEntry : parserCommandMap.entrySet()){
 			ParseResult parseResult = parserCommandEntry.getKey().parseInput(input, request);

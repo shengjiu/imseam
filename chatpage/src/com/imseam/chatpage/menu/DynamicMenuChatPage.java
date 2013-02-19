@@ -85,14 +85,14 @@ public class DynamicMenuChatPage extends AbstractChatPage {
 	 * @see com.imseam.chatpage.ChatPage#parseInput(java.lang.String)
 	 */
 	@Override
-	public String parseAndProcessInput(String input, IUserRequest request) {
+	public String parseAndProcessInput(IUserRequest request) {
 		
-		String outcome = super.parseAndProcessInput(input, request);
+		String outcome = super.parseAndProcessInput(request);
 		if(outcome == null) return null;
 		
 		CommandEnum commandEnum = CommandEnum.parseCommand(outcome);
 		assert(commandEnum != null);
-		return commandEnum.execute(menu, input);
+		return commandEnum.execute(menu, request.getInput());
 	}
 	
 	
