@@ -233,13 +233,16 @@ public class JbpmChatflow implements Serializable {
 
 	public boolean signalTransition(String transition) {
 		assert (!StringUtil.isNullOrEmptyAfterTrim(transition));
-
+		if (!isInProcess() ){
+			log.debug("The window is NOT in a chatflow process(isInProcess:false)");
+			return false;
+		}
 		ProcessInstance currentProcessInstance = this.getCurrentProcessIntance(processInstance);
 		ChatPageNode chatPageNode = getChatPageNode(currentProcessInstance);
 
-		if (!isInProcess() || !hasTransition(chatPageNode, transition)) {
-			log.debug(String.format("The conversation is NOT in a chatflow process(isInProcess:%s) or No transition found(hasTransition:%s), Event type: %s", isInProcess(),
-					hasTransition(chatPageNode, transition), transition));
+		if (!hasTransition(chatPageNode, transition)) {
+			log.debug(String.format("No transition found(hasTransition:false), Event type: %s", 
+					transition));
 			return false;
 		}
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-definition
+  name="meeting-client">
+   <start-state name="startmeetingtest">
+   		<transition name="welcome" to="welcome"></transition>
+   </start-state>
+   <chatpage name="welcome" view-id="/com/imseam/freamworktest/welcome">
+      <transition name="JoinedMeeting" to="joinedMeeting"></transition>
+   </chatpage>
+   <nowaitchatpage name="joinedMeeting" view-id="/com/imseam/freamworktest/meetingstarted">
+      <transition name="inmeeting" to="inmeeting"></transition>
+   </nowaitchatpage>
+   <chatpage name="inmeeting" view-id="/com/imseam/freamworktest/inmeeting">
+      <transition name="recievemessage" to="messagereceived"></transition>
+      <transition name="stopmeeting" to="meetingstopped"></transition>
+   </chatpage>
+   <nowaitchatpage name="messagereceived" view-id="/com/imseam/freamworktest/messagereceived">
+      <transition name="goback" to="gobacktomeeting"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="gobacktomeeting" view-id="/com/imseam/freamworktest/gobacktomeeting">
+      <transition name="inmeeting" to="inmeeting"></transition>
+   </nowaitchatpage>
+   <nowaitchatpage name="meetingstopped" view-id="/com/imseam/freamworktest/meetingstopped">
+      <transition name="end" to="end"></transition>
+   </nowaitchatpage>
+   <end-state name="end"></end-state>
+</chatflow-definition>

@@ -361,18 +361,21 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	}
 
 	private void fireChatflowEvent(Object event, AbstractChatletEventAnnotation chatflowAnnotation) {
-		String chatflow = getChatflowRequestProcessor().getChatflowName();
-		String state = getChatflowRequestProcessor().getState();
-
+		
 		try {
-			chatflowAnnotation.setChatflowAndState(chatflow, state);
-			this.fireEvent(event, chatflowAnnotation);
-
-			chatflowAnnotation.setChatflowAndState("*", state);
-			this.fireEvent(event, chatflowAnnotation);
-
-			chatflowAnnotation.setChatflowAndState(chatflow, "*");
-			this.fireEvent(event, chatflowAnnotation);
+			if(getChatflowRequestProcessor().isInProcess()){
+				String chatflow = getChatflowRequestProcessor().getChatflowName();
+				String state = getChatflowRequestProcessor().getState();
+	
+				chatflowAnnotation.setChatflowAndState(chatflow, state);
+				this.fireEvent(event, chatflowAnnotation);
+	
+				chatflowAnnotation.setChatflowAndState("*", state);
+				this.fireEvent(event, chatflowAnnotation);
+	
+				chatflowAnnotation.setChatflowAndState(chatflow, "*");
+				this.fireEvent(event, chatflowAnnotation);
+			}
 
 			chatflowAnnotation.setChatflowAndState("*", "*");
 			this.fireEvent(event, chatflowAnnotation);
@@ -481,42 +484,21 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		try {
 			eventContext = createEventContext(req, req.getRequestFromChannel());
 			
-			
+			//could be candidates for processor queue
 
 			if (getChatflowRequestProcessor().isInProcess()) {
 				
 				getChatflowRequestProcessor().processChatRequest(req, responseSender);
 				
-			} else {
+			} else if(ChatPageMapper.instance().isInProcess()){
 
-				IChatPage currentChatPage = ChatPageMapper.instance().getCurrentChatPage();
-
-				boolean processed = false;
-				if (currentChatPage != null) {
-					String outcome = currentChatPage.parseAndProcessInput(req);
-
-					if (outcome != null) {
-						IChatPage nextChatPage = ChatPageManager.getInstance().getChatPage(currentChatPage.getParentPath(), outcome);
-						if(nextChatPage == null){
-							nextChatPage = ChatPageManager.getInstance().getChatPage(outcome);
-						}
-						
-						if (nextChatPage != null) {
-							try {
-								ChatPageMapper.instance().responseStatefulPage(nextChatPage);
-								processed = true;
-							} catch (ChatPageRenderException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-
-					if (!processed) {
-						this.fireEvent(req, new AnnotationLiteral<UserRequest>() {
-						});
-					}
-				}
+				ChatPageMapper.instance().processChatRequest(req, responseSender);
+			
+			}else{
+				this.fireEvent(req, new AnnotationLiteral<UserRequest>() {
+				});
 			}
+				
 		} finally {
 			getLifecycle().endRequest(req);
 			eventContext.release();

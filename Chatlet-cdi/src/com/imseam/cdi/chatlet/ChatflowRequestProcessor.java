@@ -45,6 +45,9 @@ public class ChatflowRequestProcessor{
 	}
 	
 	public boolean signalTransition(String transitionName){
+		if(!this.isInProcess()){
+			return false;
+		}
 		
 		return jbpmChatflow.signalTransition(transitionName);
 	}

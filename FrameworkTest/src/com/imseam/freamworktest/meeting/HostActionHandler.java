@@ -15,13 +15,14 @@ public class HostActionHandler {
 	private @Inject Instance<IUserRequest> request;
 	private String connectionId = (char)("NettyTest".length() + 1) + "NettyTest" + "server1";
 	
-	public void startMeeting(){
+	public String startMeeting(){
 		String[] buddies= request.get().getParameter("buddies").split(":::");
 		for(int i = 0; i < buddies.length; i++){
 			buddies[i] = constructBuddyUid(buddies[i]);
 		}
 		meeting.get().startMeetingWithBuddy(buddies);
 		request.get().setAttribute("host", Boolean.TRUE);
+		return "startmeeting";
 	}
 	
 	public void distributeMessage(){

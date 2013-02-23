@@ -183,6 +183,8 @@ class TestRunner:
         siteNumber = getSiteNumber(grinder.threadNumber)
         site = getSite(siteNumber, glock1)
         userName = "Test user " + userNumber
+        if(isOperator(grinder.threadNumber)):
+            userName = userName + "-operator"
 
         window = startChatTest("localhost", 17001, userName, "no password", Constants.online, None)
         recievedMessage = window.waitForTextMessage(0).content.strip()

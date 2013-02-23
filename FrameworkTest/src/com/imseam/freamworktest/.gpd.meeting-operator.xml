@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-diagram name="meeting-operator" width="1437" height="957">
+  <node name="start" x="156" y="59" width="140" height="40">
+    <transition name="startmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="meetingstarted" x="164" y="281" width="140" height="40">
+    <transition name="inmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="inmeeting" x="172" y="414" width="140" height="40">
+    <transition name="sendmessage">
+      <label x="5" y="-10"/>
+    </transition>
+    <transition name="stopmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="distributemessage" x="782" y="230" width="190" height="40">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="gobacktomeeting" x="777" y="442" width="221" height="40">
+    <transition name="inmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="meetingstopped" x="156" y="586" width="187" height="40">
+    <transition name="end">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="end" x="191" y="705" width="140" height="40"/>
+</chatflow-diagram>

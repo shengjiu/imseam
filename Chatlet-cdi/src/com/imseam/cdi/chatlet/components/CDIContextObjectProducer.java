@@ -5,8 +5,10 @@ import javax.enterprise.inject.Produces;
 
 import com.imseam.cdi.chatlet.event.ConnectionRequest;
 import com.imseam.cdi.chatlet.event.MeetingEvent;
+import com.imseam.cdi.chatlet.ext.annotation.RequestObject;
 import com.imseam.cdi.context.IMRequestScoped;
 import com.imseam.chatlet.IApplication;
+import com.imseam.chatlet.IAttributes;
 import com.imseam.chatlet.IBuddy;
 import com.imseam.chatlet.IChannel;
 import com.imseam.chatlet.IConnection;
@@ -37,20 +39,24 @@ public class CDIContextObjectProducer {
     	return (T)requestObject;
     }
     
+    
     @Produces
-    @IMRequestScoped
+    @RequestObject
+	public IAttributes getRequestObject(){
+    	return getRequestObject(IAttributes.class);
+	}
+    
+    @Produces
 	public SessionEvent getSessionEvent(){
     	return getRequestObject(SessionEvent.class);
 	}
 	
     @Produces
-    @IMRequestScoped
 	public UserJoinWindowEvent getUserJoinWindowEvent(){
     	return getRequestObject(UserJoinWindowEvent.class);
 	}
 	
     @Produces
-    @IMRequestScoped
 	public WindowEvent getWindowEvent(){
     	return getRequestObject(WindowEvent.class);
 	}
@@ -62,31 +68,26 @@ public class CDIContextObjectProducer {
 //	}
 	
     @Produces
-    @IMRequestScoped
 	public MeetingEvent getFromMeetingRequest(){
     	return getRequestObject(MeetingEvent.class);
 	}
 	
     @Produces
-    @IMRequestScoped
 	public ConnectionRequest getConnectionRequest(){
     	return getRequestObject(ConnectionRequest.class);
 	}
 	
     @Produces
-    @IMRequestScoped
 	public BuddyEvent getBuddyEvent(){
     	return getRequestObject(BuddyEvent.class);
 	}
 
     @Produces
-    @IMRequestScoped
 	public IUserRequest getUserRequest(){
     	return getRequestObject(IUserRequest.class);
 	}
 
     @Produces
-    @IMRequestScoped
 	public ConnectionEvent getConnectionEvent(){
     	return getRequestObject(ConnectionEvent.class);
 	}
@@ -129,7 +130,6 @@ public class CDIContextObjectProducer {
     
 
     @Produces
-	@IMRequestScoped
     public IConnection getConnection(){
     	ContextProducer contextProducer = getContextProducer();
     	if(contextProducer == null) return null;
@@ -137,14 +137,12 @@ public class CDIContextObjectProducer {
 	}
 	
     @Produces
-	@IMRequestScoped
     public ISession getSession(){
     	ContextProducer contextProducer = getContextProducer();
     	if(contextProducer == null) return null;
     	return	contextProducer.getSession();
 	}
     @Produces
-	@IMRequestScoped
     public IWindow getWindow(){
     	ContextProducer contextProducer = getContextProducer();
     	if(contextProducer == null) return null;
@@ -152,7 +150,6 @@ public class CDIContextObjectProducer {
 	}
     
     @Produces
-	@IMRequestScoped
     public IMessageSender getSender(){
     	IWindow window = getWindow();
     	if(window == null) return null;
@@ -160,21 +157,18 @@ public class CDIContextObjectProducer {
 	}
     
     @Produces
-	@IMRequestScoped
     public IBuddy getBuddy(){
     	ContextProducer contextProducer = getContextProducer();
     	if(contextProducer == null) return null;
     	return	contextProducer.getBuddy();
 	}
     @Produces
-	@IMRequestScoped
     public IChannel getChannel(){
     	ContextProducer contextProducer = getContextProducer();
     	if(contextProducer == null) return null;
     	return	contextProducer.getChannel();
 	}
     @Produces
-	@IMRequestScoped
     public IMeeting getMeeting(){
     	ContextProducer contextProducer = getContextProducer();
     	if(contextProducer == null) return null;

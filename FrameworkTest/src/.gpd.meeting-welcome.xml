@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-diagram name="meeting-operator" width="1437" height="957">
+  <node name="start" x="111" y="59" width="140" height="40">
+    <transition name="welcome">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="welcome" x="105" y="195" width="171" height="40">
+    <transition name="end">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="end" x="120" y="335" width="140" height="40"/>
+</chatflow-diagram>

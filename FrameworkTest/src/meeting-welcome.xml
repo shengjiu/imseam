@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-definition
+  name="meeting-operator">
+   <start-state name="start">
+      <transition name="welcome" to="welcome"></transition>
+   </start-state>
+   <nowaitchatpage name="welcome">
+      <transition name="end" to="end"></transition>
+   </nowaitchatpage>
+   <end-state name="end"></end-state>
+</chatflow-definition>

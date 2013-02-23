@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chatflow-diagram name="meeting-client" width="1437" height="957">
+  <node name="startmeetingtest" x="136" y="80" width="140" height="40">
+    <transition name="welcome">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="welcome" x="174" y="206" width="140" height="40">
+    <transition name="JoinedMeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="joinedMeeting" x="157" y="344" width="203" height="40">
+    <transition name="inmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="inmeeting" x="173" y="444" width="140" height="40">
+    <transition name="recievemessage">
+      <label x="5" y="-10"/>
+    </transition>
+    <transition name="stopmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="messagereceived" x="652" y="352" width="227" height="40">
+    <transition name="goback">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="gobacktomeeting" x="735" y="589" width="198" height="40">
+    <transition name="inmeeting">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="meetingstopped" x="179" y="655" width="140" height="40">
+    <transition name="end">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="end" x="189" y="788" width="140" height="40"/>
+</chatflow-diagram>
