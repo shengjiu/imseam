@@ -239,7 +239,7 @@ public class CDIMeeting {
 	private static Func createSendMessageFunction(String windowUid, final String message){
 		return new Func(Id.windowUid(windowUid)){
 
-			private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1652488661328752071L;
 
 			@Override
 			public void invoke(IContext context) {

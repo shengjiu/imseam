@@ -42,7 +42,11 @@ public class MeetingEvent  implements IAttributes {
 	
 	public MeetingEvent(IWindow window,IEvent event){
 		this.window = window;
-		this.attributes = event;
+		
+		for(String key : event.getAttributeNames()){
+			attributes.setAttribute(key, event.getAttribute(key));
+		}
+	    
 	}
 
 

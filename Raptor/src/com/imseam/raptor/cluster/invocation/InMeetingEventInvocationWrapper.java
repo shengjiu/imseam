@@ -18,7 +18,11 @@ public class InMeetingEventInvocationWrapper extends AbstractInMeetingInvocation
 
 	@Override
 	protected void executeTask(IChatletApplication application, IWindow window) {
-		application.getMeetingEventListener().onEventReceivedInMeeting(window, event);
+		try{
+			application.getMeetingEventListener().onEventReceivedInMeeting(window, event);
+		}catch(Exception exp){
+			exp.printStackTrace();
+		}
 	}
 	
 }

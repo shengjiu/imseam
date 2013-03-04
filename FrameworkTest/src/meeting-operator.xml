@@ -9,7 +9,9 @@
       <transition name="inmeeting" to="inmeeting"></transition>
    </nowaitchatpage>
    <chatpage name="inmeeting" view-id="/com/imseam/freamworktest/inmeeting">
-      <transition name="sendmessage" to="distributemessage"></transition>
+      <transition name="sendmessage" to="distributemessage">
+      	<action expression="#{hostMeetingActionHandler.distributeMessage}"/>
+      </transition>
       <transition name="stopmeeting" to="meetingstopped"></transition>
    </chatpage>
    <nowaitchatpage name="distributemessage" view-id="/com/imseam/freamworktest/distributemessage">

@@ -348,7 +348,17 @@ public class WindowContext extends AbstractContext
 			throw new NoMeetingException("No meeting exists", this.getUid()); 
 		}		
 		Set<String> windowUidSet = application.getMeetingStorage().getReadOnlyWindowUidSet(meeting.getUid());
-		sendRequestToExistingWindowSet(handler, new InMeetingEventInvocationWrapper(meeting.getUid(), event, new Date()), windowUidSet);
+		
+		HashSet<String> copyOfExistingWindowIdSet = new HashSet<String>(windowUidSet);
+		copyOfExistingWindowIdSet.remove(this.getUid());
+		if(copyOfExistingWindowIdSet.size() > 0){
+			try {
+				requestDistributor.distributeWindowRequest(handler, new InMeetingEventInvocationWrapper(meeting.getUid(), event, new Date()), copyOfExistingWindowIdSet.toArray(new String[copyOfExistingWindowIdSet.size()]));
+			} catch (IdentifierNotExistingException e) {
+				log.warn("Invalid identifier", e);
+			}
+		}
+		
 
 	}
 

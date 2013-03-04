@@ -24,15 +24,7 @@
         <help>
         	<text>Echo page will echo the user's input</text>
         </help>
-        <actions>
-      		<action outcome="distributemessage">
-                <parsers>
-                    <regexp-parser pattern="send:::(.*)">
-                        <regexp-parseresult parameter-name="meetingTimestamp" group-number="1"/>
-                    </regexp-parser>                    
-                </parsers>
-			</action>
-		</actions>
+
     </chat-page>
     <chat-page view-id="distributemessage">
         <body>
@@ -41,7 +33,7 @@
     </chat-page>
     <chat-page view-id="messagereceived">
         <body>
-            <text>#{request.receivedMessage}</text>
+            <text></text>
         </body>
     </chat-page>
     <chat-page view-id="meetingstopped">
@@ -58,7 +50,21 @@
         <body>
             <text></text>
         </body>
+        <actions>
+      		<action outcome="sendmessage">
+                <parsers>
+                    <regexp-parser pattern="^(send:::)(.*)">
+                        <regexp-parseresult parameter-name="meetingTimestamp" group-number="1"/>
+                    </regexp-parser>                    
+                </parsers>
+			</action>
+			<action outcome="recievemessage">
+                <parsers>
+                    <regexp-parser pattern="^(recieved:::)"/>
+                </parsers>
+			</action>
+			
+		</actions>
 	</chat-page>    
-        
 </chat-pages>
 

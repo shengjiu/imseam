@@ -1,5 +1,6 @@
 package com.imseam.cdi.chatlet.components;
 
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
@@ -17,7 +18,7 @@ public class FuncBasedEventMeetingEventListener{
 	private @Inject Instance<IWindow> window;
 	
 	
-	public void onFunctionBasedEventReceived(@ReceivedMeetingEvent FuncBasedEvent funcEvent){
+	public void onFunctionBasedEventReceived(@Observes @ReceivedMeetingEvent FuncBasedEvent funcEvent){
 		if(funcEvent.getFunc() == null){
 			log.warn("The function based event contains no function");
 		}else{

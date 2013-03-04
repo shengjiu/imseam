@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<chatflow-diagram name="meeting-client" width="1437" height="957">
+<chatflow-diagram name="meeting-client" width="1416" height="829">
   <node name="startmeetingtest" x="136" y="80" width="140" height="40">
     <transition name="welcome">
       <label x="5" y="-10"/>

@@ -92,6 +92,12 @@ def getSite(siteNumber, lock):
         lock.release()
     return site
 
+def printArray(start, array):
+     for item in array:
+        start = start + item
+     log(start)
+
+
 class Site:
     def __init__(self, siteNumber):
         self.operators=[]    
@@ -136,31 +142,38 @@ class TestUser:
         startmeetingResponse = window.waitForTextMessage(0).content.strip()
         log(self.userNumber +' startmeetingResponse:' + startmeetingResponse) 
         messagesFromBuddy = [startmeetingResponse]
+        expectedResponses.remove(startmeetingResponse)
         for i in range(len(buddies)):
             responseMessage =window.waitForTextMessage(0).content.strip()
             log(self.userNumber +' startmeeting responseMessage from buddies:' + responseMessage)
             messagesFromBuddy.append(responseMessage)
             expectedResponses.remove(responseMessage)
+        log('len(expectedResponses):' + str(len(expectedResponses)))
         if(len(expectedResponses) > 0) :
             log('not received: '.join(expectedResponses) + ' , received:'.join(messagesFromBuddy))
             return False
+        else:
+            log('meeting started successfully')
         return True
     
     def sendTimesatmpMessage(self, buddies):
         expectedResponses = []
         message = 'send:::' + str(Date().getTime())
+        expectedResponses.append(message)
         for buddy in buddies:
             expectedResponses.append('recieved:::' + message + ':::' +buddy.userNumber)
+            log('Excepting: ' + 'recieved:::' + message + ':::' +buddy.userNumber)
         window = self.window            
         window.sendMsg(message)
         messagesFromBuddy = []
-        for i in range(len(buddies)):
+        for i in range(len(buddies) + 1):
             responseMessage =window.waitForTextMessage(0).content.strip()
             log(self.userNumber +' sendTimesatmpMessage response:' + responseMessage)
             messagesFromBuddy.append(responseMessage)
             expectedResponses.remove(responseMessage)
         if(len(expectedResponses) > 0) :
-            log('not received: '.join(expectedResponses) + ' , received:'.join(messagesFromBuddy))
+            printArray('not received: ', expectedResponses)
+            printArray('received: ', messagesFromBuddy)
             return False
         return True
     
@@ -207,11 +220,10 @@ class TestRunner:
                 recievedMessage = window.waitForTextMessage(0).content.strip()
                 log(userNumber +' client recievedMessage:' + recievedMessage)
                 if('meeting started' not in recievedMessage):
-                    log(' got meeting started:' + recievedMessage)
                     if('stop' not in recievedMessage):
+                        log(userNumber +' client send back:' + 'recieved:::'+recievedMessage+':::'+userName)
                         window.sendMsg('recieved:::'+recievedMessage+':::'+userName)
                     else:
                         break;
                 else:
-                    log(' No meeting started found:' + recievedMessage)
-                    log('meeting started:' + recievedMessage)
+                    log('Got meeting started:' + recievedMessage)
