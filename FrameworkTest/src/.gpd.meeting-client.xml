@@ -20,7 +20,7 @@
     <transition name="recievemessage">
       <label x="5" y="-10"/>
     </transition>
-    <transition name="stopmeeting">
+    <transition name="MeetingStopped">
       <label x="5" y="-10"/>
     </transition>
   </node>

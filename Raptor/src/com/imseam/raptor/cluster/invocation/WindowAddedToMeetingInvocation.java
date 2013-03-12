@@ -61,16 +61,30 @@ public class WindowAddedToMeetingInvocation implements IClusterInvocation<IWindo
 			InvocationErrorHandler.sendExceptionBack(application, windowInOtherMeetingException, handler, timeStamp, sourceWindowUid, buddyUid);
 		}
 		
+		Set<String> existingWindowUidSet = application.getMeetingStorage().getReadOnlyWindowUidSet(meetingUid);
+		
+		
+		application.getMeetingStorage().addWindowsToMeeting(meetingUid, window.getUid());
+		
+		Set<String> existingSet = application.getMeetingStorage().getReadOnlyWindowUidSet(meetingUid);
+		String existingWindowUids = "";
+		for(String existing : existingSet){
+			existingWindowUids += ", " + existing;
+		}
+		if(!existingSet.contains(window.getUid())){
+			System.out.println(String.format("Add windows to meeting error: windowUid(%s) is not added: %s", window.getUid(), existingWindowUids));
+		}
 		
 		application.getMeetingEventListener().onJoinedMeeting(window, sourceWindowUid);
+		
 		OtherWindowAddedToMeetingInvocation invocation = new OtherWindowAddedToMeetingInvocation(meetingUid, sourceWindowUid, window.getUid(), new Date());
-		Set<String> windowUidSet = application.getMeetingStorage().getReadOnlyWindowUidSet(meetingUid);
+		
 		try {
-			application.getClusterInvocationDistributor().distributeWindowRequest(null, invocation, windowUidSet.toArray(new String[windowUidSet.size()]));
+			application.getClusterInvocationDistributor().distributeWindowRequest(null, invocation, existingWindowUidSet.toArray(new String[existingWindowUidSet.size()]));
 		} catch (IdentifierNotExistingException e) {
 //			log.warn("Error when trying to send window added to meeting", e);
 		}
-		application.getMeetingStorage().addWindowsToMeeting(meetingUid, window.getUid());
+		
 
 	}
 

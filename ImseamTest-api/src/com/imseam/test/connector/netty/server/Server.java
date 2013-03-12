@@ -298,6 +298,12 @@ public class Server {
 						logger.info("window id: " + uuid);
 						return uuid;
 					}
+
+					@Override
+					public void windowStarted(String windowId) {
+						// TODO Auto-generated method stub
+						
+					}
 				};
 			}
 			

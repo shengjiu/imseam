@@ -191,19 +191,44 @@ public class JedisMeetingStorage implements IMeetingStorage {
 
 	@Override
 	public void addWindowsToMeeting(String meetingUid, String... windowUids) {
+//		Jedis jedis = null;
+//		try{
+//			jedis = JedisInstance.getJedisFromPool();
+//			jedis.watch(meetingUid);
+//			Pipeline pipeline = jedis.pipelined();
+//			pipeline.multi();
+//			for(String windowUid : windowUids){
+//				pipeline.sadd(meetingUid, windowUid);
+//			}
+//			pipeline.exec();
+//			pipeline.sync();
+//			
+//		}catch(Exception exp){
+//			System.out.println("watch exception:" + exp.getMessage());
+//			exp.printStackTrace();
+//		}
+//		finally{
+//			jedis.unwatch();
+//			JedisInstance.returnToPool(jedis);
+//		}	
+		
+		
 		Jedis jedis = null;
 		try{
 			jedis = JedisInstance.getJedisFromPool();
-			Pipeline pipeline = jedis.pipelined();
-			pipeline.multi();
+			Transaction transaction = jedis.multi();
 			for(String windowUid : windowUids){
-				pipeline.sadd(meetingUid, windowUid);
+				transaction.sadd(meetingUid, windowUid);
 			}
-			pipeline.exec();
-			pipeline.sync();
-		}finally{
+			transaction.exec();			
+		}catch(Exception exp){
+			System.out.println("watch exception:" + exp.getMessage());
+			exp.printStackTrace();
+		}
+		finally{
 			JedisInstance.returnToPool(jedis);
 		}	
+		
 	}
 
 	@Override

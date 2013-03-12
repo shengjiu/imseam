@@ -12,7 +12,9 @@
       <transition name="sendmessage" to="distributemessage">
       	<action expression="#{hostMeetingActionHandler.distributeMessage}"/>
       </transition>
-      <transition name="stopmeeting" to="meetingstopped"></transition>
+      <transition name="stopmeeting" to="meetingstopped">
+       	<action expression="#{hostMeetingActionHandler.stopMeeting}"/>
+      </transition>
    </chatpage>
    <nowaitchatpage name="distributemessage" view-id="/com/imseam/freamworktest/distributemessage">
       <transition name="goback" to="gobacktomeeting"></transition>

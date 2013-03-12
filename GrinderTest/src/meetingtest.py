@@ -29,6 +29,7 @@ log = logger.info
 test1 = Test(1, "start chat")
 test2 = Test(2, "startMeeting")
 test3 = Test(3, "echo")
+test4 = Test(4, "stopMeeting")
 
 siteUserNumber = 3
 
@@ -47,7 +48,9 @@ def startMeeting(user, buddies):
  
 def echo(user, buddies):
     return user.sendTimesatmpMessage(buddies)
-    
+
+def stopMeeting(user, buddies):
+    return user.stopMeeting(buddies)    
 
     
 # Wrap the info() method with our Test and call the result logWrapper.
@@ -56,6 +59,7 @@ def echo(user, buddies):
 startChatTest = test1.wrap(startChat)
 startMeetingTest = test2.wrap(startMeeting)
 echoTest = test3.wrap(echo)
+stopMeetingTest = test4.wrap(stopMeeting)
 stats = grinder.statistics 
 
 # Add two statistics expressions:
@@ -177,6 +181,21 @@ class TestUser:
             return False
         return True
     
+    def stopMeeting(self, buddies):
+        expectedResponses = []
+        message = 'stopmeeting'
+        expectedResponses.append('stoppedMeeting' +':::' + self.userNumber)            
+        window = self.window            
+        window.sendMsg(message)
+        responseMessage = window.waitForTextMessage(0).content.strip()
+        log(self.userNumber +' stopMeeting response:' + responseMessage)
+ 
+        expectedResponses.remove(responseMessage)
+        if(len(expectedResponses) > 0) :
+            printArray('not received: ', expectedResponses)
+            return False
+        return True
+    
 def isOperator(threadNumber):
     return (threadNumber % 3) == 0       
 
@@ -215,6 +234,10 @@ class TestRunner:
                 if(not suc):
                     stats.forLastTest.success = 0
                 stats.report
+            suc = stopMeetingTest(user, site.clients)
+            if(not suc):
+               stats.forLastTest.success = 0
+            stats.report
         else:
             while True:
                 recievedMessage = window.waitForTextMessage(0).content.strip()
@@ -224,6 +247,9 @@ class TestRunner:
                         log(userNumber +' client send back:' + 'recieved:::'+recievedMessage+':::'+userName)
                         window.sendMsg('recieved:::'+recievedMessage+':::'+userName)
                     else:
+                        log(userNumber +' client recieved:::'+recievedMessage+':::'+userName)
+                        grinder.sleep(1000)
+                        window.sendMsg(recievedMessage)
                         break;
                 else:
                     log('Got meeting started:' + recievedMessage)

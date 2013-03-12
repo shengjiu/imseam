@@ -21,14 +21,14 @@ public class ClientActionHandler{
 	private String meetingHostWindow;
 	
 	public void messageRecieved(){
-		System.out.println("client messagereceived: " +"recieved:::" +request.get().getInput() +", meetingHostWindow"+meetingHostWindow);
+//		System.out.println("ClientActionHandler messagereceived: " +"recieved:::" +request.get().getInput() +", meetingHostWindow:"+meetingHostWindow);
 		meeting.get().send(request.get().getInput(), meetingHostWindow);
 	}
 	
 	public void onJoinedMeeting(@Observes @JoinedMeeting MeetingEvent meetingEvent){
-		System.out.println(String.format("client action handler get joinmeeting event, window: %s, source window:%s", meetingEvent.getWindow().getUid(), meetingEvent.getSourceWindowId()));
+//		System.out.println(String.format("client action handler get joinmeeting event, window: %s, source window:%s", meetingEvent.getWindow().getUid(), meetingEvent.getSourceWindowId()));
 		meetingHostWindow =  meetingEvent.getSourceWindowId();
-		System.out.println("meeting started:::" + meetingEvent.getWindow().getDefaultChannel().getBuddy().getUserId()+ ", meetingHostBuddy: "+ meetingHostWindow);
+//		System.out.println("meeting started:::" + meetingEvent.getWindow().getDefaultChannel().getBuddy().getUserId()+ ", meetingHostBuddy: "+ meetingHostWindow);
 		meeting.get().send("meeting started:::" + meetingEvent.getWindow().getDefaultChannel().getBuddy().getUserId(), meetingHostWindow);
 		
 	}

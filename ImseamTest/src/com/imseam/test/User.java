@@ -14,6 +14,7 @@ import com.imseam.common.util.ExceptionUtil;
 import com.imseam.common.util.StringUtil;
 import com.imseam.test.connector.netty.NettyClientManager;
 import com.imseam.test.connector.netty.RPCConnector;
+import com.imseam.test.connector.netty.invocation.WindowStartedRemoteInvocation;
 import com.imseam.test.message.AcceptInvitationMessage;
 import com.imseam.test.message.BuddyAddedToWindowMessage;
 import com.imseam.test.message.InvitationMessage;
@@ -65,10 +66,15 @@ public class User {
 		return connection;
 	}
 	public Window startChat(String ... buddies){
-		 String windowId = connection.startChat(buddies);
-		 this.receivedMessagesMap.put(windowId, new LinkedBlockingQueue<Message>());
-		 NettyClientManager.instance().addWindowEventListener(windowId, eventListener);
-		 return new Window(windowId, this, buddies);
+		String windowId = connection.startChat(buddies);
+		 
+		System.out.println("window started: " + windowId);
+		this.receivedMessagesMap.put(windowId, new LinkedBlockingQueue<Message>());
+		NettyClientManager.instance().addWindowEventListener(windowId, eventListener);
+		 
+		RemoteInvocation remoteInvocation = new WindowStartedRemoteInvocation(userId, windowId);
+		NettyClientManager.instance().remoteCall(userId, remoteInvocation, null);
+		return new Window(windowId, this, buddies);
 	}
 	
 	private BlockingQueue<Message> getReceivedMessagsForWindow(String windowId){

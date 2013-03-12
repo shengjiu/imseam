@@ -34,6 +34,10 @@ public class FuncBasedEvent extends AbstractEvent implements IEvent{
 		return UidType.SYSTEMEVENT;
 	}
 	
-
+	@Override
+	public String toString() {
+		
+		return "FuncBasedEvent, Func:" + func.toString();
+	}
 
 }

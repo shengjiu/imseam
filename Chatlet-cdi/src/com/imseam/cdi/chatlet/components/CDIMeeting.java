@@ -236,20 +236,31 @@ public class CDIMeeting {
 		
 	}
 	
-	private static Func createSendMessageFunction(String windowUid, final String message){
+	private static Func createSendMessageFunction(String windowUid, final String message, final String additionalMessage){
+		
 		return new Func(Id.windowUid(windowUid)){
 
 			private static final long serialVersionUID = 1652488661328752071L;
+			private String funcMessage = message;
+			
 
 			@Override
 			public void invoke(IContext context) {
 				assert(context != null);
 				assert(context instanceof IWindow);
 				assert(ChatpageContext.current().getWindow() == context);
-				
+				//System.out.println(toAllWindowsInMeeting + "createSendMessageFunction sendElString: " + message + ":::" + ChatpageContext.current().getWindow().getDefaultChannel().getBuddy().getUserId());
 				ChatpageContext.current().sendELString(message);
 				
 			}
+
+			@Override
+			public String toString() {
+
+				return additionalMessage+ "createSendMessageFunction " + funcMessage;
+			}
+			
+			
 			
 		};
 
@@ -260,8 +271,9 @@ public class CDIMeeting {
 			log.trace("window is not in a meeting, send message cancelled");
 			return;
 		}
+		final String toAllWindowsInMeeting = (windowUids == null || windowUids.length == 0) ? "To all windows In Meeting " :"";
 		
-		invoke(createSendMessageFunction(window.get().getUid(), message), windowUids);
+		invoke(createSendMessageFunction(window.get().getUid(), message, toAllWindowsInMeeting), windowUids);
 	}
 	
 

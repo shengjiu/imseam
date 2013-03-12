@@ -212,6 +212,17 @@ public class NettyClientManager {
     	String messageFor = message.getTargetId();
     	IEventListener eventListener = this.eventListenerMap.get(messageFor);
     	
+    	if(eventListener == null){
+    		if(message instanceof TextMessage){
+        		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + ((TextMessage)message).getContent());
+        	}else{
+        		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + message);
+        	}
+
+    		return;
+    	}
+    	
+    	
 //    	System.out.println("message received, message for " +  messageFor);
     	
     	if(message instanceof InvitationMessage){
@@ -235,6 +246,7 @@ public class NettyClientManager {
     	}
 
     	if(message instanceof TextMessage){
+
     		eventListener.onTextMessage((TextMessage)message);
     		return;
     	}

@@ -24,5 +24,13 @@ public class InMeetingEventInvocationWrapper extends AbstractInMeetingInvocation
 			exp.printStackTrace();
 		}
 	}
+
+	@Override
+	public String toString() {
+		
+		return "InMeetingEventInvocationWrapper, event:" + event.toString();
+	}
+	
+	
 	
 }

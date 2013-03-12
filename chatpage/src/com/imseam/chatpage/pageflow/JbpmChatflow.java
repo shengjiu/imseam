@@ -42,7 +42,7 @@ public class JbpmChatflow implements Serializable {
 	}
 
 	public boolean isInProcess() {
-		return processInstance != null;
+		return processInstance != null && (!processInstance.hasEnded());
 	}
 
 	public ProcessInstance getProcessInstance() {

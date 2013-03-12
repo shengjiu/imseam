@@ -38,7 +38,7 @@
     </chat-page>
     <chat-page view-id="meetingstopped">
         <body>
-            <text>meeting stopped</text>
+            <text>stoppedMeeting:::#{buddy.userId}</text>
         </body>
     </chat-page>
     <chat-page view-id="gobacktomeeting">
@@ -63,7 +63,11 @@
                     <regexp-parser pattern="^(recieved:::)"/>
                 </parsers>
 			</action>
-			
+			<action outcome="stopmeeting">
+                <parsers>
+                    <regexp-parser pattern="^(stopmeeting)"/>
+                </parsers>
+			</action>
 		</actions>
 	</chat-page>    
 </chat-pages>

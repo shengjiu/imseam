@@ -15,7 +15,7 @@
       <transition name="recievemessage" to="messagereceived">
       	<action expression="#{clientMeetingActionHandler.messageRecieved}"/>
       </transition>
-      <transition name="stopmeeting" to="meetingstopped"></transition>
+      <transition name="MeetingStopped" to="meetingstopped"></transition>
    </chatpage>
    <nowaitchatpage name="messagereceived" view-id="/com/imseam/freamworktest/messagereceived">
       <transition name="goback" to="gobacktomeeting"></transition>

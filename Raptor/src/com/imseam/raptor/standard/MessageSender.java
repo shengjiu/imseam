@@ -34,7 +34,7 @@ public class MessageSender implements IMessageSender {
 		if(message != null){
 			
 			textBuffer.append(message.replace("::n", "\n"));
-			System.out.println("send server message:" +message);
+//			System.out.println("send server message:" +message);
 //			textBuffer.append(message);
 ////			textBuffer.append("\n");
 		}
@@ -48,7 +48,7 @@ public class MessageSender implements IMessageSender {
 	public void flush() {
 		if(textBuffer.length() <=0 ) return;
 		textBuffer.append("\n");
-		System.out.println("flush server message:" +textBuffer.toString());
+//		System.out.println("flush server message:" +textBuffer.toString() + ":::"+ messengerWindow.getDefaultChannel().getBuddy().getUserId());
 		messengerWindow.sendResponse(new MessengerTextMessage(textBuffer.toString()));
 		textBuffer.delete(0,textBuffer.length());
 	}

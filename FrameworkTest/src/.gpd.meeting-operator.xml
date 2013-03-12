@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<chatflow-diagram name="meeting-operator" width="1416" height="784">
+<chatflow-diagram name="meeting-operator" width="1437" height="917">
   <node name="start" x="83" y="71" width="140" height="40">
     <transition name="startmeeting">
       <label x="5" y="-10"/>

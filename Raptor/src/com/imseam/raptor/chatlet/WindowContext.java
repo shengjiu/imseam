@@ -49,7 +49,8 @@ public class WindowContext extends AbstractContext
 	
 	private static volatile int nextNumber = 0;
 	
-	private String windowUid = UidHelper.constructServerWiseUniqueId("window-" + (nextNumber++) + "-"); //UUID.randomUUID().toString());
+	
+	private String windowUid = getNextNumber(); //UUID.randomUUID().toString());
 	
 	
 	private IClusterInvocationDistributor requestDistributor;
@@ -70,6 +71,10 @@ public class WindowContext extends AbstractContext
 		log.debug(String.format("A WindowContext is created."));
 	}
 
+	
+	private synchronized String getNextNumber(){
+		return UidHelper.constructServerWiseUniqueId("window-" + (nextNumber++) + "-"); //UUID.randomUUID().toString());
+	}
 	public IMessengerWindow getMessengerWindow() {
 		return messengerWindow;
 	}
@@ -349,8 +354,15 @@ public class WindowContext extends AbstractContext
 		}		
 		Set<String> windowUidSet = application.getMeetingStorage().getReadOnlyWindowUidSet(meeting.getUid());
 		
+		
+		
 		HashSet<String> copyOfExistingWindowIdSet = new HashSet<String>(windowUidSet);
 		copyOfExistingWindowIdSet.remove(this.getUid());
+		
+		if(copyOfExistingWindowIdSet.size() != 2){
+			System.out.println("fireMeetingEventToAllOtherWindows exitingwindowidset size: " + copyOfExistingWindowIdSet.size() + ", "+ this.getDefaultChannel().getBuddy().getUserId());
+		}
+		
 		if(copyOfExistingWindowIdSet.size() > 0){
 			try {
 				requestDistributor.distributeWindowRequest(handler, new InMeetingEventInvocationWrapper(meeting.getUid(), event, new Date()), copyOfExistingWindowIdSet.toArray(new String[copyOfExistingWindowIdSet.size()]));

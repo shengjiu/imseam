@@ -250,9 +250,13 @@ public class NettyConnection extends AbstractConnection  {
 					NettyMessengerWindow window = new NettyMessengerWindow(NettyConnection.this.server, NettyConnection.this, username);
 					log.debug("Netty messenger window id: " + window.getWindowContext().getUid());
 					windowMap.put(window.getWindowContext().getUid(), window);
-					fireWindowStarted(window);
-
 					return window.getWindowContext().getUid();
+				}
+
+				@Override
+				public void windowStarted(String windowId) {
+					NettyMessengerWindow window = windowMap.get(windowId);
+					fireWindowStarted(window);
 				}
 			};
 		}

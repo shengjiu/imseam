@@ -34,6 +34,11 @@ public class HostActionHandler {
 		return "startmeeting";
 	}
 	
+	public void stopMeeting(){
+		meeting.get().stopMeeting();
+		return;
+	}
+	
 	public void distributeMessage(){
 		meeting.get().send(request.get().getInput());
 	}
