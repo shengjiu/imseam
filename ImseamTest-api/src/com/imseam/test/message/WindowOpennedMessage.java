@@ -16,7 +16,7 @@ public class WindowOpennedMessage extends Message{
 	}
 
 	
-	public String windowId() {
+	public String getWindowId() {
 		return this.getTargetId();
 	}
 	

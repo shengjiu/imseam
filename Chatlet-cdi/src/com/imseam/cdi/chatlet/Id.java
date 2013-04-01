@@ -3,6 +3,7 @@ package com.imseam.cdi.chatlet;
 import java.io.Serializable;
 
 import com.imseam.chatlet.IIdentiable.UidType;
+import com.imseam.chatlet.IWindow;
 
 
 public class Id implements Serializable {
@@ -58,6 +59,10 @@ public class Id implements Serializable {
 
 	public static Id applicationUid(String applicationName){
 		return new Id(applicationName, UidType.APPICATION);
+	}
+	
+	public static Id of(IWindow window){
+		return new Id(window.getUid(), UidType.WINDOW);
 	}
 
 	@Override

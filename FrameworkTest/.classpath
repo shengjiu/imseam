@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Chatlet-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Chatlet-cdi"/>
 	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-servlet.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-servlet-sources.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ImseamTest-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

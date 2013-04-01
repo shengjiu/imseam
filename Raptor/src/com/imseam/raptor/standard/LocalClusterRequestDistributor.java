@@ -117,10 +117,17 @@ public class LocalClusterRequestDistributor implements IClusterInvocationDistrib
 		}
 
 		public Object call() throws Exception {
-			request.invoke(application, context, handler);
-			if(context instanceof IWindow){
-				IWindow windowContext = (IWindow)context;
-				windowContext.getMessageSender().flush();
+			try{
+				request.invoke(application, context, handler);
+				if(context instanceof IWindow){
+					IWindow windowContext = (IWindow)context;
+					windowContext.getMessageSender().flush();
+				}
+			}catch(Exception exp){
+				exp.printStackTrace();
+				throw exp;
+			}catch(Error error){
+				error.printStackTrace();
 			}
 			return null;
 		}

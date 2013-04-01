@@ -98,7 +98,10 @@ public class ChannelTask implements PrioritizedTask<Object, Long> {
 		}catch(Exception exp){
 			log.error(String.format("Exception happened during processing %s Channel task", isAdd ? "add" : "remove"), exp);
 			throw exp;
-		}finally{
+		}catch(Error error){
+			error.printStackTrace();
+		}
+		finally{
 			
 		}
 		return null;

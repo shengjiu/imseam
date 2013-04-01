@@ -13,7 +13,6 @@ import org.jbpm.JbpmContext;
 
 import com.imseam.cdi.chatlet.annotations.AbstractChatletEventAnnotation;
 import com.imseam.cdi.chatlet.annotations.BeforeInviteWindowAnnotation;
-import com.imseam.cdi.chatlet.annotations.BeforeStartActiveWindowAnnotation;
 import com.imseam.cdi.chatlet.annotations.BuddySignOffAnnotation;
 import com.imseam.cdi.chatlet.annotations.BuddyStatusChangeAnnotation;
 import com.imseam.cdi.chatlet.annotations.JoinedMeetingAnnotation;
@@ -40,6 +39,7 @@ import com.imseam.cdi.chatlet.ext.annotation.ConnectionStopped;
 import com.imseam.cdi.chatlet.ext.annotation.SessionStarted;
 import com.imseam.cdi.chatlet.ext.annotation.UserRequest;
 import com.imseam.cdi.chatlet.ext.annotation.WindowStarted;
+import com.imseam.cdi.chatlet.ext.annotation.meeting.BeforeStartActiveWindow;
 import com.imseam.cdi.chatlet.ext.annotation.meeting.ExtendedMeetingListener;
 import com.imseam.cdi.chatlet.services.ChatletServices;
 import com.imseam.cdi.chatlet.spi.CDIExtendableMeetingEventListener;
@@ -63,8 +63,6 @@ import com.imseam.chatlet.listener.event.SessionEvent;
 import com.imseam.chatlet.listener.event.UserJoinWindowEvent;
 import com.imseam.chatlet.listener.event.WindowEvent;
 import com.imseam.chatpage.ChatPageManager;
-import com.imseam.chatpage.ChatPageRenderException;
-import com.imseam.chatpage.IChatPage;
 import com.imseam.chatpage.context.ChatpageContext;
 import com.imseam.chatpage.pageflow.JbpmManager;
 import com.imseam.common.util.ClassUtil;
@@ -692,7 +690,6 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		try {
 			eventContext = createEventContext(request, window);
 			AbstractChatletEventAnnotation<? extends Annotation> annotation = new BeforeInviteWindowAnnotation();
-
 			annotation.setChatflowAndState(chatflow, state);
 			CDIExtendableMeetingEventListener extendedMeetingEventListener = this.findCDIExtendableMeetingEventListener(annotation);
 			if (extendedMeetingEventListener != null) {
@@ -727,30 +724,14 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		getLifecycle().beginRequest(request);
 
 		EventContext eventContext = null;
-		String chatflow = getChatflowRequestProcessor().getChatflowName();
-		String state = getChatflowRequestProcessor().getState();
 		boolean result = true;
 
 		try {
 			eventContext = createEventContext(request);
-			AbstractChatletEventAnnotation<? extends Annotation> annotation = new BeforeStartActiveWindowAnnotation();
-			annotation.setChatflowAndState(chatflow, state);
-			CDIExtendableMeetingEventListener extendedMeetingEventListener = this.findCDIExtendableMeetingEventListener(annotation);
-			if (extendedMeetingEventListener != null) {
-				result &= extendedMeetingEventListener.beforeStartActiveWindow(connection, buddyUid);
-			}
-			annotation.setChatflowAndState("*", state);
-			extendedMeetingEventListener = this.findCDIExtendableMeetingEventListener(annotation);
-			if (extendedMeetingEventListener != null) {
-				result &= extendedMeetingEventListener.beforeStartActiveWindow(connection, buddyUid);
-			}
-			annotation.setChatflowAndState(chatflow, "*");
-			extendedMeetingEventListener = this.findCDIExtendableMeetingEventListener(annotation);
-			if (extendedMeetingEventListener != null) {
-				result &= extendedMeetingEventListener.beforeStartActiveWindow(connection, buddyUid);
-			}
-			annotation.setChatflowAndState("*", "*");
-			extendedMeetingEventListener = this.findCDIExtendableMeetingEventListener(annotation);
+			
+			
+			CDIExtendableMeetingEventListener extendedMeetingEventListener = this.findCDIExtendableMeetingEventListener(new AnnotationLiteral<BeforeStartActiveWindow>() {
+			});
 			if (extendedMeetingEventListener != null) {
 				result &= extendedMeetingEventListener.beforeStartActiveWindow(connection, buddyUid);
 			}

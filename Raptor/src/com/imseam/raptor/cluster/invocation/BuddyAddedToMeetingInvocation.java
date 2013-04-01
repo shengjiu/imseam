@@ -52,20 +52,22 @@ public class BuddyAddedToMeetingInvocation implements IClusterInvocation<IConnec
 			this.errorCallBack = handler;
 			Set<IWindow> activeWindowSet = connection.getBuddyActiveWindowSet(buddyUid);
 			
-			for(IWindow window : activeWindowSet){
-				IMeeting meeting = application.getMeetingStorage().getExistingMeeting(meetingUid);
-				if (meeting != null){
-					try{
-						((WindowContext)window).setMeeting(meeting);
-					}catch(WindowInOtherMeetingException windowInOtherMeetingException){
-						continue;
+			if(activeWindowSet != null){
+				for(IWindow window : activeWindowSet){
+					IMeeting meeting = application.getMeetingStorage().getExistingMeeting(meetingUid);
+					if (meeting != null){
+						try{
+							((WindowContext)window).setMeeting(meeting);
+						}catch(WindowInOtherMeetingException windowInOtherMeetingException){
+							continue;
+						}
+						WindowAddedToMeetingInvocation request = new WindowAddedToMeetingInvocation(meetingUid, window.getUid(), sourceWindowUid, timeStamp);		
+						application.getClusterInvocationDistributor().distributeWindowRequest(handler, request, window.getUid());
+						return;
+					}else{
+						//todo no meeting existing
+						InvocationErrorHandler.sendExceptionBack(application, new MeetingNotExistingException(meetingUid), handler, timeStamp, sourceWindowUid, buddyUid);
 					}
-					WindowAddedToMeetingInvocation request = new WindowAddedToMeetingInvocation(meetingUid, window.getUid(), sourceWindowUid, timeStamp);		
-					application.getClusterInvocationDistributor().distributeWindowRequest(handler, request, window.getUid());
-					return;
-				}else{
-					//todo no meeting existing
-					InvocationErrorHandler.sendExceptionBack(application, new MeetingNotExistingException(meetingUid), handler, timeStamp, sourceWindowUid, buddyUid);
 				}
 			}
 			

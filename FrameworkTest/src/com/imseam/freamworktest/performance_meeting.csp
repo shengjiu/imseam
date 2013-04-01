@@ -68,6 +68,21 @@
                     <regexp-parser pattern="^(stopmeeting)"/>
                 </parsers>
 			</action>
+			<action outcome="#{hostMeetingActionHandler.setValue2MeetingContext}">
+                <parsers>
+                    <regexp-parser pattern="^(setValueMeetingContext:::)(.*)">
+                        <regexp-parseresult parameter-name="encodedStr" group-number="2"/>
+                    </regexp-parser>
+                </parsers>
+			</action>
+			<action outcome="#{hostMeetingActionHandler.startActiveWindow}">
+                <parsers>
+                    <regexp-parser pattern="startActiveWindow:::(.*)">
+                        <regexp-parseresult parameter-name="buddies" group-number="1"/>
+                    </regexp-parser>                    
+                </parsers>
+			</action>
+
 		</actions>
 	</chat-page>    
 </chat-pages>

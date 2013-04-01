@@ -213,6 +213,15 @@ public class NettyClientManager {
     	IEventListener eventListener = this.eventListenerMap.get(messageFor);
     	
     	if(eventListener == null){
+        	if(message instanceof WindowOpennedMessage){
+        		messageFor = ((WindowOpennedMessage) message).getBuddyIds()[0];
+            	eventListener = this.eventListenerMap.get(messageFor);
+        	}
+    	}
+        		
+        		
+    	if(eventListener == null){
+    		
     		if(message instanceof TextMessage){
         		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + ((TextMessage)message).getContent());
         	}else{

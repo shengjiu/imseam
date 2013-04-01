@@ -126,6 +126,7 @@ public class Server {
 								    public void messageReceived(
 								            ChannelHandlerContext ctx, MessageEvent e) {
 								    	
+								    	
 								    	Server.this.messageReceived(e);
 								    }
 
@@ -136,7 +137,7 @@ public class Server {
 								                Level.WARNING,
 								                "Unexpected exception from downstream.",
 								                e.getCause());
-								        e.getChannel().close();
+								        //e.getChannel().close();
 								    }						
 								});
 							}

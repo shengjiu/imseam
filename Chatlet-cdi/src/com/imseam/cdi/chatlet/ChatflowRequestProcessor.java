@@ -76,6 +76,7 @@ public class ChatflowRequestProcessor{
 	}
 	
 	public String getState(){
+		if(jbpmChatflow.getChatPageNode() == null) return null;
 		return jbpmChatflow.getChatPageNode().getName();
 	}
 	

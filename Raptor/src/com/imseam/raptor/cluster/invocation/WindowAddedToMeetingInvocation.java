@@ -38,22 +38,19 @@ public class WindowAddedToMeetingInvocation implements IClusterInvocation<IWindo
 	@Override
 	public void invoke(IChatletApplication application, IWindow window, IEventErrorCallback handler) {
 //		log.debug(String.format("Start processing %s meeting(%s), sourceWindow(%s), for window(%s)", this.getClass(), meetingUid, sourceWindowUid, window.getUid()));
+		
 
 		IMeeting meeting = application.getMeetingStorage().getExistingMeeting(meetingUid);
 		if (meeting == null){
 //			log.warn("Exception when invite window to meeting, and meeting already existing: " + window.getMeeting().getUid());
 			InvocationErrorHandler.sendExceptionBack(application, new MeetingNotExistingException(meetingUid), handler, timeStamp, sourceWindowUid, buddyUid);
 		}
-		
 		if(application.getMeetingEventListener().beforeInviteWindow(window) ) {
 			InvocationErrorHandler.sendExceptionBack(application, new BeforeStartMeetingFailedException(meetingUid), handler, timeStamp, sourceWindowUid, buddyUid);
 		}
-
-
 		if (window.getMeeting() != null && !window.getMeeting().getUid().equals(meetingUid)) {
 //			log.warn("Exception when invite window to meeting, and meeting already existing: " + window.getMeeting().getUid());
 		}
-		
 		
 		try{
 			((WindowContext)window).setMeeting(meeting);

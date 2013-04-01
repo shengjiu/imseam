@@ -128,7 +128,7 @@ public class RequestProcessor implements IRequestProcessor {
 				
 				messageSender.flush();
 				
-			} catch (Exception exp) {
+			} catch (Throwable exp) {
 				exceptionHandler.handleException(chatletRequest, messageSender, exp);
 			}
 			return null;

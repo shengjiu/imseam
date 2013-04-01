@@ -159,7 +159,7 @@ public enum EventTypeEnum {
 		}
 		public void fireEvent(final ISystemEventListener listener, final IEvent event){
 			WindowEvent windowEvent = (WindowEvent)event;
-			RaptorTaskQueue.getInstance(windowEvent.getUid()).addTask(new PrioritizedTask <Object, Long>(){
+			RaptorTaskQueue.getInstance(windowEvent.getWindow().getUid()).addTask(new PrioritizedTask <Object, Long>(){
 				@Override
 				public Object call() throws Exception {
 					listener.onWindowStarted((WindowEvent)event);
@@ -179,7 +179,7 @@ public enum EventTypeEnum {
 		}
 		public void fireEvent(final ISystemEventListener listener, final IEvent event){
 			WindowEvent windowEvent = (WindowEvent)event;
-			RaptorTaskQueue.getInstance(windowEvent.getUid()).addTask(new PrioritizedTask <Object, Long>(){
+			RaptorTaskQueue.getInstance(windowEvent.getWindow().getUid()).addTask(new PrioritizedTask <Object, Long>(){
 				@Override
 				public Object call() throws Exception {
 					listener.onWindowStopped((WindowEvent)event);

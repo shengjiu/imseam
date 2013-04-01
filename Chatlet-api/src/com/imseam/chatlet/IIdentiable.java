@@ -11,7 +11,8 @@ public interface IIdentiable {
 		BUDDY,
 		MEETING,
 		USERREQUEST,
-		SYSTEMEVENT
+		SYSTEMEVENT,
+		EVENT
 	}
 	
 	String getUid();

@@ -3,7 +3,6 @@ package com.imseam.test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,7 @@ public class User {
 	
 	private UserEventListener eventListener = new UserEventListener();
 	
-	private Map<String, Window> windowMap = new HashMap<String, Window>();
+	private Map<String, Window> windowMap = new ConcurrentHashMap<String, Window>();
 	
 	private Map<String, BlockingQueue<Message>> receivedMessagesMap = new ConcurrentHashMap<String, BlockingQueue<Message>>(); 
 	
@@ -74,7 +73,9 @@ public class User {
 		 
 		RemoteInvocation remoteInvocation = new WindowStartedRemoteInvocation(userId, windowId);
 		NettyClientManager.instance().remoteCall(userId, remoteInvocation, null);
-		return new Window(windowId, this, buddies);
+		Window window = new Window(windowId, this, buddies);
+		windowMap.put(window.windowId(), window);
+		return window;
 	}
 	
 	private BlockingQueue<Message> getReceivedMessagsForWindow(String windowId){
@@ -97,14 +98,14 @@ public class User {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends Message> T waitForMessage(String windowId, int milliSeconds) throws WaitException{
+	public <T extends Message> T waitForMessage(String messageFor, int milliSeconds) throws WaitException{
 		Message message = null;
 		try {
 			BlockingQueue<Message> receivedMessages = null;
-			if(StringUtil.isNullOrEmptyAfterTrim(windowId)){
+			if(StringUtil.isNullOrEmptyAfterTrim(messageFor)){
 				receivedMessages = getReceivedMessagsForUser();
 			}else{
-				receivedMessages = getReceivedMessagsForWindow(windowId);
+				receivedMessages = getReceivedMessagsForWindow(messageFor);
 			}
 
 			if(milliSeconds > 0){
@@ -136,8 +137,9 @@ public class User {
 		return waitForMessage(windowId, milliSeconds);
 	}
 	
-	public WindowOpennedMessage waitForWindowOpen(int milliSeconds) throws WaitException{
-		return waitForMessage(null, milliSeconds);
+	public Window waitForWindowOpen(int milliSeconds) throws WaitException{
+		WindowOpennedMessage windowOpenMessage = waitForMessage(null, milliSeconds); 
+		return this.getWindow(windowOpenMessage.getWindowId());
 	}
 
 	public WindowClosedMessage waitForWindowClose(String windowId, int milliSeconds) throws WaitException{
@@ -166,13 +168,13 @@ public class User {
 	
 		@Override
 		public void onWindowOpened(WindowOpennedMessage message) {
-			Window window = new Window(message.windowId(), User.this, message.getBuddyIds());
+			Window window = new Window(message.getWindowId(), User.this, message.getBuddyIds());
 			windowMap.put(window.windowId(), window);
-			assert(getReceivedMessagsForWindow(message.windowId()) == null);
+			assert(getReceivedMessagsForWindow(message.getWindowId()) == null);
 			BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<Message>();
-			User.this.receivedMessagesMap.put(message.windowId(), receivedMessages);
-			receivedMessages.add(message);
-			NettyClientManager.instance().addWindowEventListener(message.windowId(), this);
+			User.this.receivedMessagesMap.put(message.getWindowId(), receivedMessages);
+			getReceivedMessagsForUser().add(message);
+			NettyClientManager.instance().addWindowEventListener(message.getWindowId(), this);
 		}
 		
 //		private String [] getArrrayFromSet(Set<String> buddyIdSet){

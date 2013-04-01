@@ -110,7 +110,7 @@ public class RaptorTaskQueue implements ComparableCallable<Object, Long>, Serial
 			}else{
 				return result;
 			}
-		}catch(Exception exp){
+		}catch(Throwable exp){
 			log.error("Task Excuting Error in Queue", exp);
 		}
 		
@@ -126,9 +126,13 @@ public class RaptorTaskQueue implements ComparableCallable<Object, Long>, Serial
 			}
 			return result;
 		}catch(Exception exp){
-			log.error("Error happened when polling the next task in ConversatoinMessageQueue:", exp);
+			log.error("Exception happened when polling the next task in ConversatoinMessageQueue:", exp);
 			throw exp;
-		}finally{
+		}catch(Error error){
+			error.printStackTrace();
+			return null;
+		}
+		finally{
 			lock.unlock();
 		}
 	}
