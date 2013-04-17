@@ -24,7 +24,11 @@
 	<property name="javac.debug" value="true" />
 	<property name="javac.deprecation" value="false" />
 
-
+	<property name="junit.jar" value="../ImseamLibs/junit/junit.jar" />
+	<property name="jbpm.lib.dir" value="../ImseamLibs/jbpm"/>
+	<property name="weld.lib.dir" value="../ImseamLibs/weld-final1.1/weld"/>
+	<property name="cdi.lib.dir" value="../ImseamLibs/weld-final1.1/cdi"/>
+	<property name="el.lib.dir" value="../ImseamLibs/el" />
 	<property name="mail.lib.dir" value="../ImseamLibs/mail" />
 	<property name="drools.lib.dir" value="../ImseamLibs/drools" />
 	<property name="chart.lib.dir" value="../ImseamLibs/chart" />
@@ -39,12 +43,32 @@
 	<property name="generated.lib.dir" value="../ImseamLibs/generated-jars" />
 	<property name="testng.jar" value="${jboss.seam.lib.dir}/testng-4.5.1-jdk15.jar" />
 	<property name="ImseamCommon.jar" value="${generated.lib.dir}/ImseamCommon.jar" />
+	<property name="chatlet-api.jar" value="${generated.lib.dir}/chatlet-api.jar" />
+	<property name="chatlet-config.jar" value="${generated.lib.dir}/chatlet-config.jar"/>
+	<property name="chatlet-api.jar" value="${generated.lib.dir}/chatlet-api.jar" />
+	<property name="chatpage.jar" value="${generated.lib.dir}/chatpage.jar" />
+	<property name="chatlet-cdi.jar" value="${generated.lib.dir}/chatlet-cdi.jar" />
 	<property name="JMsnLib.jar" value="${generated.lib.dir}/JMsnLib.jar" />
 	<property name="JMLLib.jar" value="${JML.lib.dir}/jml.jar" />
 	<property name="javaAssist.jar" value="${imseam.seam.lib.dir}/javassist.jar" />
 	<property name="ImseamSeam.jar" value="${generated.lib.dir}/ImseamSeam.jar" />
 	<property name="ImseamWeb.jar" value="${generated.lib.dir}/ImseamWeb.jar" />
+	
+	<fileset id="el.libs" dir="${el.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+	
+	<fileset id="jbpm.libs" dir="${jbpm.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
 
+	<fileset id="weld.libs" dir="${weld.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+	<fileset id="cdi.libs" dir="${cdi.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+	
 	<fileset id="mail.libs" dir="${mail.lib.dir}">
 		<include name="*.jar" />
 	</fileset>

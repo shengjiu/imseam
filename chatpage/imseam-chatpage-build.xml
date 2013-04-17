@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<project name="chatpage" default="archive" basedir=".">
+
+	<!-- Give user a chance to override without editing this file or typing -D -->
+	<property file="${basedir}/build.properties" />
+	
+	<import file="../ImseamBuild/BuildProperty.xml" />
+
+	<!-- set global properties for this build -->
+	<property name="project.name" value="chatpage"/>
+	<property name="jar.dir" value="${dist.dir}/${project.name}.jar" />
+	<!--property name="resources.dir" value="resources" /-->
+	
+	<path id="build.classpath">
+		<fileset refid="el.libs" />
+		<fileset refid="jbpm.libs" />
+		<fileset refid="logging.libs" />
+		<pathelement location ="${junit.jar}"/>
+		<pathelement location ="${chatlet-config.jar}"/>
+		<pathelement location ="${chatlet-api.jar}"/>
+		<pathelement location ="${ImseamCommon.jar}"/>
+	</path>
+
+	<target name="init" depends="clean" description="Initialize the build">
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${jar.dir}" />
+	</target>
+
+	<target name="compile" depends="init" 
+			description="Compile the Java source code">
+		<javac classpathref="build.classpath" 
+			        destdir="${jar.dir}" 
+			          debug="${javac.debug}" 
+			    deprecation="${javac.deprecation}" 
+			        nowarn="on"
+			target="1.6"
+			compiler="javac1.5"
+			verbose="true"
+				 >
+			<src path="${src.java.dir}" />
+		<!--
+			<compilerarg value="-Xlint:unchecked" />
+		-->
+		</javac>
+
+	</target>
+	
+
+	
+	<target name="archive" depends="compile" 
+			description="Package the archives">
+		<!--copy todir="${jar.dir}">
+			<fileset dir="${basedir}/${resources.dir}">
+				<include name="imseam.properties" />
+			</fileset>
+		</copy-->		
+		<jar jarfile="${chatpage.jar}" basedir="${jar.dir}"/>
+	</target>
+
+	<target name="clean" description="Cleans up the build directory">
+		<delete dir="${dist.dir}" />
+	</target>
+
+
+	
+	<target name="imseam-build" depends="archive" description="Run the test and copy the jar">
+	</target>
+
+	
+</project>

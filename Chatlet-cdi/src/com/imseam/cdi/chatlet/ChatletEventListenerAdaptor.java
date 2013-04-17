@@ -361,7 +361,7 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	private void fireChatflowEvent(Object event, AbstractChatletEventAnnotation chatflowAnnotation) {
 		
 		try {
-			if(getChatflowRequestProcessor().isInProcess()){
+			if(getChatflowRequestProcessor() != null && getChatflowRequestProcessor().isInProcess()){
 				String chatflow = getChatflowRequestProcessor().getChatflowName();
 				String state = getChatflowRequestProcessor().getState();
 	

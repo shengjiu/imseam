@@ -16,9 +16,7 @@
 	<classpathentry kind="lib" path="/ImseamLibs/el/el-api.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/el/jboss-el.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-core.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-core-sources.jar"/>
-	<classpathentry kind="lib" path="/ImseamLibs/cdi/slf4j-api-1.6.4.jar"/>
-	<classpathentry kind="lib" path="/ImseamLibs/cdi/slf4j-ext-1.6.4.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-servlet-core.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-servlet.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-servlet-sources.jar"/>
-	<classpathentry kind="lib" path="/ImseamLibs/weld-final1.1/weld/weld-servlet-core.jar" sourcepath="/ImseamLibs/weld-final1.1/weld/weld-servlet-core-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

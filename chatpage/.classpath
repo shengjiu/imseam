@@ -7,8 +7,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Chatlet-api"/>
 	<classpathentry kind="lib" path="/ImseamLibs/logging/commons-logging.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/jboss-seam-jars/jbpm-3.1.4.jar"/>
-	<classpathentry kind="lib" path="/ImseamLibs/imseam-seam-jars/thirdparty-all.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/el/jboss-el.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/el/el-api.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/jbpm/dom4j-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
