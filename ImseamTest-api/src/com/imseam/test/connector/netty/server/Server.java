@@ -53,6 +53,10 @@ public class Server {
 	
 	private ExecutorService executorService = Executors.newCachedThreadPool(); 
 	
+	private ServerBootstrap bootstrap = null;
+	
+	private Channel serverChannel = null;
+	
 	private String hostAddress = null; //InetAddress.getLocalHost().getHostName();
 	
 	public String getHostAddress() {
@@ -95,7 +99,7 @@ public class Server {
 		
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-		        ServerBootstrap bootstrap = new ServerBootstrap(
+		        bootstrap = new ServerBootstrap(
 		                new NioServerSocketChannelFactory(
 		                		executorService,
 		                		executorService));
@@ -145,7 +149,7 @@ public class Server {
 		            	
 		            	
 		        // Bind and start to accept incoming connections.
-		        bootstrap.bind(new InetSocketAddress(port));
+		        serverChannel = bootstrap.bind(new InetSocketAddress(port));
 		        
 				
 			}
@@ -155,7 +159,10 @@ public class Server {
 	}
 	
 	public void stopServer(){
-		ExceptionUtil.createRuntimeException("stopServer not implemented");
+		ChannelFuture cf = serverChannel.close();
+		cf.awaitUninterruptibly();
+//		executorService.shutdown();
+//		bootstrap.releaseExternalResources();
 	}
 	
 	public void sendMessage(String username, Message message){

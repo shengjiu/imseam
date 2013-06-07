@@ -83,7 +83,7 @@ public class ChatPageManager {
 	
 	public void addChatPage(IChatPage chatPage){
 		if(chatPageMap.get(chatPage.getFullPathViewID()) != null){
-			ExceptionUtil.createRuntimeException("The view id already exists: " + chatPage.getFullPathViewID() +", it might be loaded from other Jars: ");
+			log.warn("The view id already exists: " + chatPage.getFullPathViewID() +", it might be loaded from other Jars: ");
 		}
 		chatPageMap.put(chatPage.getFullPathViewID(), chatPage);
 		log.debug("A chatpage is added to the chatpagemanager: " + chatPage.getFullPathViewID());

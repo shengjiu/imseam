@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project name="ImseamSystem" default="build" basedir=".\">
+
+	<description>Build files.</description>
+
+	<import file=".\BuildProperty.xml" />
+
+	<target name="info" description="Add Build result links to the build log">
+		<echo>Please check the build test result at: https://dev.imseam.com/buildresult/${build.number}/</echo>
+		<echo> </echo>
+		<echo>Please check the Imseam web application at: https://dev.imseam.com/ImseamWeb/</echo>
+		<echo> </echo>
+	</target>
+	
+
+	<target name="init" depends="clean" description="Initialize the build">
+		<copy file=".\test-result-index.html" tofile="${dist.dir}\index.html"/>
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="clean" depends= "info" description="Cleans up the build directory">
+
+	</target>
+
+
+	<target name="build" depends="init" description="build all projects">
+
+		<!--sysinfo verbose="true" /-->
+
+		<!--<echo message="Source directory = ${dir.src}" />-->
+
+
+		<subant target="imseam-build">
+			<!--property name="jboss.home" value="${jboss.home}" /-->			<fileset id="buildfiles" dir="..\">
+				<include name="ImseamBuild\ImseamBuild.xml" />
+				<include name="FrameworkTest\imseam-framework-test-build.xml" />
+			</fileset>
+
+		</subant>
+	</target>
+
+</project>
+
+

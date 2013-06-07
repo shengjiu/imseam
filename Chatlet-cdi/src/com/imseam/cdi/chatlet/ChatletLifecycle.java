@@ -174,12 +174,12 @@ public class ChatletLifecycle implements Service {
 	@Override
 	public void cleanup() {
 //		dependentContext.cleanup();
-		requestContextCache.cleanup();
-		sessionContextCache.cleanup();
-		windowContextCache.cleanup();
-		channelContextCache.cleanup();
-		meetingContextCache.cleanup();
-		connectionContextCache.cleanup();
+//		requestContextCache.cleanup();
+//		sessionContextCache.cleanup();
+//		windowContextCache.cleanup();
+//		channelContextCache.cleanup();
+//		meetingContextCache.cleanup();
+//		connectionContextCache.cleanup();
 //		singletonContext.cleanup();
 //		applicationContext.cleanup();
 	}

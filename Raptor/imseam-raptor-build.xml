@@ -25,9 +25,20 @@
 		<fileset refid="JYmsg.libs" />
 		<fileset refid="JML.libs" />
 		<fileset refid="generated.libs" />
-		<fileset refid="jboss.server.libs" />
-		<fileset refid="jboss.server.libs" />
+		<fileset refid="el.libs" />
+		<fileset refid="jbpm.libs" />
+		<fileset refid="cdi.libs" />
+		<fileset refid="weld.libs" />
+		<fileset refid="jedis.libs" />
+		<fileset refid="commons-pool.libs" />
+		<pathelement location ="${chatlet-config.jar}"/>
+		<pathelement location ="${chatlet-api.jar}"/>
+		<pathelement location ="${chatpage.jar}"/>
+		<pathelement location ="${chatlet-cdi.jar}"/>
+		<pathelement location ="${ImseamCommon.jar}"/>
+		<pathelement location ="${imseam-test-api.jar}"/>
 		<pathelement location="${testng.jar}" />
+		
 	</path>
 
 	<target name="init" depends="clean" description="Initialize the build">
@@ -35,13 +46,26 @@
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${generated.lib.dir}" />
 	</target>
-
-	<target name="compile" depends="init" description="Compile the Java source code">
-		<javac classpathref="build.classpath" destdir="${jar.dir}" debug="${javac.debug}" deprecation="${javac.deprecation}" nowarn="on" source="1.5">
-			<src path="${src.java.dir}" />
-		</javac>
+	
+	<target name="compile" depends="init" 
+				description="Compile the Java source code">
+			<javac classpathref="build.classpath" 
+				        destdir="${jar.dir}" 
+				          debug="${javac.debug}" 
+				    deprecation="${javac.deprecation}" 
+				        nowarn="on"
+				target="1.6"
+				compiler="javac1.5"
+				verbose="true"
+					 >
+				<src path="${src.java.dir}" />
+			<!--
+				<compilerarg value="-Xlint:unchecked" />
+			-->
+			</javac>
 
 	</target>
+			
 
 	<target name="jar" depends="compile" description="Build the distribution .jar file">
 		<copy todir="${jar.dir}">
@@ -69,14 +93,15 @@
 		</copy>
 	</target>
 
-	<target name="archive" depends="jar,sar" description="Package the archives">
-		<jar jarfile="${dist.dir}/${project.name}.jar" basedir="${jar.dir}" />
+	<target name="archive" depends="compile" description="Package the archives">
+		<!--jar jarfile="${dist.dir}/${project.name}.jar" basedir="${jar.dir}" />
 		<jar jarfile="${dist.dir}/${project.name}.sar">
 			<fileset dir="${sar.dir}" />
 			<fileset dir="${dist.dir}">
 				<include name="${project.name}.jar" />
 			</fileset>
-		</jar>
+		</jar-->
+		<jar jarfile="${raptor.jar}" basedir="${jar.dir}"/>
 	</target>
 
 
@@ -142,7 +167,7 @@
 
 	</target>
 
-	<target name="imseam-build" depends="test, deploy" description="Run the test and copy the jar">
+	<target name="imseam-build" depends="archive" description="Run the test and copy the jar">
 	</target>
 
 

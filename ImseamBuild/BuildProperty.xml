@@ -2,7 +2,8 @@
 	<property environment="env" />
 	<!-- directories -->
 	<property name="dir.current" value="${project::get-base-directory()}" />
-	<property name="dir.root" value="${env.ImseamBuildRoot}" />
+	<!--property name="dir.root" value="${env.ImseamBuildRoot}" /-->
+	<property name="dir.root" value="dist" />
 	<property name="build.number" value="${env.Label}" />
 
 
@@ -29,7 +30,10 @@
 	<property name="weld.lib.dir" value="../ImseamLibs/weld-final1.1/weld"/>
 	<property name="cdi.lib.dir" value="../ImseamLibs/weld-final1.1/cdi"/>
 	<property name="el.lib.dir" value="../ImseamLibs/el" />
-	<property name="mail.lib.dir" value="../ImseamLibs/mail" />
+	<property name="jedis.lib.dir" value="../ImseamLibs/jedis" />
+	<property name="commons-pool.lib.dir" value="../ImseamLibs/common-pool" />
+	<property name="mail.lib.dir" value="../ImseamLibs/mail"/>
+	<property name="netty.lib.dir" value="../ImseamLibs/netty"/>
 	<property name="drools.lib.dir" value="../ImseamLibs/drools" />
 	<property name="chart.lib.dir" value="../ImseamLibs/chart" />
 	<property name="logging.lib.dir" value="../ImseamLibs/logging" />
@@ -48,6 +52,10 @@
 	<property name="chatlet-api.jar" value="${generated.lib.dir}/chatlet-api.jar" />
 	<property name="chatpage.jar" value="${generated.lib.dir}/chatpage.jar" />
 	<property name="chatlet-cdi.jar" value="${generated.lib.dir}/chatlet-cdi.jar" />
+	<property name="imseam-test-api.jar" value="${generated.lib.dir}/imseam-test-api.jar" />
+	<property name="imseam-test.jar" value="${generated.lib.dir}/imseam-test.jar" />
+	<property name="imseam-framework-test.jar" value="${generated.lib.dir}/imseam-framework-test.jar" />
+	<property name="raptor.jar" value="${generated.lib.dir}/raptor.jar" />
 	<property name="JMsnLib.jar" value="${generated.lib.dir}/JMsnLib.jar" />
 	<property name="JMLLib.jar" value="${JML.lib.dir}/jml.jar" />
 	<property name="javaAssist.jar" value="${imseam.seam.lib.dir}/javassist.jar" />
@@ -55,6 +63,17 @@
 	<property name="ImseamWeb.jar" value="${generated.lib.dir}/ImseamWeb.jar" />
 	
 	<fileset id="el.libs" dir="${el.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+
+	<fileset id="jedis.libs" dir="${jedis.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+	<fileset id="commons-pool.libs" dir="${commons-pool.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+	
+	<fileset id="netty.libs" dir="${netty.lib.dir}">
 		<include name="*.jar" />
 	</fileset>
 	
@@ -67,6 +86,14 @@
 	</fileset>
 	<fileset id="cdi.libs" dir="${cdi.lib.dir}">
 		<include name="*.jar" />
+	</fileset>
+	
+	<fileset id="framework.libs" dir="${generated.lib.dir}">
+		<include name="chatlet-api.jar"/>
+		<include name="chatpage.jar"/>
+		<include name="chatlet-cdi.jar"/>
+		<include name="ImseamCommon.jar"/>
+		<include name="imseam-test-api.jar"/>	
 	</fileset>
 	
 	<fileset id="mail.libs" dir="${mail.lib.dir}">

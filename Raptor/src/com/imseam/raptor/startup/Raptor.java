@@ -1,24 +1,17 @@
-/*
- * Copyright 1999,2004 The Apache Software Foundation.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
 package com.imseam.raptor.startup;
 
 
 import java.io.FileInputStream;
+import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
+
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,32 +20,13 @@ import com.imseam.chatlet.config.EngineConfig;
 import com.imseam.chatlet.config.util.ConfigReader;
 import com.imseam.common.util.ClassUtil;
 import com.imseam.raptor.IChatletEngine;
+import com.imseam.raptor.mbean.RaptorManagement;
 
 
 
-/**
- * Startup/Shutdown shell program for Catalina.  The following command line
- * options are recognized:
- * <ul>
- * <li><b>-config {pathname}</b> - Set the pathname of the configuration file
- *     to be processed.  If a relative path is specified, it will be
- *     interpreted as relative to the directory pathname specified by the
- *     "catalina.base" system property.   [conf/server.xml]
- * <li><b>-help</b> - Display usage information.
- * <li><b>-stop</b> - Stop the currently running instance of Catalina.
- * </u>
- *
- * Should do the same thing as Embedded, but using a server.xml file.
- *
- * @author Craig R. McClanahan
- * @author Remy Maucherat
- * @version $Revision: 380229 $ $Date: 2006-02-23 15:28:29 -0600 (Thu, 23 Feb 2006) $
- */
-
-public class Raptor {
+public class Raptor implements RaptorManagement{
 
     private static Log log = LogFactory.getLog( Raptor.class );
-    // ----------------------------------------------------- Instance Variables
 
 
     /**
@@ -87,6 +61,7 @@ public class Raptor {
     
     protected boolean await = false;
 
+    private static Raptor raptor = null;
 
     // ----------------------------------------------------------- Main Program
 
@@ -95,8 +70,23 @@ public class Raptor {
      *
      * @param args Command line arguments
      */
-    public static void main(String args[]) {
-        (new Raptor()).process(args);
+    public static void main(String args[]) throws Exception{
+    	 MBeanServer mbs = ManagementFactory.getPlatformMBeanServer(); 
+
+    	 ObjectName mxbeanName;
+		
+         mxbeanName = new ObjectName("com.imseam:type=Raptor");
+ 
+         raptor = new Raptor();
+         
+         mbs.registerMBean(raptor, mxbeanName);    	
+         
+         
+         raptor.process(args); 
+         synchronized(raptor){
+        	 raptor.wait();
+         }
+         System.out.println("Stopped!");
     }
 
 
@@ -122,8 +112,33 @@ public class Raptor {
         }
     }
     
+    public void restart(){
+    	engine.stop();
+    	load();
+    	start();
+    }		
+    
     public void stopServer() {
-        stop();
+    	System.out.println("Connect to JMX service.");
+		JMXServiceURL url;
+		try {
+			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:9999/jmxrmi");
+		
+			JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+			MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+	
+
+			ObjectName mbeanName = new ObjectName("com.imseam:type=Raptor");
+			RaptorManagement mbeanProxy = JMX.newMBeanProxy(mbsc, mbeanName, RaptorManagement.class, true);
+	
+			System.out.println("Connected to: RaptorManagement bean");
+	
+			mbeanProxy.stop();
+			jmxc.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     // ------------------------------------------------------ Protected Methods
@@ -251,9 +266,10 @@ public class Raptor {
      * Stop an existing server instance.
      */
     public void stop() {
-
     	engine.stop();
-
+    	synchronized(this){
+    		this.notifyAll();
+    	}
     }
 
 
@@ -273,7 +289,7 @@ public class Raptor {
     protected void usage() {
 
         System.out.println
-            ("usage: java org.apache.catalina.startup.Catalina"
+            ("usage: java com.imseam.raptor.startup.Raptor"
              + " [ -config {pathname} ]"
              + " [ -nonaming ] { start | stop }");
 

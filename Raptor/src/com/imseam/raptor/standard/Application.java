@@ -229,7 +229,11 @@ public class Application implements IChatletApplication {
 			eventListenerManager.fireEvent(EventTypeEnum.ConnectionStopped, event);
 		}
 		ApplicationEvent appEvent = new ApplicationEvent(this, applicationContext);
-		eventListenerManager.fireEvent(EventTypeEnum.ApplicationStopped, appEvent);
+		try{
+			eventListenerManager.fireEvent(EventTypeEnum.ApplicationStopped, appEvent);
+		}catch(Exception exp){
+			exp.printStackTrace();
+		}
 		log.info(String.format("Applicaiton(%s) stopped", this.getApplicationName()));
 		
 	}

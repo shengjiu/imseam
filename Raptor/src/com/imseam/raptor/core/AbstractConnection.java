@@ -51,7 +51,7 @@ public abstract class AbstractConnection implements IMessengerConnection{
 	private String serviceID;
 	private String password;
 	
-	private ConnectionEvent event;
+	
 	
 	protected AbstractConnection(IChatletApplication application, ConnectionConfig config){
 		this.application = application;
@@ -63,7 +63,6 @@ public abstract class AbstractConnection implements IMessengerConnection{
 		this.serviceID = config.getServiceID();
 		this.password = config.getPassword();
 		this.connectionContext = new ConnectionContext(this);
-		event = new ConnectionEvent(this, this.getConnectionContext());
 		assert(eventListenerManager != null);
 		assert(config != null);
 		assert(!StringUtil.isNullOrEmptyAfterTrim(connectionName));
@@ -77,12 +76,17 @@ public abstract class AbstractConnection implements IMessengerConnection{
 	
 
 	public void connectionStarted(){
-		eventListenerManager.fireEvent(EventTypeEnum.ConnectionStarted, event);
+		eventListenerManager.fireEvent(EventTypeEnum.ConnectionStarted, new ConnectionEvent(this, this.getConnectionContext()));
 	}
 	
 	final public void disconnect(){
 		disconnecting();
-		eventListenerManager.fireEvent(EventTypeEnum.ConnectionStopped, event);
+		try{
+			eventListenerManager.fireEvent(EventTypeEnum.ConnectionStopped, new ConnectionEvent(this, this.getConnectionContext()));	
+		}catch(Exception exp){
+			exp.printStackTrace();
+		}
+		
 	}
 	
 	abstract protected void disconnecting(); 

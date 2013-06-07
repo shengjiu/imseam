@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="ImseamSystem" default="build" basedir=".\">
+<project name="ImseamSystem" default="imseam-build" basedir=".\">
 
 	<description>Build files.</description>
 
@@ -14,7 +14,8 @@
 	
 
 	<target name="init" depends="clean" description="Initialize the build">
-		<copy file=".\test-result-index.html" tofile="..\index.html"/>
+		<copy file=".\test-result-index.html" tofile="${dist.dir}\index.html"/>
+		<mkdir dir="${dist.dir}" />
 	</target>
 
 	<target name="clean" depends= "info" description="Cleans up the build directory">
@@ -22,7 +23,7 @@
 	</target>
 
 
-	<target name="build" depends="init" description="build all projects">
+	<target name="imseam-build" depends="init" description="build all projects">
 
 		<!--sysinfo verbose="true" /-->
 
@@ -30,17 +31,37 @@
 
 
 		<subant target="imseam-build">
-			<property name="jboss.home" value="${jboss.home}" />			<fileset id="buildfiles" dir="${dir.root}">
+			<!--property name="jboss.home" value="${jboss.home}" /-->			<fileset id="buildfiles" dir="..\">
 				<include name="ImseamCommon\imseam-common-build.xml" />
-				<include name="ImseamWeb\imseam-web-build.xml" />
-				<include name="Imseam-seam\imseam-seam-build.xml" />
-				<include name="ImseamChatBoard\imseam-chatboard-build.xml" />
+				<include name="Chatlet-config\imseam-chatlet-config-build.xml" />
+				<include name="Chatlet-api\imseam-chatlet-api-build.xml" />
+				<include name="Chatlet-cdi\imseam-chatlet-cdi-build.xml" />
+				<include name="ImseamTest-api\imseam-test-api-build.xml" />
+				<include name="ImseamTest\imseam-test-build.xml" />
 				<include name="Raptor\imseam-raptor-build.xml" />
-				<include name="chatboard-cluster\imseam-imgateway-build.xml" />
-				<include name="MeetingBoard\imseam-meetingboard-build.xml" />				
 			</fileset>
+
 		</subant>
 	</target>
+
+	<target name="copy-bin-config-4-zip" 
+			description="Create the zipfile">
+		<echo message="${dist.target.dir}\zip"/>
+		<mkdir dir="${dist.target.dir}\zip\bin" />
+		<mkdir dir="${dist.target.dir}\zip\lib" />
+		<copy todir="${dist.target.dir}\zip\bin">
+			<fileset dir=".\bin"/>
+		</copy>
+		<copy todir="${dist.target.dir}\zip\lib">
+			<fileset dir="${dist.target.dir}" includes="*.jar"/>
+			<fileset refid="framework.libs"/>
+			<fileset refid="weld.libs" />
+		</copy>
+
+		<zip destfile="${zip.file}" basedir="${dist.target.dir}\zip">
+		</zip>
+	</target>
+
 
 </project>
 

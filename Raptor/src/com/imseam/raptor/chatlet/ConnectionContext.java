@@ -3,10 +3,10 @@ package com.imseam.raptor.chatlet;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.cache.util.concurrent.ConcurrentHashSet;
 
 import com.imseam.chatlet.BuddyStatusEnum;
 import com.imseam.chatlet.IApplication;
@@ -127,7 +127,7 @@ public class ConnectionContext extends AbstractContext implements IConnection {
 		assert(window != null);
 		Set<IWindow> windowSet = buddyToWindowMap.get(buddyUid);
 		if(windowSet == null){
-			buddyToWindowMap.putIfAbsent(buddyUid, new ConcurrentHashSet<IWindow>());
+			buddyToWindowMap.putIfAbsent(buddyUid, new CopyOnWriteArraySet<IWindow>());
 			windowSet = buddyToWindowMap.get(buddyUid);
 		}
 		windowSet.add(window);

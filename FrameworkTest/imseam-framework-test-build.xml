@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<project name="imseam-framework-test" default="archive" basedir=".">
+
+	<!-- Give user a chance to override without editing this file or typing -D -->
+	<property file="${basedir}/build.properties" />
+	<import file="../ImseamBuild/BuildProperty.xml" />
+
+	<!-- set global properties for this build -->
+	<property name="project.name" value="imseam-framework-test"/>
+	<property name="classes.dir" value="${dist.dir}/classes" />
+	<property name="jar.file" value="${dist.dir}/${project.name}.jar"/>
+	
+	
+
+	
+	<target name="clean" description="Cleans up the build directory">
+		<delete dir="${dist.dir}" />
+		<delete dir="${classes.dir}" />		
+	</target>
+	
+	<target name="init" depends="clean" description="Initialize the build">
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${classes.dir}" />
+	</target>
+
+	<path id="build.classpath">
+		<fileset refid="framework.libs"/>
+		<fileset refid="weld.libs" />
+	</path>
+
+	<target name="compile" depends="init" 
+			description="Compile the Java source code">
+		<javac classpathref="build.classpath" 
+			        destdir="${classes.dir}" 
+			          debug="${javac.debug}" 
+			    deprecation="${javac.deprecation}" 
+			        nowarn="on"
+			target="1.6"
+			compiler="javac1.5"
+			verbose="true">
+			<src path="${src.java.dir}" />
+		<!--
+			<compilerarg value="-Xlint:unchecked" />
+		-->
+		</javac>
+	</target>
+	
+
+	
+	<target name="archive" depends="compile" 
+			description="Package the archives">
+		<!--copy todir="${jar.dir}">
+			<fileset dir="${basedir}/${resources.dir}">
+				<include name="imseam.properties" />
+			</fileset>
+		</copy-->		
+		<jar jarfile="${jar.file}" basedir="${classes.dir}"/>
+	</target>
+
+	<target name="zip" 
+			description="Zip all required runnable files">
+		<subant target="copy-bin-config-4-zip">
+			<property name="dist.target.dir" value="${basedir}\${dist.dir}" />
+			<property name="zip.file" value="${basedir}\${dist.dir}\${project.name}.zip" />
+			<fileset id="buildfiles" dir="..\">
+				<include name="ImseamBuild\ImseamBuild.xml" />
+			</fileset>
+		</subant>
+	</target>
+
+
+
+	
+	<target name="imseam-build" depends="archive" description="Run the test and copy the jar">
+	</target>
+
+	<target name="build-imseam-jars" description="build all projects">
+			<subant target="imseam-build">
+				<!--property name="jboss.home" value="${jboss.home}" /-->
+				<fileset id="buildfiles" dir="..\">
+					<include name="ImseamBuild\ImseamBuild.xml" />
+				</fileset>
+
+			</subant>
+	</target>
+	
+</project>

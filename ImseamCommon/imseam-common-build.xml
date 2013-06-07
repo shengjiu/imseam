@@ -75,7 +75,7 @@
 		
 	</target>
 	
-	<target name="imseam-build" depends="test, archive" description="Run the test and copy the jar">
+	<target name="imseam-build" depends="compile, archive" description="Run the test and copy the jar">
 	</target>
 
 	
