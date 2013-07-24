@@ -20,7 +20,6 @@
 	<property name="src.java.dir" value="src" />
 	
 	
-	
 	<property name="test.dir" value="build/test" />
 	<property name="javac.debug" value="true" />
 	<property name="javac.deprecation" value="false" />
@@ -92,8 +91,10 @@
 		<include name="chatlet-api.jar"/>
 		<include name="chatpage.jar"/>
 		<include name="chatlet-cdi.jar"/>
+		<include name="chatlet-config.jar"/>
 		<include name="ImseamCommon.jar"/>
-		<include name="imseam-test-api.jar"/>	
+		<include name="imseam-test-api.jar"/>
+		<include name="raptor.jar"/>
 	</fileset>
 	
 	<fileset id="mail.libs" dir="${mail.lib.dir}">

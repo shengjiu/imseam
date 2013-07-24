@@ -49,6 +49,8 @@
 		<echo message="${dist.target.dir}\zip"/>
 		<mkdir dir="${dist.target.dir}\zip\bin" />
 		<mkdir dir="${dist.target.dir}\zip\lib" />
+		<mkdir dir="${dist.target.dir}\zip\config" />
+		<mkdir dir="${dist.target.dir}\zip\logging" />
 		<copy todir="${dist.target.dir}\zip\bin">
 			<fileset dir=".\bin"/>
 		</copy>
@@ -56,8 +58,20 @@
 			<fileset dir="${dist.target.dir}" includes="*.jar"/>
 			<fileset refid="framework.libs"/>
 			<fileset refid="weld.libs" />
+			<fileset refid="logging.libs"/>
+			<fileset refid="jedis.libs"/>
+			<fileset refid="netty.libs"/>
+			<fileset refid="el.libs"/>
+			<fileset refid="JML.libs"/>
+			<fileset refid="cdi.libs"/>
+			<fileset refid="smack.libs"/>
+			<fileset refid="commons-pool.libs"/>
+			<fileset refid="jbpm.libs"/>
 		</copy>
-
+		<copy todir="${dist.target.dir}\zip\config">
+			<fileset dir="./config" includes="engine.config"/>
+			<fileset dir="./config" includes="logging.properties"/>
+		</copy>
 		<zip destfile="${zip.file}" basedir="${dist.target.dir}\zip">
 		</zip>
 	</target>

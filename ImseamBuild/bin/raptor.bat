@@ -125,14 +125,15 @@ rem quotes into the CLASSPATH
 if "%CLASSPATH%" == "" goto emptyClasspath
 set "CLASSPATH=%CLASSPATH%;"
 :emptyClasspath
-set "CLASSPATH=%CLASSPATH%%RAPTOR_HOME%\lib\raptor.jar"
+set "CLASSPATH=%CLASSPATH%%RAPTOR_HOME%\lib\*"
 
 if not "%RAPTOR_TMPDIR%" == "" goto gotTmpdir
 set "RAPTOR_TMPDIR=%RAPTOR_BASE%\temp"
 :gotTmpdir
 
 
-set LOGGING_CONFIG=-Djava.util.logging.config.file="%RAPTOR_BASE%\conf\logging.properties"
+set LOGGING_CONFIG=-Djava.util.logging.config.file="%RAPTOR_BASE%\config\logging.properties"
+set COMMONS_LOGGING_LOGGER=-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Jdk14Logger
 
 
 rem ----- Execute The Requested Command ---------------------------------------
@@ -140,6 +141,7 @@ rem ----- Execute The Requested Command ---------------------------------------
 echo Using RAPTOR_BASE:   "%RAPTOR_BASE%"
 echo Using RAPTOR_HOME:   "%RAPTOR_HOME%"
 echo Using RAPTOR_TMPDIR: "%RAPTOR_TMPDIR%"
+echo Using logging:   %COMMONS_LOGGING_LOGGER% %LOGGING_CONFIG%
 if ""%1"" == ""debug"" goto use_jdk
 echo Using JRE_HOME:        "%JRE_HOME%"
 goto java_dir_displayed
@@ -147,6 +149,7 @@ goto java_dir_displayed
 echo Using JAVA_HOME:       "%JAVA_HOME%"
 :java_dir_displayed
 echo Using CLASSPATH:       "%CLASSPATH%"
+
 
 set _EXECJAVA=%_RUNJAVA%
 set MAINCLASS=com.imseam.raptor.startup.Raptor
@@ -195,8 +198,8 @@ goto setArgs
 
 rem Execute Java with the applicable properties
 echo %_EXECJAVA%
-echo %_EXECJAVA% %JAVA_OPTS% %RAPTOR_OPTS% -classpath "%CLASSPATH%" -DRAPTOR.base="%RAPTOR_BASE%" -DRAPTOR.home="%RAPTOR_HOME%" -Djava.io.tmpdir="%RAPTOR_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
-%_EXECJAVA% %JAVA_OPTS% %RAPTOR_OPTS% -classpath "%CLASSPATH%" -DRAPTOR.base="%RAPTOR_BASE%" -DRAPTOR.home="%RAPTOR_HOME%" -Djava.io.tmpdir="%RAPTOR_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
+echo %_EXECJAVA% %JAVA_OPTS% %RAPTOR_OPTS% -classpath "%CLASSPATH%" %COMMONS_LOGGING_LOGGER% %LOGGING_CONFIG% -DRAPTOR.base="%RAPTOR_BASE%" -DRAPTOR.home="%RAPTOR_HOME%" -Djava.io.tmpdir="%RAPTOR_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
+%_EXECJAVA% %JAVA_OPTS% %RAPTOR_OPTS% -classpath "%CLASSPATH%"  %COMMONS_LOGGING_LOGGER% %LOGGING_CONFIG% -DRAPTOR.base="%RAPTOR_BASE%" -DRAPTOR.home="%RAPTOR_HOME%" -Djava.io.tmpdir="%RAPTOR_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
 goto end
 
 :end
