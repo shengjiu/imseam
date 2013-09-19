@@ -39,6 +39,8 @@ test6 = Test(6, "startActiveWindow")
 
 siteUserNumber = 3
 
+totalServerNumber = 1
+
 
 
 
@@ -268,17 +270,35 @@ class TestUser:
         return True
         
     
-def isOperator(threadNumber):
-    return (threadNumber % siteUserNumber) == 0       
-
-def isWaitSiteUser(threadNumber):
-    log('thread number:' + str(threadNumber) + '(threadNumber % siteUserNumber)' + str(threadNumber % siteUserNumber) + '(siteUserNumber - 1)' + str(siteUserNumber - 1))
-    return (threadNumber % siteUserNumber) == (siteUserNumber - 1)      
-
-def getSiteNumber(threadNumber):
-    return threadNumber / siteUserNumber      
+#def isOperator(agentNumber, threadNumber):
+#    #log('isOperator agentNumber: ' + str(agentNumber))
+#    return (threadNumber % siteUserNumber) == 0       
+#
+#def isWaitSiteUser(agentNumber, threadNumber):
+#    #log('isWaitSiteUser agentNumber: ' + str(agentNumber))
+#    #log('thread number:' + str(threadNumber) + '(threadNumber % siteUserNumber)' + str(threadNumber % siteUserNumber) + '(siteUserNumber - 1)' + str(siteUserNumber - 1))
+#    return (threadNumber % siteUserNumber) == (siteUserNumber - 1)      
+#
+#def getSiteNumber(agentNumber, threadNumber):
+#    #log('getSiteNumber agentNumber: ' + str(agentNumber))
+#    return threadNumber / siteUserNumber      
  
+def isOperator(agentNumber, threadNumber):
+    return (getGlobalSequence(agentNumber, threadNumber) % siteUserNumber) == 0       
 
+def isWaitSiteUser(agentNumber, threadNumber):
+    sequence = getGlobalSequence(agentNumber, threadNumber)
+    #log('sequence:' + str(sequence) + '(sequence % siteUserNumber)' + str(sequence % siteUserNumber) + '(siteUserNumber - 1)' + str(siteUserNumber - 1))
+    return (sequence % siteUserNumber) == (siteUserNumber - 1)      
+
+def getSiteNumber(agentNumber, threadNumber):
+    return getGlobalSequence(agentNumber, threadNumber) / siteUserNumber      
+
+
+def getGlobalSequence(agentNumber, threadNumber):
+    if(agentNumber == -1):
+        agentNumber = 0
+    return threadNumber * totalServerNumber + agentNumber  
 
 # A TestRunner instance is created for each thread. It can be used to
 # store thread-specific data.
@@ -287,16 +307,16 @@ class TestRunner:
     # This method is called for every run.
     def __call__(self):
         grinder.statistics.delayReports = 1
-        userNumber = str(grinder.processNumber) +'-' + str(grinder.threadNumber) + '-' +str(grinder.runNumber)
-        siteNumber = getSiteNumber(grinder.threadNumber)
+        userNumber = str(grinder.agentNumber) +'-' + str(grinder.threadNumber) + '-' +str(grinder.runNumber)
+        siteNumber = getSiteNumber(grinder.agentNumber,grinder.threadNumber)
         site = getSite(siteNumber, glock1)
         userName = "Test user " + userNumber
-        if(isOperator(grinder.threadNumber)):
+        if(isOperator(grinder.agentNumber, grinder.threadNumber)):
             userName = userName + "-operator"
             
-        if(isWaitSiteUser(grinder.threadNumber)):
+        if(isWaitSiteUser(grinder.agentNumber, grinder.threadNumber)):
             log('wait site user:' + userName)
-            user = TestUser(None, isOperator(grinder.threadNumber), isWaitSiteUser(grinder.threadNumber), userName, site)
+            user = TestUser(None, isOperator(grinder.agentNumber, grinder.threadNumber), isWaitSiteUser(grinder.agentNumber, grinder.threadNumber), userName, site)
             user.wait()
 
             window = waitForActiveWindow("localhost", 17001, userName, "no password", Constants.online, None)
@@ -308,7 +328,7 @@ class TestRunner:
             window = startChatTest("localhost", 17001, userName, "no password", Constants.online, None)
             recievedMessage = window.waitForTextMessage(0).content.strip()
             log(userNumber +' welcome message:' + recievedMessage)
-            user = TestUser(window, isOperator(grinder.threadNumber), isWaitSiteUser(grinder.threadNumber), userName, site)
+            user = TestUser(window, isOperator(grinder.agentNumber, grinder.threadNumber), isWaitSiteUser(grinder.agentNumber, grinder.threadNumber), userName, site)
             user.wait()
         
         if(user.isOperator):

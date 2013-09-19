@@ -249,7 +249,7 @@ public class NettyConnection extends AbstractConnection  {
 				public String startWindow(String... buddies) {
 					NettyMessengerWindow window = new NettyMessengerWindow(NettyConnection.this.server, NettyConnection.this, username);
 					log.debug("Netty messenger window id: " + window.getWindowContext().getUid());
-					windowMap.put(window.getWindowContext().getUid(), window);
+					Object oldWindow = windowMap.put(window.getWindowContext().getUid(), window);
 					return window.getWindowContext().getUid();
 				}
 

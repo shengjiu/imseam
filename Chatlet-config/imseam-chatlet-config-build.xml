@@ -45,6 +45,10 @@
 	
 	<target name="archive" depends="compile" 
 			description="Package the archives">
+		<copy todir="${jar.dir}">
+			<fileset dir="./src" includes="**/*.xsd"/>
+		</copy>
+			
 		<!--copy todir="${jar.dir}">
 			<fileset dir="${basedir}/${resources.dir}">
 				<include name="imseam.properties" />

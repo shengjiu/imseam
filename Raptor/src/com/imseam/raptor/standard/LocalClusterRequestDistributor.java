@@ -69,7 +69,7 @@ public class LocalClusterRequestDistributor implements IClusterInvocationDistrib
 			throws IdentifierNotExistingException {
 		List<RequestTask<?>> taskList = new ArrayList<RequestTask<?>>();
 		if(request.toString().contains("To all windows In Meeting") && windowUids.length < 2){
-			System.out.println("LocalClusterRequestDistributor.distributeWindowRequest, targets size 1, and target[0]:" + windowUids[0]);
+			//System.out.println("LocalClusterRequestDistributor.distributeWindowRequest, targets size 1, and target[0]:" + windowUids[0]);
 		}
 
 		for(String uid : windowUids){
@@ -79,7 +79,7 @@ public class LocalClusterRequestDistributor implements IClusterInvocationDistrib
 			}
 			IWindow window = messengerWindow.getWindowContext();
 			if(request.toString().contains("createSendMessageFunction")){
-				System.out.println("LocalClusterRequestDistributor.distributeWindowRequest, target:" + uid + ", " + request);
+				//System.out.println("LocalClusterRequestDistributor.distributeWindowRequest, target:" + uid + ", " + request);
 			}
 			taskList.add(new RequestTask<IWindow>(uid, application, handler,request, window));
 		}

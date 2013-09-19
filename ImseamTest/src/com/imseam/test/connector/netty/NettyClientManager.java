@@ -183,8 +183,14 @@ public class NettyClientManager {
 		synchronized(blocking) {
 			while(!blocking.isDone()) {
 				try {
+					long before = System.currentTimeMillis();
 					blocking.wait(callbacktimeout);
+					long after = System.currentTimeMillis();
+					if((after - before) >= callbacktimeout){
+						System.out.println("----------------- wait time out ----------------------------");
+					}
 				} catch (InterruptedException e) {
+					System.out.println("----------------- InterruptedException ----------------------------");
 					ExceptionUtil.wrapRuntimeException(e);
 				}
 			}
@@ -218,10 +224,9 @@ public class NettyClientManager {
             	eventListener = this.eventListenerMap.get(messageFor);
         	}
     	}
-        		
-        		
+        	
     	if(eventListener == null){
-    		
+    		System.out.println("--------------------------------------------------------------");
     		if(message instanceof TextMessage){
         		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + ((TextMessage)message).getContent());
         	}else{
@@ -272,6 +277,7 @@ public class NettyClientManager {
     		if(callback != null){
     			callback.done(responseMessage);
     		}
+    		return;
     	}
     	assert(false);
 
@@ -279,11 +285,15 @@ public class NettyClientManager {
 	
 	private static class BlockingRpc {
 
-		private boolean done = false;
+		private volatile boolean done = false;
 		private RpcResponseMessage response;
 		
 		public void done(RpcResponseMessage response) {
 			this.response = response;
+			if(response == null){
+				System.out.println("response is null");
+			}
+			
 			synchronized(this) {
 				done = true;
 				notify();

@@ -66,8 +66,10 @@ public class User {
 	}
 	public Window startChat(String ... buddies){
 		String windowId = connection.startChat(buddies);
-		 
-		System.out.println("window started: " + windowId);
+		
+		if(windowId == null || !windowId.contains("server0-window-")){
+			System.out.println("window started: " + windowId);	
+		}
 		this.receivedMessagesMap.put(windowId, new LinkedBlockingQueue<Message>());
 		NettyClientManager.instance().addWindowEventListener(windowId, eventListener);
 		 
@@ -186,7 +188,7 @@ public class User {
 		public void onTextMessage(TextMessage message) {
 			
 			getReceivedMessagsForWindow(message.windowId()).add(message);
-			System.out.println("client received, window id: " + message.windowId() +", message target" +message.getTargetId() + ", "+message.getContent());
+//			System.out.println("client received, window id: " + message.windowId() +", message target" +message.getTargetId() + ", "+message.getContent());
 		}
 	
 		@Override
