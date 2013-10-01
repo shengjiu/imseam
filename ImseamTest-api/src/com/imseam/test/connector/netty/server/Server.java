@@ -197,6 +197,7 @@ public class Server {
 
     	if(message instanceof TextMessage){
     		eventListener.onTextMessage((TextMessage)message);
+//    		System.out.println(((TextMessage)message).getContent());
     		return;
     	}
 

@@ -2,6 +2,7 @@ package com.imseam.cdi.chatlet;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.Set;
 
 import javax.el.ELContextListener;
 import javax.enterprise.util.AnnotationLiteral;
@@ -37,6 +38,7 @@ import com.imseam.cdi.chatlet.ext.annotation.BuddySignIn;
 import com.imseam.cdi.chatlet.ext.annotation.ConnectionStarted;
 import com.imseam.cdi.chatlet.ext.annotation.ConnectionStopped;
 import com.imseam.cdi.chatlet.ext.annotation.SessionStarted;
+import com.imseam.cdi.chatlet.ext.annotation.SessionStopped;
 import com.imseam.cdi.chatlet.ext.annotation.UserRequest;
 import com.imseam.cdi.chatlet.ext.annotation.WindowStarted;
 import com.imseam.cdi.chatlet.ext.annotation.meeting.BeforeStartActiveWindow;
@@ -445,18 +447,34 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 	@Override
 	public void onSessionStopped(SessionEvent event) {
 		checkWeldContainer();
-		getLifecycle().sessionDestroyed(event);
-		EventContext eventContext = null;
-		try {
-			eventContext = createEventContext(event);
-
-			AbstractChatletEventAnnotation<? extends Annotation> annotation = new SessionStoppedAnnotation();
-			this.fireChatflowEvent(event, annotation);
-			getChatflowRequestProcessor().signalTransition(annotation.getTransitionName());
-
-		} finally {
-			getLifecycle().sessionDestroyedEventDone(event);
-			eventContext.release();
+		Set<? extends IWindow> windowSet = event.getSession().getAvailableWindows();
+		if(windowSet != null || windowSet.size() > 0){
+			for(IWindow window : windowSet){
+				getLifecycle().sessionDestroyed(event, window);
+				EventContext eventContext = null;
+				try {
+					eventContext = createEventContext(event);
+		
+					AbstractChatletEventAnnotation<? extends Annotation> annotation = new SessionStoppedAnnotation();
+					this.fireChatflowEvent(event, annotation);
+					getChatflowRequestProcessor().signalTransition(annotation.getTransitionName());
+		
+				} finally {
+					getLifecycle().sessionDestroyedEventDone(event, window);
+					eventContext.release();
+				}
+			}
+		}else{
+			EventContext eventContext = null;
+			try {
+				getLifecycle().sessionDestroyed(event);
+				eventContext = createEventContext(event);
+				this.fireEvent(event, new AnnotationLiteral<SessionStopped>() {
+				});
+			} finally {
+				getLifecycle().sessionIntializedEventDone(event);
+				eventContext.release();
+			}
 		}
 	}
 
@@ -478,6 +496,12 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 
 		getLifecycle().beginRequest(req, responseSender);
 		EventContext eventContext = null;
+//		String message = getStringInput(req);
+		
+//		if(message.contains("startMeeting")){
+//			System.out.println("ChatletEventListnerAdaptor received:" +message);
+//		}
+
 
 		try {
 			eventContext = createEventContext(req, req.getRequestFromChannel());
@@ -503,14 +527,14 @@ public class ChatletEventListenerAdaptor implements IMeetingEventListener, ISyst
 		}
 	}
 
-	private String getStringInput(IUserRequest chatRequest) {
-		if (chatRequest.getRequestContent().getMessageContent() instanceof String) {
-			return (String) chatRequest.getRequestContent().getMessageContent();
-		} else {
-			log.warn("Chat Request type is not supported");
-			return null;
-		}
-	}
+//	private String getStringInput(IUserRequest chatRequest) {
+//		if (chatRequest.getRequestContent().getMessageContent() instanceof String) {
+//			return (String) chatRequest.getRequestContent().getMessageContent();
+//		} else {
+//			log.warn("Chat Request type is not supported");
+//			return null;
+//		}
+//	}
 
 	@Override
 	public void onKickedoutFromMeeting(IWindow window, String sourceWindowUid, String meetingUid) {

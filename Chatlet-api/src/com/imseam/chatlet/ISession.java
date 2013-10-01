@@ -9,7 +9,7 @@ import java.util.Set;
 /// </summary>
 public interface ISession extends IContext{
 	
-	Set<? extends IWindow> getAvailableWindow(); 
+	Set<? extends IWindow> getAvailableWindows(); 
 	
 	void setLiveTime(long liveTime);
 	

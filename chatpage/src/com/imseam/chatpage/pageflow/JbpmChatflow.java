@@ -160,63 +160,71 @@ public class JbpmChatflow implements Serializable {
 
 	public boolean processChatInput(final String input, IUserRequest request, IMessageSender responseSender) {
 		assert (!StringUtil.isNullOrEmptyAfterTrim(input));
+//		System.out.println(input);
 
-		try{
-//			if(!request.getRequestFromChannel().getWindow().getUid().equalsIgnoreCase(this.beginWindowId)){
-//				System.out.println("request from Window: " + request.getRequestFromChannel().getWindow().getUid() + ", beginWindowId: " + beginWindowId);
-//			}
-		if (!isInProcess()) {
-			log.warn("Process chat input request not in a chatflow process");
-			return false;
-		}
+		try {
+			// if(!request.getRequestFromChannel().getWindow().getUid().equalsIgnoreCase(this.beginWindowId)){
+			// System.out.println("request from Window: " +
+			// request.getRequestFromChannel().getWindow().getUid() +
+			// ", beginWindowId: " + beginWindowId);
+			// }
+			if (!isInProcess()) {
+				log.warn("Process chat input request not in a chatflow process");
+				return false;
+			}
 
-		final ProcessInstance currentProcessInstance = this.getCurrentProcessIntance(processInstance);
+			final ProcessInstance currentProcessInstance = this.getCurrentProcessIntance(processInstance);
 
-		final ChatPageNode chatPageNode = getChatPageNode(currentProcessInstance);
+			final ChatPageNode chatPageNode = getChatPageNode(currentProcessInstance);
 
-		final IChatPage chatPage = ChatPageManager.getInstance().getChatPage(chatPageNode.getFullPathViewId());
+			final IChatPage chatPage = ChatPageManager.getInstance().getChatPage(chatPageNode.getFullPathViewId());
 
-		String outcome = chatPage.parseAndProcessInput(request);
-		
+			String outcome = chatPage.parseAndProcessInput(request);
 
-		if (!StringUtil.isNullOrEmptyAfterTrim(outcome)) {
+			if (!StringUtil.isNullOrEmptyAfterTrim(outcome)) {
 
-			navigate(input, request, responseSender, outcome, currentProcessInstance, chatPageNode);
+				navigate(input, request, responseSender, outcome, currentProcessInstance, chatPageNode);
 
-		} else {
-			log.debug("No outcome parsed out for input: " + input);
-			// raiseEventToBackBean(chatPageNode,
-			// BuildInEventEnum.UNPARSABLE_INPUT, input);
-		}
-		
-//		Method getTextMessageMethod;
-//		String responseText = null;
-//		try {
-//			getTextMessageMethod = responseSender.getClass().getMethod("getTextMessage");
-//			responseText = (String) getTextMessageMethod.invoke(responseSender);
-//		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (NoSuchMethodException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InvocationTargetException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		String requestText = request.getRequestContent().toString(); 
-//		if((!requestText.equalsIgnoreCase(responseText)) || StringUtil.isNullOrEmptyAfterTrim(responseText))
-//		{
-//			System.out.println("request: " + requestText +", response: " + responseText +", outcome:" + outcome + ", chatpageNode: " + chatPage.getViewID() + ", currentProcessInstance:" + currentProcessInstance);
-//		}
-		}catch(Exception exp){
+			} else {
+				log.debug("No outcome parsed out for input: " + input);
+				// raiseEventToBackBean(chatPageNode,
+				// BuildInEventEnum.UNPARSABLE_INPUT, input);
+			}
+
+			// Method getTextMessageMethod;
+			// String responseText = null;
+			// try {
+			// getTextMessageMethod =
+			// responseSender.getClass().getMethod("getTextMessage");
+			// responseText = (String)
+			// getTextMessageMethod.invoke(responseSender);
+			// } catch (SecurityException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// } catch (NoSuchMethodException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// } catch (IllegalArgumentException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// } catch (IllegalAccessException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// } catch (InvocationTargetException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			//
+			// String requestText = request.getRequestContent().toString();
+			// if((!requestText.equalsIgnoreCase(responseText)) ||
+			// StringUtil.isNullOrEmptyAfterTrim(responseText))
+			// {
+			// System.out.println("request: " + requestText +", response: " +
+			// responseText +", outcome:" + outcome + ", chatpageNode: " +
+			// chatPage.getViewID() + ", currentProcessInstance:" +
+			// currentProcessInstance);
+			// }
+		} catch (Exception exp) {
 			exp.printStackTrace();
 		}
 		

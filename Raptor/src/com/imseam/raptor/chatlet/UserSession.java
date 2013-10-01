@@ -41,7 +41,7 @@ public class UserSession extends AbstractContext implements ISession {
 		return channelSet.remove(channel);
 	}
 
-	public Set<IWindow> getAvailableWindow() {
+	public Set<IWindow> getAvailableWindows() {
 		Set<IWindow> windowSet = new HashSet<IWindow>();
 		for(ChannelContext channel: channelSet){
 			windowSet.add(channel.getWindow());

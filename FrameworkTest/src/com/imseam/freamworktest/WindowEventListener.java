@@ -32,7 +32,7 @@ public class WindowEventListener {
 //		chatflow.get().begin("performance-test-chatflow", event, "welcome");
 		
 		String userId = event.getWindow().getDefaultChannel().getBuddy().getUserId();
-		System.out.println("Window: "+ event.getWindow() + ", " + event.getWindow().getUid() + ", userId:" + userId);
+//		System.out.println("Window: "+ event.getWindow() + ", " + event.getWindow().getUid() + ", userId:" + userId);
 		
 		if(userId.contains("operator")){
 			try {

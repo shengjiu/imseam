@@ -21,47 +21,17 @@ public class RaptorTaskQueue implements ComparableCallable<Object, Long>, Serial
 		
 	private static ConcurrentHashMap<String, RaptorTaskQueue> queueMap = new ConcurrentHashMap<String, RaptorTaskQueue>();
 	
-	private volatile PrioritizedTask<Object, Long> runningTask = null;
+//	private volatile PrioritizedTask<Object, Long> nextCallable = null;
 	
 	private static Lock lock = new ReentrantLock();
 	
 	@SuppressWarnings("rawtypes")
-	private volatile FutureTask futureTask = null;
+	private volatile FutureTask futureTaskInThreadPool = null;
 
-	private PriorityBlockingQueue<PrioritizedTask<Object, Long>> taskQueue = new PriorityBlockingQueue<PrioritizedTask<Object, Long>>(20, new InQueueTaskComparable());
+	private PriorityBlockingQueue<PrioritizedTask<Object, Long>> callableQueue = new PriorityBlockingQueue<PrioritizedTask<Object, Long>>(20, new InQueueTaskComparable());
 	
 	private volatile boolean isStopped = false;
 
-	public void addTask(PrioritizedTask<Object, Long> message) {
-		
-		if(this.isStopped){
-			log.warn("The conversation was stopped: " + message);
-			return;
-		}
-
-		assert(message.getPriority() != null);
-		try{
-			taskQueue.add(message);
-		}
-		catch(ClassCastException cce){
-			log.error("Cannot add the task in conversationqueue" + message, cce);
-			return;
-		}
-		try{
-			lock.lock();
-			
-			if(futureTask == null){
-				futureTask = RaptorThreadPool.getInstance().addQueue(this);
-			}
-		}catch(Exception exp){
-			log.error("Cannot add the conversationqueue to the conversation thread pool", exp);
-		}finally{
-			lock.unlock();
-		}
-	}
-	
-
-	
 	public static RaptorTaskQueue getInstance(String uid) {
 		
 //		System.out.println("RaptorTaskQueue uid: " + uid);
@@ -79,58 +49,76 @@ public class RaptorTaskQueue implements ComparableCallable<Object, Long>, Serial
 		return queue;
 	}
 	
-	public void queueStopped(){
-		this.isStopped = true;
-		lock.lock();
+	public void stopQueue(){
 		try{
-			if(futureTask != null){
-				futureTask.cancel(false);
-				futureTask = null;
+			lock.lock();
+			this.isStopped = true;
+			if(futureTaskInThreadPool != null){
+				futureTaskInThreadPool.cancel(false);
+				futureTaskInThreadPool = null;
 			}
-			if(taskQueue.size() != 0){
-				log.warn("The conversation queue will be empty but it is not empty");
+			if(callableQueue.size() != 0){
+				log.warn("The RaptorTaskQueue will be empty but it is not empty");
 			}
-			taskQueue.clear();
-			runningTask = null;
+			callableQueue.clear();
 		}finally{
 			lock.unlock();
 		}
 		
 	}
 
+	public void addTask(PrioritizedTask<Object, Long> message) {
+		try{
+			lock.lock();
+
+			if(this.isStopped){
+				log.warn("The RaptorTaskQueue was stopped: " + message);
+				return;
+			}
+
+			assert(message.getPriority() != null);
+
+			callableQueue.add(message);
+			
+			if(futureTaskInThreadPool == null){
+				futureTaskInThreadPool = RaptorThreadPool.getInstance().addQueue(this);
+			}
+		}catch(Exception exp){
+			log.error("Cannot add the conversationqueue to the conversation thread pool", exp);
+		}finally{
+			lock.unlock();
+		}
+	}
 
 	public Object call() throws Exception {
 		Object result = null;
 		try{
-			if(runningTask == null){
-				runningTask = taskQueue.poll();
+			lock.lock();
+			if(this.isStopped){
+				log.warn("The RaptorTaskQueue was stopped, the call will return immediately");
+				return null;
 			}
-			if(runningTask != null){
-				result = runningTask.call();
-			}else{
+
+			try{
+				PrioritizedTask<Object, Long> nextCallable = callableQueue.poll();
+				assert(nextCallable != null);
+				result = nextCallable.call();
+			}catch(Throwable exp){
+				log.error("Task Excuting Error in Queue", exp);
+				result = null;
+			}
+			
+			try{
+				if(callableQueue.peek() != null){
+					futureTaskInThreadPool = RaptorThreadPool.getInstance().addQueue(this);
+				}else{
+					futureTaskInThreadPool = null;
+				}
+				return result;
+			}catch(Throwable exp){
+				log.error("Exception happened when polling the next task in ConversatoinMessageQueue:", exp);
 				return result;
 			}
-		}catch(Throwable exp){
-			log.error("Task Excuting Error in Queue", exp);
-		}
-		
-		lock.lock();
-
-		try{
-			runningTask = taskQueue.poll();
-			if(runningTask != null){
-			
-				futureTask = RaptorThreadPool.getInstance().addQueue(this);
-			}else{
-				futureTask = null;
-			}
-			return result;
-		}catch(Exception exp){
-			log.error("Exception happened when polling the next task in ConversatoinMessageQueue:", exp);
-			throw exp;
-		}catch(Error error){
-			error.printStackTrace();
-			return null;
 		}
 		finally{
 			lock.unlock();
@@ -140,13 +128,11 @@ public class RaptorTaskQueue implements ComparableCallable<Object, Long>, Serial
 
 
 	public Long getPriority() {
-		if(runningTask == null){
-			runningTask = taskQueue.poll();
-		}
-		if(runningTask == null){
+		PrioritizedTask<Object, Long> nextCallable = callableQueue.peek();
+		if(nextCallable == null){
 			return new Long(-1);
 		}
-		return runningTask.getPriority();
+		return nextCallable.getPriority();
 	}
 	
 	

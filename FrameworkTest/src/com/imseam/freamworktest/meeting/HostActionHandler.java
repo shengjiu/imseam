@@ -8,6 +8,7 @@ import com.imseam.cdi.chatlet.Id;
 import com.imseam.cdi.chatlet.components.CDIMeeting;
 import com.imseam.cdi.chatlet.components.Chatflow;
 import com.imseam.cdi.context.IMWindowScoped;
+import com.imseam.chatlet.IBuddy;
 import com.imseam.chatlet.IMeeting;
 import com.imseam.chatlet.IMessageSender;
 import com.imseam.chatlet.IUserRequest;
@@ -24,6 +25,7 @@ public class HostActionHandler {
 	private @Inject Instance<Chatflow> chatflow;
 	private @Inject Instance<IMeeting> meetingContext;
 	private @Inject Instance<IWindow> windowContext;
+	private @Inject Instance<IBuddy> buddy;
 	private String connectionId = (char)("NettyTest".length() + 1) + "NettyTest" + "server1";
 
 	
@@ -36,6 +38,10 @@ public class HostActionHandler {
 //		sender.get().send("meeting started:::" + request.get().getInput());
 		
 		chatflow.get().begin("meeting-operator", request.get(), "startmeeting");
+		
+//		System.out.println("Meeting started in HostActionHandler: " + buddy.get().getUserId());
+		
+		
 		return "startmeeting";
 	}
 	

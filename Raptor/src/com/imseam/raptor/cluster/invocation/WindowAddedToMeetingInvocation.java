@@ -2,6 +2,7 @@ package com.imseam.raptor.cluster.invocation;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.imseam.chatlet.IEventErrorCallback;
 import com.imseam.chatlet.IMeeting;
@@ -69,6 +70,7 @@ public class WindowAddedToMeetingInvocation implements IClusterInvocation<IWindo
 			existingWindowUids += ", " + existing;
 		}
 		if(!existingSet.contains(window.getUid())){
+			
 			System.out.println(String.format("Add windows to meeting error: windowUid(%s) is not added: %s", window.getUid(), existingWindowUids));
 		}
 		
@@ -79,6 +81,7 @@ public class WindowAddedToMeetingInvocation implements IClusterInvocation<IWindo
 		try {
 			application.getClusterInvocationDistributor().distributeWindowRequest(null, invocation, existingWindowUidSet.toArray(new String[existingWindowUidSet.size()]));
 		} catch (IdentifierNotExistingException e) {
+			e.printStackTrace();
 //			log.warn("Error when trying to send window added to meeting", e);
 		}
 		

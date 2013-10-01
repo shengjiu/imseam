@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
@@ -50,7 +51,7 @@ public class WindowContext extends AbstractContext
 	private static volatile int nextNumber = 0;
 	
 	
-	private String windowUid = getNextNumber(); //UUID.randomUUID().toString());
+	private String windowUid = UidHelper.constructServerWiseUniqueId(UUID.randomUUID().toString()); //getNextNumber();
 	
 	
 	private IClusterInvocationDistributor requestDistributor;
@@ -72,7 +73,7 @@ public class WindowContext extends AbstractContext
 	}
 
 	
-	private synchronized String getNextNumber(){
+	private static synchronized String getNextNumber(){
 		return UidHelper.constructServerWiseUniqueId("window-" + (nextNumber++) + "-"); //UUID.randomUUID().toString());
 	}
 	public IMessengerWindow getMessengerWindow() {
@@ -359,9 +360,9 @@ public class WindowContext extends AbstractContext
 		HashSet<String> copyOfExistingWindowIdSet = new HashSet<String>(windowUidSet);
 		copyOfExistingWindowIdSet.remove(this.getUid());
 		
-		if(copyOfExistingWindowIdSet.size() != 2){
-			System.out.println("fireMeetingEventToAllOtherWindows exitingwindowidset size: " + copyOfExistingWindowIdSet.size() + ", "+ this.getDefaultChannel().getBuddy().getUserId());
-		}
+//		if(copyOfExistingWindowIdSet.size() != 2){
+//			System.out.println("fireMeetingEventToAllOtherWindows exitingwindowidset size: " + copyOfExistingWindowIdSet.size() + ", "+ this.getDefaultChannel().getBuddy().getUserId());
+//		}
 		
 		if(copyOfExistingWindowIdSet.size() > 0){
 			try {

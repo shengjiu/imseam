@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.Roster.SubscriptionMode;
@@ -99,21 +100,52 @@ public class ImseamXMPPConnection extends AbstractConnection implements RosterLi
 			xmppConnection.login(this.getHostUserId(), this.getPassword());
 			xmppConnection.getRoster().addRosterListener(this);
 			xmppConnection.getChatManager().addChatListener(this);
+			xmppConnection.addConnectionListener(new ConnectionListener(){
+
+				@Override
+				public void connectionClosed() {
+					log.info("XMPP connectionClosed ");
+				}
+
+				@Override
+				public void connectionClosedOnError(Exception exp) {
+					log.warn("XMPP connectionClosedOnError: ", exp);
+				}
+
+				@Override
+				public void reconnectingIn(int seconds) {
+					log.info("XMPP reconnectingIn: " + seconds);
+				}
+
+				@Override
+				public void reconnectionFailed(Exception exp) {
+					log.warn("XMPP reconnectionFailed: ", exp);
+				}
+
+				@Override
+				public void reconnectionSuccessful() {
+					log.info("XMPP reconnectionSuccessful!");
+//					afterConnected();
+				}
+				
+			});
 			Roster.setDefaultSubscriptionMode(SubscriptionMode.accept_all);
-			Collection<RosterEntry> entries = xmppConnection.getRoster().getEntries();
-			for(RosterEntry entry: entries){
-				this.addMessengerUser(entry.getUser(), false);
-				presenceChanged(xmppConnection.getRoster().getPresence(entry.getUser()));
-			}
-			connectionStarted();
-	
-			
+			afterConnected();		
 		} catch (Exception e) {
 			ExceptionUtil
 					.wrapRuntimeException(String.format("Cannot connect to Google using Smack SDK(user: %s, Password: %s",
 											this.getHostUserId(), this.getPassword()), e);
 		}
 		return true;
+	}
+	
+	private void afterConnected(){
+		Collection<RosterEntry> entries = xmppConnection.getRoster().getEntries();
+		for(RosterEntry entry: entries){
+			this.addMessengerUser(entry.getUser(), false);
+			presenceChanged(xmppConnection.getRoster().getPresence(entry.getUser()));
+		}
+		connectionStarted();
 	}
 	
 	public void processMessage(Chat chat, Message xmppMsg){

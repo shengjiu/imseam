@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<chatflow-diagram name="Performance-meeting-test" width="734" height="1116">
+<chatflow-diagram name="Performance-meeting-test" width="1145" height="917">
   <node name="startmeetingtest" x="46" y="148" width="140" height="40">
     <transition name="online">
       <label x="5" y="-10"/>
@@ -35,7 +35,7 @@
       <label x="5" y="-10"/>
     </transition>
   </node>
-  <node name="gobacktomeetingstarted" x="579" y="403" width="140" height="40">
+  <node name="gobacktomeetingstarted" x="579" y="403" width="226" height="40">
     <transition name="goback">
       <label x="5" y="-10"/>
     </transition>
@@ -56,5 +56,5 @@
       <label x="5" y="-10"/>
     </transition>
   </node>
-  <node name="nowaitchatpage1" x="371" y="449" width="-1" height="-1"/>
+  <node name="nowaitchatpage1" x="355" y="429" width="-1" height="-1"/>
 </chatflow-diagram>

@@ -29,6 +29,8 @@ public class ChatflowRequestProcessor{
 			return false;
 		}
 		
+		//System.out.println(input);
+		
 		return jbpmChatflow.processChatInput(input, chatRequest, responseSender);
 		
 //		if (!jbpmChatflow.get().processChatInput(input)) {
@@ -65,7 +67,7 @@ public class ChatflowRequestProcessor{
 	public static ChatflowRequestProcessor instance() {
 		ChatflowRequestProcessor instance = WeldEngineHelper.getInstance().getInstanceFromWeldEngine(ChatflowRequestProcessor.class);
 		if(instance == null){
-			System.out.println("ChatflowRequestProcessor is null!");
+			log.warn("ChatflowRequestProcessor is null!");
 			instance = WeldEngineHelper.getInstance().getInstanceFromWeldEngine(ChatflowRequestProcessor.class);
 		}
 		return instance;

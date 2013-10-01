@@ -517,6 +517,33 @@ public class ChatletLifecycle implements Service {
 		destroyContext(sessionContext());
 	}
 
+	public void sessionDestroyed(SessionEvent event, IWindow window) {
+		log.debug(">>> begin destroy session event: " + event.getSession());
+		activateContext(requestContext(), event);
+		activateContext(sessionContext(), event.getSession());
+		activateContext(channelContext(), window.getDefaultChannel());
+		activateContext(connectionContext(), window.getConnection());
+		activateContext(windowContext(), window);
+		if(window.getMeeting() != null){
+			activateContext(meetingContext(), window.getMeeting());
+		}		
+		CDIRequestObjectInThreadHolder.getInstance().setRequestObjectInThread(event);
+	}
+
+	public void sessionDestroyedEventDone(SessionEvent event, IWindow window) {
+
+		log.debug(">>> End destroy session event: " + event.getSession());
+		destroyContext(requestContext());
+		destroyContext(sessionContext());
+		destroyContext(channelContext());
+		deactivateContext(connectionContext(), window.getConnection());
+		destroyContext(windowContext());
+		
+		if(meetingContext().isActive()){
+			deactivateContext(meetingContext(), window.getMeeting());
+		}
+	}
+
 	
 	public void windowInitialized(WindowEvent event) {
 		log.debug(">>> Begin window intialize event: " + event.getWindow().getUid());

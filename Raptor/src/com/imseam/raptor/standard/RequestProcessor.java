@@ -60,6 +60,11 @@ public class RequestProcessor implements IRequestProcessor {
 			log.warn(String.format("The request message is not supported. please look at the createChatletRequest method:"  + message));
 			return;
 		}
+		
+		if(message.getMessageContent().toString().contains("startMeeting")){
+			System.out.println("before adding to RaptorTaskQueue: " + message.getMessageContent().toString());
+		}
+		
 		RaptorTaskQueue.getInstance(window.getWindowContext().getUid()).addTask(new RequestTask(chatletRequest, messageSender));
 
 	}

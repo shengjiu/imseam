@@ -187,10 +187,10 @@ public class NettyClientManager {
 					blocking.wait(callbacktimeout);
 					long after = System.currentTimeMillis();
 					if((after - before) >= callbacktimeout){
-						System.out.println("----------------- wait time out ----------------------------");
+//						System.out.println("----------------- wait time out ----------------------------");
 					}
 				} catch (InterruptedException e) {
-					System.out.println("----------------- InterruptedException ----------------------------");
+//					System.out.println("----------------- InterruptedException ----------------------------");
 					ExceptionUtil.wrapRuntimeException(e);
 				}
 			}
@@ -226,12 +226,12 @@ public class NettyClientManager {
     	}
         	
     	if(eventListener == null){
-    		System.out.println("--------------------------------------------------------------");
-    		if(message instanceof TextMessage){
-        		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + ((TextMessage)message).getContent());
-        	}else{
-        		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + message);
-        	}
+//    		System.out.println("--------------------------------------------------------------");
+//    		if(message instanceof TextMessage){
+//        		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + ((TextMessage)message).getContent());
+//        	}else{
+//        		System.out.println("MessageReceived but eventListener is null, window: " + messageFor +", message: " + message);
+//        	}
 
     		return;
     	}
@@ -291,7 +291,7 @@ public class NettyClientManager {
 		public void done(RpcResponseMessage response) {
 			this.response = response;
 			if(response == null){
-				System.out.println("response is null");
+				logger.warning("response is null");
 			}
 			
 			synchronized(this) {

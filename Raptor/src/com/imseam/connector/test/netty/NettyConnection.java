@@ -199,12 +199,19 @@ public class NettyConnection extends AbstractConnection  {
 		@Override
 		public void onTextMessage(TextMessage message) {
 			log.debug("onTextMessage");	
+//			if(message.getContent().contains("startMeeting")){
+//				System.out.println("client received message user: " + message.getFrom() + ", window owner:" + message.getTargetId() + message.getContent());
+//			}
 			String windowId = message.getTargetId();
 			MessengerTextMessage messageWrapper = new MessengerTextMessage(message.getContent());
-			getWindow(windowId)
-					.requestReceived(messageWrapper, message.getFrom());
+			NettyMessengerWindow window = getWindow(windowId);
 			
-//			System.out.println("client received message user: " + message.getFrom() + ", window owner: " + getWindow(windowId) + message.getContent());
+//			if(message.getContent().contains("startMeeting") && window == null){
+//				System.out.println("client received, window is null, message user: " + message.getFrom() + ", window owner:" + message.getTargetId() + message.getContent());
+//			}
+			
+			window.requestReceived(messageWrapper, message.getFrom());
+			
 		}
 
 		@Override
