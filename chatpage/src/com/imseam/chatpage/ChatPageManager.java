@@ -75,7 +75,7 @@ public class ChatPageManager {
 
 	
 	public void initChatPages(){
-		new ChatPageScanner("imseam.properties").startScan();
+		new ChatPageScanner("META-INF/beans.xml").startScan();
 		for(String chatPageResource : chatPageResourceMap.keySet()){
 			ChatPageConfigReader.loadChatPagesFromConfigResource(chatPageResource, chatPageResourceMap.get(chatPageResource));
 		}

@@ -1,0 +1,5 @@
+<chatflow-configuration>
+  <jbpm-context />
+  <string name="resource.node.types" value="com/imseam/chatpage/pageflow/node.types.xml"/>
+  <bean name="jbpm.sub.process.resolver" class="com.imseam.chatpage.pageflow.ChatflowSubProcessResolver" />
+</chatflow-configuration>

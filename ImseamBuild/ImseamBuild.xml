@@ -36,6 +36,7 @@
 				<include name="Chatlet-config\imseam-chatlet-config-build.xml" />
 				<include name="Chatlet-api\imseam-chatlet-api-build.xml" />
 				<include name="Chatlet-cdi\imseam-chatlet-cdi-build.xml" />
+				<include name="chatpage\imseam-chatpage-build.xml" />
 				<include name="ImseamTest-api\imseam-test-api-build.xml" />
 				<include name="ImseamTest\imseam-test-build.xml" />
 				<include name="Raptor\imseam-raptor-build.xml" />

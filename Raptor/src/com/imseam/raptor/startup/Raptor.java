@@ -1,9 +1,9 @@
 package com.imseam.raptor.startup;
 
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
-import java.net.MalformedURLException;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;
@@ -21,6 +21,7 @@ import com.imseam.chatlet.config.util.ConfigReader;
 import com.imseam.common.util.ClassUtil;
 import com.imseam.raptor.IChatletEngine;
 import com.imseam.raptor.mbean.RaptorManagement;
+import com.sun.tools.attach.VirtualMachine;
 
 
 
@@ -118,23 +119,60 @@ public class Raptor implements RaptorManagement{
     	start();
     }		
     
+	static final String CONNECTOR_ADDRESS =
+		 "com.sun.management.jmxremote.localConnectorAddress";
     public void stopServer() {
     	System.out.println("Connect to JMX service.");
-		JMXServiceURL url;
+//		JMXServiceURL url;
 		try {
-			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:9999/jmxrmi");
-		
-			JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
-			MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
-	
+//			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:9999/jmxrmi");
+//		
+//			JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+//			MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+//	
+//
+//			ObjectName mbeanName = new ObjectName("com.imseam:type=Raptor");
+//			RaptorManagement mbeanProxy = JMX.newMBeanProxy(mbsc, mbeanName, RaptorManagement.class, true);
+//	
+//			System.out.println("Connected to: RaptorManagement bean");
+//	
+//			mbeanProxy.stop();
+//			jmxc.close();
+			
 
-			ObjectName mbeanName = new ObjectName("com.imseam:type=Raptor");
-			RaptorManagement mbeanProxy = JMX.newMBeanProxy(mbsc, mbeanName, RaptorManagement.class, true);
+				 
+				// attach to the target application
+				VirtualMachine vm = VirtualMachine.attach("6604");
+				 
+				// get the connector address
+				String connectorAddress =
+				    vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+				 
+				// no connector address, so we start the JMX agent
+				if (connectorAddress == null) {
+				   String agent = vm.getSystemProperties().getProperty("java.home") +
+				       File.separator + "lib" + File.separator + "management-agent.jar";
+				   vm.loadAgent(agent);
+				 
+				   // agent is started, get the connector address
+				   connectorAddress =
+				       vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+				}
+				 
+				// establish connection to connector server
+				JMXServiceURL url = new JMXServiceURL(connectorAddress);
+				JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+				MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
+		
 	
-			System.out.println("Connected to: RaptorManagement bean");
-	
-			mbeanProxy.stop();
-			jmxc.close();
+				ObjectName mbeanName = new ObjectName("com.imseam:type=Raptor");
+				RaptorManagement mbeanProxy = JMX.newMBeanProxy(mbsc, mbeanName, RaptorManagement.class, true);
+		
+				System.out.println("Connected to: RaptorManagement bean");
+		
+				mbeanProxy.stop();
+				jmxc.close();
+//				JMXConnector = JMXConnectorFactory.connect(url);			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

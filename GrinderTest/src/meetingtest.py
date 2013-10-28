@@ -25,6 +25,7 @@ from threading import Lock, Event
 # A shorter alias for the grinder.logger.info() method.
 logger = grinder.logger
 log = logger.info
+ 
 
 
 # Create a Test with a test number and a description. The test will be
@@ -319,13 +320,15 @@ class TestRunner:
             user = TestUser(None, isOperator(grinder.agentNumber, grinder.threadNumber), isWaitSiteUser(grinder.agentNumber, grinder.threadNumber), userName, site)
             user.wait()
 
-            window = waitForActiveWindow("localhost", 17001, userName, "no password", Constants.online, None)
+            window = waitForActiveWindow("192.168.1.74", 17001, userName, "no password", Constants.online, None)
+            #window = waitForActiveWindow("192.168.1.74", 17001, userName, "no password", Constants.online, None)
             log(userNumber +' waitForActiveWindow window Id:' + window.windowId())
             user.window = window
             recievedMessage = window.waitForTextMessage(0).content.strip()
             log(userNumber +' welcome message from wait site user:' + recievedMessage)
         else:
-            window = startChatTest("localhost", 17001, userName, "no password", Constants.online, None)
+            window = startChatTest("192.168.1.74", 17001, userName, "no password", Constants.online, None)
+            #window = startChatTest("192.168.1.74", 17001, userName, "no password", Constants.online, None)
             recievedMessage = window.waitForTextMessage(0).content.strip()
             log(userNumber +' welcome message:' + recievedMessage)
             user = TestUser(window, isOperator(grinder.agentNumber, grinder.threadNumber), isWaitSiteUser(grinder.agentNumber, grinder.threadNumber), userName, site)

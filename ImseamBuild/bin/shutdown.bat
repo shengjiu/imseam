@@ -16,27 +16,27 @@ rem limitations under the License.
 
 if "%OS%" == "Windows_NT" setlocal
 rem ---------------------------------------------------------------------------
-rem Stop script for the CATALINA Server
+rem Stop script for the RAPTOR Server
 rem
 rem $Id: shutdown.bat 895392 2010-01-03 14:02:31Z kkolinko $
 rem ---------------------------------------------------------------------------
 
-rem Guess CATALINA_HOME if not defined
+rem Guess RAPTOR_HOME if not defined
 set "CURRENT_DIR=%cd%"
-if not "%CATALINA_HOME%" == "" goto gotHome
-set "CATALINA_HOME=%CURRENT_DIR%"
-if exist "%CATALINA_HOME%\bin\catalina.bat" goto okHome
+if not "%RAPTOR_HOME%" == "" goto gotHome
+set "RAPTOR_HOME=%CURRENT_DIR%"
+if exist "%RAPTOR_HOME%\bin\RAPTOR.bat" goto okHome
 cd ..
-set "CATALINA_HOME=%cd%"
+set "RAPTOR_HOME=%cd%"
 cd "%CURRENT_DIR%"
 :gotHome
-if exist "%CATALINA_HOME%\bin\catalina.bat" goto okHome
-echo The CATALINA_HOME environment variable is not defined correctly
+if exist "%RAPTOR_HOME%\bin\RAPTOR.bat" goto okHome
+echo The RAPTOR_HOME environment variable is not defined correctly
 echo This environment variable is needed to run this program
 goto end
 :okHome
 
-set "EXECUTABLE=%CATALINA_HOME%\bin\catalina.bat"
+set "EXECUTABLE=%RAPTOR_HOME%\bin\RAPTOR.bat"
 
 rem Check that target executable exists
 if exist "%EXECUTABLE%" goto okExec

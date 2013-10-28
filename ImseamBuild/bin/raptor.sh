@@ -181,6 +181,10 @@ if $cygwin; then
   JAVA_ENDORSED_DIRS=`cygpath --path --windows "$JAVA_ENDORSED_DIRS"`
 fi
 
+if [ ! -z "$RAPTOR_PID" ]; then
+    RAPTOR_PID=$RAPTOR_BASE/raptor.pid
+fi
+
 # ----- Execute The Requested Command -----------------------------------------
 
 # Bugzilla 37848: only output this if we have a TTY
@@ -194,9 +198,8 @@ if [ $have_tty -eq 1 ]; then
     echo "Using JRE_HOME:        $JRE_HOME"
   fi
   echo "Using CLASSPATH:       $CLASSPATH"
-  if [ ! -z "$RAPTOR_PID" ]; then
-    echo "Using RAPTOR_PID:    $RAPTOR_PID"
-  fi
+  
+  echo "Using RAPTOR_PID:    $RAPTOR_PID"
 fi
 
 

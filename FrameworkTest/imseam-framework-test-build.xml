@@ -38,8 +38,8 @@
 			        nowarn="on"
 			target="1.6"
 			compiler="javac1.5"
-			verbose="true">
-			<src path="${src.java.dir}" />
+			verbose="true"
+			srcdir="${src.java.dir}">
 		<!--
 			<compilerarg value="-Xlint:unchecked" />
 		-->
@@ -50,11 +50,13 @@
 	
 	<target name="archive" depends="compile" 
 			description="Package the archives">
-		<!--copy todir="${jar.dir}">
-			<fileset dir="${basedir}/${resources.dir}">
-				<include name="imseam.properties" />
-			</fileset>
-		</copy-->		
+		<copy todir="${classes.dir}/META-INF">
+			<fileset dir="${basedir}/resource/META-INF"/>
+		</copy>		
+		<copy todir="${classes.dir}">
+		    <fileset dir="${src.java.dir}"
+		             includes="**/*.xml, **/*.csp" />
+		</copy>		
 		<jar jarfile="${jar.file}" basedir="${classes.dir}"/>
 	</target>
 
@@ -67,6 +69,11 @@
 				<include name="ImseamBuild\ImseamBuild.xml" />
 			</fileset>
 		</subant>
+	</target>
+	
+	<target name="scp-zip" 
+			description="scp the file to ansible control server">
+	<scp file="${basedir}\${dist.dir}\${project.name}.zip" todir="shengjiu:Jsw2612003@192.168.0.181:/home/shengjiu" trust="true"/>
 	</target>
 
 
