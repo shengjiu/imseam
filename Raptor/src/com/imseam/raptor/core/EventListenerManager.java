@@ -43,7 +43,11 @@ public class EventListenerManager implements IEventListenerManager{
 		}
 		
 		for(ISystemEventListener listener : this.eventListenerList){
-			eventType.fireEvent(listener, event);
+			try{
+				eventType.fireEvent(listener, event);
+			}catch(Exception exp){
+				log.warn(String.format("eventtype: %s, event: %s, listener: %s", eventType, event, listener), exp);
+			}
 		}
 	}
 

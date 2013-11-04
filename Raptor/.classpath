@@ -6,8 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/ImseamLibs/JYMSG/ymsg_network_v0_61.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/incesoft/iBotPlatform-sdk-2.1.0.jar"/>
-	<classpathentry kind="lib" path="/ImseamLibs/smack/smack.jar"/>
-	<classpathentry kind="lib" path="/ImseamLibs/smack/smackx.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Chatlet-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Chatlet-config"/>
 	<classpathentry kind="lib" path="/ImseamLibs/jmsn/msnm.jar"/>
@@ -20,5 +18,7 @@
 	<classpathentry kind="lib" path="/ImseamLibs/jboss-seam-jars/testng-4.5.1-jdk15.jar"/>
 	<classpathentry kind="lib" path="/ImseamLibs/msn_jml/jml-1.0b4-full.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_20/lib/tools.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/smack/smack.jar"/>
+	<classpathentry kind="lib" path="/ImseamLibs/smack/smackx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

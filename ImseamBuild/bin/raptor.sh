@@ -21,7 +21,7 @@
 #   RAPTOR_OPTS   (Optional) Java runtime options used when the "start",
 #                   "run" or "debug" command is executed.
 #                   Include here and not in JAVA_OPTS all options, that should
-#                   only be used by Tomcat itself, not by the stop process,
+#                   only be used by Raptor itself, not by the stop process,
 #                   the version command etc.
 #                   Examples are heap size, GC logging, JMX ports etc.
 #
@@ -39,7 +39,7 @@
 #   JAVA_OPTS       (Optional) Java runtime options used when any command
 #                   is executed.
 #                   Include here and not in RAPTOR_OPTS all options, that
-#                   should be used by Tomcat and also by the stop process,
+#                   should be used by Raptor and also by the stop process,
 #                   the version command etc.
 #                   Most options should go into RAPTOR_OPTS.
 #
@@ -53,11 +53,11 @@
 #                   of the RAPTOR startup java process, when start (fork) is
 #                   used
 #
-#   LOGGING_CONFIG  (Optional) Override Tomcat's logging config file
+#   LOGGING_CONFIG  (Optional) Override Raptor's logging config file
 #                   Example (all one line)
 #                   LOGGING_CONFIG="-Djava.util.logging.config.file=$RAPTOR_BASE/conf/logging.properties"
 #
-#   LOGGING_MANAGER (Optional) Override Tomcat's logging manager
+#   LOGGING_MANAGER (Optional) Override Raptor's logging manager
 #                   Example (all one line)
 #                   LOGGING_MANAGER="-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"
 #
@@ -149,7 +149,7 @@ fi
 if [ ! -z "$CLASSPATH" ] ; then
   CLASSPATH="$CLASSPATH":
 fi
-CLASSPATH="$CLASSPATH""$RAPTOR_HOME"/lib/*:
+CLASSPATH="$CLASSPATH""$RAPTOR_HOME"/lib/*:/usr/lib/jvm/java/lib/*:
 
 if [ -z "$RAPTOR_OUT" ] ; then
   RAPTOR_OUT="$RAPTOR_BASE"/logging/RAPTOR.out
@@ -181,7 +181,7 @@ if $cygwin; then
   JAVA_ENDORSED_DIRS=`cygpath --path --windows "$JAVA_ENDORSED_DIRS"`
 fi
 
-if [ ! -z "$RAPTOR_PID" ]; then
+if [ -z "$RAPTOR_PID" ]; then
     RAPTOR_PID=$RAPTOR_BASE/raptor.pid
 fi
 
@@ -221,7 +221,7 @@ elif [ "$1" = "start" ] ; then
           PID=`cat "$RAPTOR_PID"`
           ps -p $PID >/dev/null 2>&1
           if [ $? -eq 0 ] ; then
-            echo "Tomcat appears to still be running with PID $PID. Start aborted."
+            echo "Raptor appears to still be running with PID $PID. Start aborted."
             exit 1
           else
             echo "Removing/clearing stale PID file."
@@ -298,71 +298,57 @@ elif [ "$1" = "stop" ] ; then
   if [ ! -z "$RAPTOR_PID" ]; then
     if [ -f "$RAPTOR_PID" ]; then
       if [ -s "$RAPTOR_PID" ]; then
-        kill -0 `cat "$RAPTOR_PID"` >/dev/null 2>&1
-        if [ $? -gt 0 ]; then
-          echo "PID file found but no matching process was found. Stop aborted."
-          exit 1
-        fi
-      else
-        echo "PID file is empty and has been ignored."
-      fi
-    else
-      echo "\$RAPTOR_PID was set but the specified file does not exist. Is Tomcat running? Stop aborted."
-      exit 1
-    fi
-  fi
-
-  eval \"$_RUNJAVA\" $LOGGING_MANAGER $JAVA_OPTS \
-    -Djava.endorsed.dirs=\"$JAVA_ENDORSED_DIRS\" -classpath \"$CLASSPATH\" \
-    -DRAPTOR.base=\"$RAPTOR_BASE\" \
-    -DRAPTOR.home=\"$RAPTOR_HOME\" \
-    -Djava.io.tmpdir=\"$RAPTOR_TMPDIR\" \
-    org.apache.RAPTOR.startup.Bootstrap "$@" stop
-
-  if [ ! -z "$RAPTOR_PID" ]; then
-    if [ -f "$RAPTOR_PID" ]; then
-      while [ $SLEEP -ge 0 ]; do
-        kill -0 `cat "$RAPTOR_PID"` >/dev/null 2>&1
-        if [ $? -gt 0 ]; then
-          rm -f "$RAPTOR_PID" >/dev/null 2>&1
-          if [ $? != 0 ]; then
-            if [ -w "$RAPTOR_PID" ]; then
-              cat /dev/null > "$RAPTOR_PID"
-            else
-              echo "Tomcat stopped but the PID file could not be removed or cleared."
-            fi
-          fi
-          break
-        fi
-        if [ $SLEEP -gt 0 ]; then
-          sleep 1
-        fi
-        if [ $SLEEP -eq 0 ]; then
-          if [ $FORCE -eq 0 ]; then
-            echo "Tomcat did not stop in time. PID file was not removed."
-          fi
-        fi
-        SLEEP=`expr $SLEEP - 1 `
-      done
-    fi
-  fi
-
-  if [ $FORCE -eq 1 ]; then
-    if [ -z "$RAPTOR_PID" ]; then
-      echo "Kill failed: \$RAPTOR_PID not set"
-    else
-      if [ -f "$RAPTOR_PID" ]; then
         PID=`cat "$RAPTOR_PID"`
-        echo "Killing Tomcat with the PID: $PID"
-        kill -9 $PID
-        rm -f "$RAPTOR_PID" >/dev/null 2>&1
-        if [ $? != 0 ]; then
-          echo "Tomcat was killed but the PID file could not be removed."
+        ps -p $PID >/dev/null 2>&1
+        if [ $? -ne 0 ] ; then
+           echo "PID file found but no matching process was found. Stop aborted."
+           exit 1
         fi
-      fi
-    fi
-  fi
+        echo $_RUNJAVA -Djava.util.logging.config.file=$LOGGING_CONFIG_FILE $COMMONS_LOGGING_LOGGER $JAVA_OPTS $RAPTOR_OPTS \
+             -Djava.endorsed.dirs=$JAVA_ENDORSED_DIRS -classpath $CLASSPATH \
+             -DRAPTOR.base=$RAPTOR_BASE \
+             -DRAPTOR.home=$RAPTOR_HOME \
+             -Djava.io.tmpdir=$RAPTOR_TMPDIR \
+             com.imseam.raptor.startup.Raptor "$@" stop "$PID"
 
+        eval $_RUNJAVA -Djava.util.logging.config.file=$LOGGING_CONFIG_FILE $COMMONS_LOGGING_LOGGER $JAVA_OPTS $RAPTOR_OPTS \
+             -Djava.endorsed.dirs=$JAVA_ENDORSED_DIRS -classpath $CLASSPATH \
+             -DRAPTOR.base=$RAPTOR_BASE \
+             -DRAPTOR.home=$RAPTOR_HOME \
+             -Djava.io.tmpdir=$RAPTOR_TMPDIR \
+             com.imseam.raptor.startup.Raptor "$@" stop "$PID" \
+             >> "$RAPTOR_OUT" 2>&1 "&"
+        
+          
+        while [ $SLEEP -ge 0 ]; do
+	       sleep $SLEEP
+           ps -p $PID >/dev/null 2>&1
+           if [ $? -ne 0 ] ; then
+              rm -f "$RAPTOR_PID" >/dev/null 2>&1
+              echo Stopped!
+              exit 0
+           fi
+           SLEEP=`expr $SLEEP - 1 `
+        done
+        
+        echo 'Have to kill the process $PID'
+        kill $PID >/dev/null 2>&1
+	    if [ $? -gt 0 ]; then
+	       rm -f "$RAPTOR_PID" >/dev/null 2>&1
+	       echo The process killed, and raptor.pid file removed
+	    else
+	       echo Kill process failed.
+	    fi
+	    exit 1
+	  else
+        echo "PID file is empty and has been ignored."
+        exit 1
+      fi
+    else
+      echo "\$RAPTOR_PID was set but the specified file does not exist. Is Raptor running? Stop aborted."
+      exit 1
+	fi
+  fi
 elif [ "$1" = "configtest" ] ; then
 
     eval \"$_RUNJAVA\" $LOGGING_MANAGER $JAVA_OPTS \
@@ -370,7 +356,7 @@ elif [ "$1" = "configtest" ] ; then
       -DRAPTOR.base=\"$RAPTOR_BASE\" \
       -DRAPTOR.home=\"$RAPTOR_HOME\" \
       -Djava.io.tmpdir=\"$RAPTOR_TMPDIR\" \
-      org.apache.RAPTOR.startup.Bootstrap configtest
+      com.imseam.raptor.startup.Raptor configtest
     result=$?
     if [ $result -ne 0 ]; then
         echo "Configuration error detected!"
@@ -404,7 +390,7 @@ else
   echo "  stop -force       Stop RAPTOR, wait up to 5 seconds and then use kill -KILL if still running"
   echo "  stop n -force     Stop RAPTOR, wait up to n seconds and then use kill -KILL if still running"
   echo "  configtest        Run a basic syntax check on server.xml - check exit code for result"
-  echo "  version           What version of tomcat are you running?"
+  echo "  version           What version of Raptor are you running?"
   echo "Note: Waiting for the process to end and use of the -force option require that \$RAPTOR_PID is defined"
   exit 1
 

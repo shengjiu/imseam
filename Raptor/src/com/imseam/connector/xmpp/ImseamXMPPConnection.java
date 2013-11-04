@@ -170,8 +170,11 @@ public class ImseamXMPPConnection extends AbstractConnection implements RosterLi
 		return false;
 	}
 
+	@Override
 	public void disconnecting() {
+		System.out.println("xmppConnection.disconnect()");
 		xmppConnection.disconnect();
+		
 		conversationMap.clear();
 	}
 

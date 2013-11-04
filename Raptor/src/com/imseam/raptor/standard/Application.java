@@ -225,8 +225,6 @@ public class Application implements IChatletApplication {
 		log.info(String.format("Stopping applicaiton(%s)", this.getApplicationName()));
 		for(IMessengerConnection connection : connectionMap.values()){
 			connection.disconnect();
-			ConnectionEvent event = new ConnectionEvent(this, connection.getConnectionContext());
-			eventListenerManager.fireEvent(EventTypeEnum.ConnectionStopped, event);
 		}
 		ApplicationEvent appEvent = new ApplicationEvent(this, applicationContext);
 		try{

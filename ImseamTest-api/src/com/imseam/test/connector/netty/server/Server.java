@@ -30,7 +30,6 @@ import org.jboss.netty.handler.codec.serialization.ClassResolvers;
 import org.jboss.netty.handler.codec.serialization.ObjectDecoder;
 import org.jboss.netty.handler.codec.serialization.ObjectEncoder;
 
-import com.imseam.common.util.ExceptionUtil;
 import com.imseam.test.Constants;
 import com.imseam.test.IEventListener;
 import com.imseam.test.Message;
@@ -161,8 +160,8 @@ public class Server {
 	public void stopServer(){
 		ChannelFuture cf = serverChannel.close();
 		cf.awaitUninterruptibly();
-//		executorService.shutdown();
-//		bootstrap.releaseExternalResources();
+		executorService.shutdown();
+		bootstrap.releaseExternalResources();
 	}
 	
 	public void sendMessage(String username, Message message){

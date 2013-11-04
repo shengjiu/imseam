@@ -16,7 +16,7 @@
 # limitations under the License.
 
 # -----------------------------------------------------------------------------
-# Stop script for the CATALINA Server
+# Stop script for the raptor Server
 #
 # $Id: shutdown.sh 1202062 2011-11-15 06:50:02Z mturk $
 # -----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ while [ -h "$PRG" ] ; do
 done
 
 PRGDIR=`dirname "$PRG"`
-EXECUTABLE=catalina.sh
+EXECUTABLE=raptor.sh
 
 # Check that target executable exists
 if $os400; then

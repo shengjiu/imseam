@@ -16,7 +16,7 @@
 # limitations under the License.
 
 # -----------------------------------------------------------------------------
-# Start Script for the CATALINA Server
+# Start Script for the Raptor Server
 #
 # $Id: startup.sh 1202062 2011-11-15 06:50:02Z mturk $
 # -----------------------------------------------------------------------------

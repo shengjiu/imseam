@@ -55,7 +55,7 @@
 				    deprecation="${javac.deprecation}" 
 				        nowarn="on"
 				target="1.6"
-				compiler="javac1.5"
+				compiler="javac1.6"
 				verbose="true"
 					 >
 				<src path="${src.java.dir}" />
