@@ -41,6 +41,7 @@
 	<property name="smack.lib.dir" value="../ImseamLibs/smack" />
 	<property name="JYmsg.lib.dir" value="../ImseamLibs/JYMSG" />
 	<property name="JML.lib.dir" value="../ImseamLibs/msn_jml" />
+	<property name="grinder.java.lib.dir" value="../ImseamLibs/grinder"/>
 	<property name="imseam.seam.lib.dir" value="../ImseamLibs/imseam-seam-jars" />
 	<property name="jboss.seam.lib.dir" value="../ImseamLibs/jboss-seam-jars" />
 	<property name="generated.lib.dir" value="../ImseamLibs/generated-jars" />
@@ -60,7 +61,14 @@
 	<property name="javaAssist.jar" value="${imseam.seam.lib.dir}/javassist.jar" />
 	<property name="ImseamSeam.jar" value="${generated.lib.dir}/ImseamSeam.jar" />
 	<property name="ImseamWeb.jar" value="${generated.lib.dir}/ImseamWeb.jar" />
+	<property name="c-h" value="192.168.0.181" />
+	<property name="c-h-u" value="control-host-username" />
+	<property name="c-h-p" value="control-host-password"/>
 	
+	<property name="g-h" value="192.168.0.186" />
+	<property name="g-h-u" value="control-host-username" />
+	<property name="g-h-p" value="control-host-password"/>
+
 	<fileset id="el.libs" dir="${el.lib.dir}">
 		<include name="*.jar" />
 	</fileset>
@@ -87,6 +95,10 @@
 		<include name="*.jar" />
 	</fileset>
 	
+	<fileset id="grinder.java.libs" dir="${grinder.java.lib.dir}">
+		<include name="*.jar" />
+	</fileset>
+	
 	<fileset id="framework.libs" dir="${generated.lib.dir}">
 		<include name="chatlet-api.jar"/>
 		<include name="chatpage.jar"/>
@@ -95,6 +107,11 @@
 		<include name="ImseamCommon.jar"/>
 		<include name="imseam-test-api.jar"/>
 		<include name="raptor.jar"/>
+	</fileset>
+
+	<fileset id="imseam.test.libs" dir="${generated.lib.dir}">
+		<include name="imseam-test-api.jar"/>
+		<include name="imseam-test.jar"/>
 	</fileset>
 	
 	<fileset id="mail.libs" dir="${mail.lib.dir}">

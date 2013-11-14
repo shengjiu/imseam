@@ -73,7 +73,15 @@
 			<fileset dir="./config" includes="engine.config"/>
 			<fileset dir="./config" includes="logging.properties"/>
 		</copy>
-		<zip destfile="${zip.file}" basedir="${dist.target.dir}\zip">
+		<zip destfile="${dist.target.dir}\${zip.file}" basedir="${dist.target.dir}\zip" update="true">
+		</zip>
+		<copy todir="${dist.target.dir}">
+			<fileset dir="./ansible-playbook" includes="deploy-imseam-app-zip.yml"/>
+		</copy>
+		<echo message="${zip.file}"/>
+		<zip destfile="${dist.target.dir}\${zip.file.ansible}" update="true">
+			<fileset dir="${dist.target.dir}" includes="deploy-imseam-app-zip.yml"/>
+			<fileset dir="${dist.target.dir}" includes="${zip.file}"/>
 		</zip>
 	</target>
 

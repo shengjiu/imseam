@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+
+<project name="imseam-grinder-test" default="archive" basedir=".">
+
+	<!-- Give user a chance to override without editing this file or typing -D -->
+	<property file="${basedir}/imseam-build.properties" />
+	<import file="../ImseamBuild/BuildProperty.xml" />
+
+	<!-- set global properties for this build -->
+	<property name="project.name" value="imseam-grinder-test"/>
+	<property name="zip.file" value="${project.name}.zip"/>
+
+	
+	<target name="clean" description="Cleans up the build directory">
+		<delete dir="${dist.dir}" />
+	</target>
+	
+	<target name="init" depends="clean" description="Initialize the build">
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}/lib" />
+		<mkdir dir="${dist.dir}/logging" />
+	</target>
+	
+	<target name="archive" depends="init" 
+			description="Package the archives">
+		<copy todir="${dist.dir}">
+			<fileset dir="${basedir}" includes="grinder.properties"/>
+		</copy>		
+		<copy todir="${dist.dir}">
+		    <fileset dir="${src.java.dir}"
+		             includes="**/*.py" />
+		</copy>		
+		<copy todir="${dist.dir}/lib">
+			<fileset refid="grinder.java.libs"/>
+			<fileset refid="netty.libs"/>
+			<fileset refid="imseam.test.libs"/>
+		</copy>
+		
+		<zip destfile="${dist.dir}/${zip.file}" basedir="${dist.dir}" update="true">
+		</zip>		
+	</target>
+	
+	<target name="scp-zip-grinder" depends="archive"
+			description="scp the file to ansible control server">
+		<scp file="${dist.dir}/${zip.file}" todir="${g-h-u}:${g-h-p}@${g-h}:~" trust="true"/>
+		<sshexec host="${g-h}"
+			trust="true"
+			username="${g-h-u}"
+			password="${g-h-p}"
+			verbose="true"
+			command="unzip -o ${zip.file} -d grinder"/>
+	</target>
+
+	<target name="run-grinder" 
+				description="scp the file to ansible control server">
+			<sshexec host="${g-h}"
+				trust="true"
+				username="${g-h-u}"
+				password="${g-h-p}"
+				verbose="true"
+				command="java -classpath ./grinder/lib/*: net.grinder.Grinder ./grinder/grinder.properties"/>
+	</target>
+
+	<target name="deploy-raptor"
+				description="scp the file to ansible control server">
+			<sshexec host="${c-h}"
+				trust="true"
+				username="${c-h-u}"
+				password="${c-h-p}"
+				verbose="true"
+				command="ansible-playbook deploy-imseam-app-zip.yml --extra-vars &quot;hosts=dell-servers  zip_file=${project.name}.zip target_location=/home/shengjiu&quot;"/>
+	</target>
+	
+	<target name="imseam-build" depends="archive" description="Run the test and copy the jar">
+	</target>
+
+	<target name="build-imseam-jars" description="build all projects">
+			<subant target="imseam-build">
+				<!--property name="jboss.home" value="${jboss.home}" /-->
+				<fileset id="buildfiles" dir="..\">
+					<include name="ImseamBuild\ImseamBuild.xml" />
+				</fileset>
+
+			</subant>
+	</target>
+	
+</project>

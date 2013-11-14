@@ -1,10 +1,11 @@
 ---
 - hosts: '{{ hosts }}'
+  user: shengjiu
   tasks:
   - name: copy the zip to target
-    copy: src=imseam-framework-test.zip dest={{target_location}}
+    copy: src={{zip_file}} dest={{target_location}}
   - name: unzip the file
-    shell: unzip imseam-framework-test.zip -d imseam
+    shell: unzip -o {{zip_file}} -d imseam
   - name: setup executable permission
     shell: chmod 740 imseam/bin/*.sh
 
