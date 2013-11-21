@@ -35,6 +35,8 @@
 			<fileset refid="netty.libs"/>
 			<fileset refid="imseam.test.libs"/>
 		</copy>
+		<copy file="${src.java.dir}/raptorserver.properties2" tofile="${dist.dir}/raptorserver.properties">
+		</copy>		
 		
 		<zip destfile="${dist.dir}/${zip.file}" basedir="${dist.dir}" update="true">
 		</zip>		
@@ -58,7 +60,7 @@
 				username="${g-h-u}"
 				password="${g-h-p}"
 				verbose="true"
-				command="java -classpath ./grinder/lib/*: net.grinder.Grinder ./grinder/grinder.properties"/>
+				command="cd grinder &amp;&amp; java -classpath lib/*: net.grinder.Grinder grinder.properties&amp;"/>
 	</target>
 
 	<target name="deploy-raptor"

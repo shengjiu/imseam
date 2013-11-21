@@ -111,6 +111,7 @@
 
 	<fileset id="imseam.test.libs" dir="${generated.lib.dir}">
 		<include name="imseam-test-api.jar"/>
+		<include name="ImseamCommon.jar"/>
 		<include name="imseam-test.jar"/>
 	</fileset>
 	

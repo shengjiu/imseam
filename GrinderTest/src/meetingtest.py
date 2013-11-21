@@ -10,6 +10,7 @@
 
 from net.grinder.script.Grinder import grinder
 from net.grinder.script import Test
+from net.grinder.common import GrinderProperties
 from com.imseam.test import User
 from com.imseam.test.connector.netty import RPCConnector
 from com.imseam.test import Constants
@@ -18,6 +19,7 @@ from java.util import Date
 from java.util import ArrayList
 from java.util import HashMap
 from java.util import HashSet
+from java.io import File
 from collections import deque
 from threading import Lock, Event
 
@@ -42,6 +44,8 @@ siteUserNumber = 3
 
 totalServerNumber = 1
 
+raptorHost = None
+raptorPort = -1
 
 
 
@@ -301,12 +305,33 @@ def getGlobalSequence(agentNumber, threadNumber):
         agentNumber = 0
     return threadNumber * totalServerNumber + agentNumber  
 
+def getRaptorHost():
+    global raptorHost
+    global raptorPort
+    if(raptorHost is None):
+        raptorProperties = GrinderProperties(File('raptorserver.properties'))
+        raptorHost = raptorProperties.getProperty('raptor.host')
+        raptorPort = int(raptorProperties.getProperty('raptor.port'))
+    return raptorHost
+
+def getRaptorPort():
+    global raptorHost
+    global raptorPort
+    if(raptorPort is -1):
+        raptorProperties = GrinderProperties(File('raptorserver.properties'))
+        raptorHost = raptorProperties.getProperty('raptor.host')
+        raptorPort = int(raptorProperties.getProperty('raptor.port'))
+    return raptorPort
+ 
+ 
 # A TestRunner instance is created for each thread. It can be used to
 # store thread-specific data.
 class TestRunner:
 
     # This method is called for every run.
     def __call__(self):
+        log(' raptor host:' + getRaptorHost())
+        log(' raptor port:' + str(getRaptorPort()))
         grinder.statistics.delayReports = 1
         userNumber = str(grinder.agentNumber) +'-' + str(grinder.threadNumber) + '-' +str(grinder.runNumber)
         siteNumber = getSiteNumber(grinder.agentNumber,grinder.threadNumber)
@@ -320,14 +345,14 @@ class TestRunner:
             user = TestUser(None, isOperator(grinder.agentNumber, grinder.threadNumber), isWaitSiteUser(grinder.agentNumber, grinder.threadNumber), userName, site)
             user.wait()
 
-            window = waitForActiveWindow("192.168.1.74", 17001, userName, "no password", Constants.online, None)
+            window = waitForActiveWindow(getRaptorHost(), getRaptorPort(), userName, "no password", Constants.online, None)
             #window = waitForActiveWindow("192.168.1.74", 17001, userName, "no password", Constants.online, None)
             log(userNumber +' waitForActiveWindow window Id:' + window.windowId())
             user.window = window
             recievedMessage = window.waitForTextMessage(0).content.strip()
             log(userNumber +' welcome message from wait site user:' + recievedMessage)
         else:
-            window = startChatTest("192.168.1.74", 17001, userName, "no password", Constants.online, None)
+            window = startChatTest(getRaptorHost(), getRaptorPort(), userName, "no password", Constants.online, None)
             #window = startChatTest("192.168.1.74", 17001, userName, "no password", Constants.online, None)
             recievedMessage = window.waitForTextMessage(0).content.strip()
             log(userNumber +' welcome message:' + recievedMessage)
