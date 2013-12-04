@@ -60,7 +60,7 @@
 				username="${g-h-u}"
 				password="${g-h-p}"
 				verbose="true"
-				command="cd grinder &amp;&amp; java -classpath lib/*: net.grinder.Grinder grinder.properties&amp;"/>
+				command="cd grinder &amp;&amp; java -classpath lib/*: net.grinder.Grinder grinder.properties"/>
 	</target>
 
 	<target name="deploy-raptor"

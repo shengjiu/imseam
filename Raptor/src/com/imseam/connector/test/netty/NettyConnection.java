@@ -171,7 +171,7 @@ public class NettyConnection extends AbstractConnection  {
 			statusMap.put(message.getFrom(), message.getStatus());
 			
 			addMessengerUser(message.getFrom(), !Constants.notbuddy.equals(message.getStatus()));
-			fireBuddyStatusChange(message.getFrom());
+			fireBuddySignIn(message.getFrom());
 		}
 
 		@Override

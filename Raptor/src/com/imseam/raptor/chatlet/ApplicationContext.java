@@ -19,6 +19,7 @@ import com.imseam.chatlet.config.ChatletAppConfig;
 import com.imseam.chatlet.config.Param;
 import com.imseam.chatlet.exception.IdentifierNotExistingException;
 import com.imseam.chatlet.listener.event.IEvent;
+import com.imseam.cluster.IClusterCache;
 import com.imseam.common.util.StringUtil;
 import com.imseam.raptor.IChatletApplication;
 import com.imseam.raptor.IMessengerWindow;
@@ -43,6 +44,8 @@ public class ApplicationContext extends AbstractContext implements IApplication 
 	private Map<Locale, ResourceBundle> resourceBundleMap = new ConcurrentHashMap<Locale, ResourceBundle>();
 	
 	private Map<String, String> initParamMap = new HashMap<String, String>();
+	
+	private IClusterCache clusterStorage = null;
 	
 //	private String applicationRootPath;
 	
@@ -136,6 +139,15 @@ public class ApplicationContext extends AbstractContext implements IApplication 
 	@Override
 	public String getInitParam(String paramName){
 		return this.initParamMap.get(paramName);
+	}
+
+	@Override
+	public IClusterCache getClusterCache() {
+		return clusterStorage;
+	}
+	
+	public void setClusterStorage(IClusterCache clusterStorage){
+		this.clusterStorage = clusterStorage;
 	}
 
 

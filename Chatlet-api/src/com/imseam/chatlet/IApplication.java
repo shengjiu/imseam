@@ -2,11 +2,11 @@ package com.imseam.chatlet;
 
 import java.net.URL;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import com.imseam.chatlet.exception.IdentifierNotExistingException;
 import com.imseam.chatlet.listener.event.IEvent;
+import com.imseam.cluster.IClusterCache;
 
 
 
@@ -26,5 +26,7 @@ public interface IApplication extends IContext {
 	ResourceBundle getResourceBundle(Locale locale);
 	
 	void fireSystemEventToWinodw(String windowUid, IEvent event, IEventErrorCallback handler, String sourceUid, UidType sourceUidType) throws IdentifierNotExistingException;
+	
+	IClusterCache getClusterCache();
 	
 }

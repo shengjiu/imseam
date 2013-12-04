@@ -6,7 +6,6 @@ import javax.enterprise.inject.Produces;
 import com.imseam.cdi.chatlet.event.ConnectionRequest;
 import com.imseam.cdi.chatlet.event.MeetingEvent;
 import com.imseam.cdi.chatlet.ext.annotation.RequestObject;
-import com.imseam.cdi.context.IMRequestScoped;
 import com.imseam.chatlet.IApplication;
 import com.imseam.chatlet.IAttributes;
 import com.imseam.chatlet.IBuddy;
@@ -22,6 +21,7 @@ import com.imseam.chatlet.listener.event.ConnectionEvent;
 import com.imseam.chatlet.listener.event.SessionEvent;
 import com.imseam.chatlet.listener.event.UserJoinWindowEvent;
 import com.imseam.chatlet.listener.event.WindowEvent;
+import com.imseam.cluster.IClusterCache;
 
 
 public class CDIContextObjectProducer {
@@ -44,6 +44,11 @@ public class CDIContextObjectProducer {
     @RequestObject
 	public IAttributes getRequestObject(){
     	return getRequestObject(IAttributes.class);
+	}
+    
+    @Produces
+	public IClusterCache getClusterCache(){
+    	return CDIRequestObjectInThreadHolder.getInstance().getApplication().getClusterCache();
 	}
     
     @Produces

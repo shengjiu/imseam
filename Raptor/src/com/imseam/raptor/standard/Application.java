@@ -19,7 +19,7 @@ import com.imseam.chatlet.config.util.ConfigUtil;
 import com.imseam.chatlet.listener.IMeetingEventListener;
 import com.imseam.chatlet.listener.ISystemEventListener;
 import com.imseam.chatlet.listener.event.ApplicationEvent;
-import com.imseam.chatlet.listener.event.ConnectionEvent;
+import com.imseam.cluster.IClusterCache;
 import com.imseam.common.util.ClassUtil;
 import com.imseam.common.util.ExceptionUtil;
 import com.imseam.raptor.IChatletApplication;
@@ -31,8 +31,8 @@ import com.imseam.raptor.IWindowManager;
 import com.imseam.raptor.chatlet.ApplicationContext;
 import com.imseam.raptor.chatlet.EventTypeEnum;
 import com.imseam.raptor.cluster.IClusterInvocationDistributor;
-import com.imseam.raptor.cluster.IClusterStorage;
 import com.imseam.raptor.cluster.IMeetingStorage;
+import com.imseam.raptor.cluster.IRaptorClustercache;
 import com.imseam.raptor.core.ConnectorManager;
 import com.imseam.raptor.core.EventListenerManager;
 import com.imseam.raptor.core.FilterManager;
@@ -72,7 +72,7 @@ public class Application implements IChatletApplication {
 	
 //	private final static String CLUSTER_EVENT_MANAGER ="CLUSTER_EVENT_MANAGER";
 
-	private IClusterStorage clusterStorage;
+//	private IRaptorClusterStorage clusterStorage;
 	
 	private final static String CLUSTER_STORAGE ="CLUSTER_STORAGE";
 
@@ -117,6 +117,8 @@ public class Application implements IChatletApplication {
 	
 	private void processConfig() {
 		log.info("Processing chat applicaiton config.");
+		
+		IRaptorClustercache clusterStorage = null;
 
 		if (appConfig.getInitParams() != null) {
 			for (Param param : appConfig.getInitParams().getParam()) {
@@ -127,8 +129,8 @@ public class Application implements IChatletApplication {
 					meetingStorage.initApplication(this);
 				}
 				if(param.getName().equals(CLUSTER_STORAGE)){
-					this.clusterStorage =(IClusterStorage) ClassUtil.createInstance(param.getValue());
-					clusterStorage.initApplication(this);
+					clusterStorage =(IRaptorClustercache) ClassUtil.createInstance(param.getValue());
+					clusterStorage.init(this);
 				}
 				if(param.getName().equals(REQUEST_TASK_DISTRIBUTOR)){
 					this.syncClusterRequestDistributor = (IClusterInvocationDistributor) ClassUtil.createInstance(param.getValue());
@@ -143,8 +145,8 @@ public class Application implements IChatletApplication {
 		}
 		
 		if(clusterStorage == null){
-			clusterStorage = new ClusterStorage();
-			clusterStorage.initApplication(this);
+			clusterStorage = new LocalFakeClusterCache();
+			clusterStorage.init(this);
 		}
 		
 		if(syncClusterRequestDistributor == null){
@@ -272,10 +274,10 @@ public class Application implements IChatletApplication {
 		return this.syncClusterRequestDistributor;
 	}
 
-	@Override
-	public IClusterStorage getClusterStorage() {
-		return this.clusterStorage;
-	}
+//	@Override
+//	public IClusterStorage getClusterStorage() {
+//		return this.clusterStorage;
+//	}
 
 	@Override
 	public IMeetingStorage getMeetingStorage() {

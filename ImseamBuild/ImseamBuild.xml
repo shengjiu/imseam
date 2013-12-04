@@ -76,11 +76,11 @@
 		<zip destfile="${dist.target.dir}\${zip.file}" basedir="${dist.target.dir}\zip" update="true">
 		</zip>
 		<copy todir="${dist.target.dir}">
-			<fileset dir="./ansible-playbook" includes="deploy-imseam-app-zip.yml"/>
+			<fileset dir="./ansible-playbook" includes="*.yml"/>
 		</copy>
 		<echo message="${zip.file}"/>
 		<zip destfile="${dist.target.dir}\${zip.file.ansible}" update="true">
-			<fileset dir="${dist.target.dir}" includes="deploy-imseam-app-zip.yml"/>
+			<fileset dir="${dist.target.dir}" includes="*.yml"/>
 			<fileset dir="${dist.target.dir}" includes="${zip.file}"/>
 		</zip>
 	</target>

@@ -91,8 +91,7 @@
 				command="unzip -o ${project.name}-ansible.zip"/>
 	</target>
 
-	<target name="deploy-raptor"
-				description="scp the file to ansible control server">
+	<target name="deploy-raptor">
 			<sshexec host="${c-h}"
 				trust="true"
 				username="${c-h-u}"
@@ -100,6 +99,25 @@
 				verbose="true"
 				command="ansible-playbook deploy-imseam-app-zip.yml --extra-vars &quot;hosts=dell-servers  zip_file=${project.name}.zip target_location=/home/shengjiu&quot;"/>
 	</target>
+	
+	<target name="start-raptor">
+			<sshexec host="${c-h}"
+				trust="true"
+				username="${c-h-u}"
+				password="${c-h-p}"
+				verbose="true"
+				command="ansible-playbook start-imseam.yml --extra-vars &quot;hosts=dell-servers  zip_file=${project.name}.zip target_location=/home/shengjiu&quot;"/>
+	</target>
+
+	<target name="stop-raptor">
+			<sshexec host="${c-h}"
+				trust="true"
+				username="${c-h-u}"
+				password="${c-h-p}"
+				verbose="true"
+				command="ansible-playbook stop-imseam.yml --extra-vars &quot;hosts=dell-servers  zip_file=${project.name}.zip target_location=/home/shengjiu&quot;"/>
+	</target>
+
 	
 	<target name="imseam-build" depends="archive" description="Run the test and copy the jar">
 	</target>

@@ -42,7 +42,7 @@ test6 = Test(6, "startActiveWindow")
 
 siteUserNumber = 3
 
-totalServerNumber = 1
+totalServerNumber = 2
 
 raptorHost = None
 raptorPort = -1
@@ -336,12 +336,14 @@ class TestRunner:
         userNumber = str(grinder.agentNumber) +'-' + str(grinder.threadNumber) + '-' +str(grinder.runNumber)
         siteNumber = getSiteNumber(grinder.agentNumber,grinder.threadNumber)
         site = getSite(siteNumber, glock1)
-        userName = "Test user " + userNumber
+        userName = str(siteNumber) + '-' + str(siteUserNumber) + '-' + userNumber
+        #sitenumber-usernumber-operator waitsiteuser
         if(isOperator(grinder.agentNumber, grinder.threadNumber)):
             userName = userName + "-operator"
             
         if(isWaitSiteUser(grinder.agentNumber, grinder.threadNumber)):
             log('wait site user:' + userName)
+            userName = userName +'-waitsiteuser'
             user = TestUser(None, isOperator(grinder.agentNumber, grinder.threadNumber), isWaitSiteUser(grinder.agentNumber, grinder.threadNumber), userName, site)
             user.wait()
 

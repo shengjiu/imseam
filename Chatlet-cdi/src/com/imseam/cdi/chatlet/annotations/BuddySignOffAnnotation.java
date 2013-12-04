@@ -1,6 +1,6 @@
 package com.imseam.cdi.chatlet.annotations;
 
-import com.imseam.cdi.chatlet.ext.annotation.BuddyStatusChange;
+import com.imseam.cdi.chatlet.ext.annotation.BuddySignOff;
 
 
 /*
@@ -12,7 +12,7 @@ import com.imseam.cdi.chatlet.ext.annotation.BuddyStatusChange;
  * loop to fireevent to each active window
  * 
  */
-public class BuddySignOffAnnotation extends AbstractChatletEventAnnotation<BuddyStatusChange> implements BuddyStatusChange{
+public class BuddySignOffAnnotation extends AbstractChatletEventAnnotation<BuddySignOff> implements BuddySignOff{
 
 	/**
 	 * 

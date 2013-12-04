@@ -7,8 +7,8 @@ import com.imseam.chatlet.IChatlet;
 import com.imseam.chatlet.IChatletFilter;
 import com.imseam.chatlet.config.ChatletAppConfig;
 import com.imseam.chatlet.listener.IMeetingEventListener;
+import com.imseam.cluster.IClusterCache;
 import com.imseam.raptor.cluster.IClusterInvocationDistributor;
-import com.imseam.raptor.cluster.IClusterStorage;
 import com.imseam.raptor.cluster.IMeetingStorage;
 
 public interface IChatletApplication {
@@ -37,7 +37,7 @@ public interface IChatletApplication {
 	
 	IChatlet getChatlet();
 	
-	IClusterStorage getClusterStorage();
+//	IClusterStorage getClusterStorage();
 	
 	IMeetingStorage getMeetingStorage();
 	

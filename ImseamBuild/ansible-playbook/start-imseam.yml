@@ -1,0 +1,8 @@
+---
+- hosts: '{{ hosts }}'
+  user: shengjiu
+  tasks:
+  - name: startup
+    shell: cd ~/imseam/bin && ./startup.sh
+
+
