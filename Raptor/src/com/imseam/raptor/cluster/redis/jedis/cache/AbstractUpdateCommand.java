@@ -1,35 +1,52 @@
 package com.imseam.raptor.cluster.redis.jedis.cache;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.imseam.cluster.LockException;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
 public abstract class AbstractUpdateCommand{
 	
-	private Set<String> lockKeyList = new HashSet<String>();
-	protected AbstractUpdateCommand(String ... lockKeys){
-		if(lockKeys != null){
-			for(String lockKey:lockKeys){
-				lockKeyList.add(lockKey);
-			}
-		}
+	private String [] keys = null;
+	
+	protected AbstractUpdateCommand(String ... keys){
+		this.keys = keys;
 	}
 
-	void addAdditionalLockKey(String lockKey){
-		lockKeyList.add(lockKey);
+	public <T extends AbstractUpdateCommand> Object doCommand(JedisClusterCache clusterCache) throws LockException{
+		JedisLockHolder lockHolder = clusterCache.currentLockHolder();
+		
+		lockHolder.lock(keys);
+		
+		if(clusterCache.currentTransaction() == null){
+			try{
+				return doCommandWithoutTransaction(clusterCache.getJedis());
+			}finally{
+				lockHolder.unlock(keys);
+			}
+		}
+		return new FutureResult((T)this);
 	}
 	
-	
-	String[] getLockKeys(){
-		return lockKeyList.toArray(new String[lockKeyList.size()]);
+	public String[] getKeys(){
+		return keys;
 	}
-	
-	
-	abstract public void doCommandWithoutTransaction(Jedis jedis);
+
+
+	abstract public Object doCommandWithoutTransaction(Jedis jedis);
 	
 	abstract public void doCommandWithTransaction(Transaction transaction);
 	
+	
+	public static class FutureResult<T extends AbstractUpdateCommand>{
+		private T command;
+		public FutureResult(T t){
+			this.command = t;
+		}
+		
+		public T getCommand(){
+			return command;
+		}
+	}
 
 }

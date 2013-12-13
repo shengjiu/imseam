@@ -1,20 +1,19 @@
 package com.imseam.raptor.cluster.redis.jedis.cache;
 
+import java.util.List;
 import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.util.SafeEncoder;
 
 import com.imseam.cluster.IClusterCache;
 import com.imseam.cluster.IClusterTransaction;
-import com.imseam.cluster.TimeoutForAcquireLockException;
-import com.imseam.raptor.cluster.redis.jedis.JedisInstance;
+import com.imseam.cluster.LockException;
 import com.imseam.raptor.cluster.redis.jedis.cache.commands.Put;
+import com.imseam.raptor.cluster.redis.jedis.cache.commands.PutIfAbsent;
 import com.imseam.raptor.cluster.redis.jedis.cache.commands.Remove;
-import com.imseam.serialize.SerializerUtil;
 
 public class JedisClusterCache implements IClusterCache {
 	
@@ -29,25 +28,17 @@ public class JedisClusterCache implements IClusterCache {
 	JedisClusterCache(Jedis jedis, JedisCachePool pool){
 		this.jedis = jedis;
 		this.pool = pool;
-		this.lockHolder = new JedisLockHolder(jedis);
+		this.lockHolder = new JedisLockHolder(jedis, null);
 	}
 	
 	@Override
-	public void releaseToPoolWithCommit() {
-		try {
-			while (transactionStack.isEmpty()) {
-				JedisTransaction transaction = (JedisTransaction) transactionStack.pop();
-				transaction.commit();
-			}
-		} finally {
-			pool.releaseToPool(jedis);
-		}
-	}
+	public void releaseToPool() {
 
-	
-	@Override
-	public void releaseToPoolWithRollback() {
 		try {
+			if (!transactionStack.isEmpty()) {
+				log.warn("The transaction is not empty, all the pending transation will be rollback");
+			}
+
 			while (transactionStack.isEmpty()) {
 				JedisTransaction transaction = (JedisTransaction) transactionStack.pop();
 				transaction.rollback();
@@ -57,109 +48,79 @@ public class JedisClusterCache implements IClusterCache {
 		}
 	}
 	
-	private boolean isInTransaction(){
-		return this.transactionStack.size() > 0;
+	public JedisTransaction currentTransaction(){
+		return this.transactionStack.peek();
 	}
 
-	@Override
-	public <T> void put(String key, T obj) {
-		
-		Put<T> putCommand = Put.at(key, obj);
-		
-		if(isInTransaction())
-			putCommand.doCommandWithoutTransaction(jedis);
-		else
-			transactionStack.peek().onCommand(putCommand);
-		
-	}
-
-	@Override
-	public <T> T putIfAbsent(String key, T obj) {
-		byte[] originalBytes = null;
-		T originalObject = null;
-		byte[] keyBytes = SafeEncoder.encode(key);
-		Jedis jedis = null;
-		try{
-			jedis = JedisInstance.getJedisFromPool();
-			originalBytes = jedis.get(keyBytes);
-			
-			if(originalBytes == null){
-				jedis.set(keyBytes, SerializerUtil.serialize(obj));
-			}else{
-				originalObject = (T)SerializerUtil.deserialize(originalBytes);
-			}
-		}finally{
-			JedisInstance.returnToPool(jedis);
+	public JedisLockHolder currentLockHolder(){
+		JedisTransaction transaction = this.transactionStack.peek();
+		if(transaction == null){
+			return this.lockHolder;
+		}else{
+			return transaction.getLockHolder();
 		}
-		return originalObject;
+	}
+
+	
+	public Jedis getJedis(){
+		return jedis;
 	}
 
 	@Override
-	public void remove(String key) {
-		Remove removeCommand = Remove.at(key);
-		
-		if(isInTransaction())
-			removeCommand.doCommandWithoutTransaction(jedis);
-		else
-			transactionStack.peek().onCommand(removeCommand);
+	public <T> void put(String key, T obj) throws LockException {
+		Put.at(key, obj).doCommand(this);
+	}
 
+	@Override
+	public <T> T putIfAbsent(String key, T value) throws LockException{
+		return (T) PutIfAbsent.at(key, value).doCommand(this);
+	}
+
+	@Override
+	public void remove(String...key) {
+		Remove.at(key).doCommandWithoutTransaction(jedis);
+	}
+
+	@Override
+	public <T> List<T> get(String...keys) {
+		assert(keys != null);
+		assert(keys.length > 0);
+		
+		List<byte[]> bytesList = jedis.mget(ByteUtils.toBytesArray(keys));
+		
+		if(bytesList == null) return null;
+
+		return ByteUtils.deserialize(bytesList);
 	}
 
 	@Override
 	public <T> T get(String key) {
-		byte[] originalBytes = null;
-		T originalObject = null;
-		byte[] keyBytes = SafeEncoder.encode(key);
+		assert(key != null);
+
+		byte[] bytes = jedis.get(ByteUtils.toBytes(key));
 		
-		originalBytes = jedis.get(keyBytes);
-	
-		return (T)SerializerUtil.deserialize(originalBytes);
+		if(bytes == null) return null;
+
+		return ByteUtils.deserialize(bytes);
 	}
 
-
-
 	@Override
-	public void lock(String... keys) throws TimeoutForAcquireLockException {
-		JedisTransaction transaction = this.transactionStack.peek();
-		if(transaction != null){
-			transaction.lock(keys);
-		}else{
-			this.lockHolder.lock(keys);
-		}
-	}
-
-
-	@Override
-	public void optimisticLock(String... keys) {
-		JedisTransaction transaction = this.transactionStack.peek();
-		if(transaction != null){
-			transaction.optimisticLock(keys);
-		}else{
-			this.lockHolder.optimisticLock(keys);
-		}
+	public void lock(String... keys) throws LockException {
+		currentLockHolder().lock(keys);
 	}
 
 	@Override
 	public void unlock(String... keys) {
-		JedisTransaction transaction = this.transactionStack.peek();
-		if(transaction != null){
-			transaction.unlock(keys);
-		}else{
-			this.lockHolder.unlock(keys);
-		}
+		currentLockHolder().unlock(keys);
 	}
-
-
 
 	@Override
 	public IClusterTransaction startTransaction() {
-		JedisTransaction transaction = new JedisTransaction(jedis);
-		this.transactionStack.add(transaction);
-		return transaction;
+		JedisLockHolder currentLockHolder = this.transactionStack.peek().getLockHolder();
+		JedisTransaction newTransaction = new JedisTransaction(jedis, currentLockHolder);
+		
+		this.transactionStack.add(newTransaction);
+		return newTransaction;
 	}
-
-
-
-
 	
 }

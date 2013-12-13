@@ -2,10 +2,9 @@ package com.imseam.raptor.cluster.redis.jedis.cache.commands;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
-import redis.clients.util.SafeEncoder;
 
 import com.imseam.raptor.cluster.redis.jedis.cache.AbstractUpdateCommand;
-import com.imseam.serialize.SerializerUtil;
+import com.imseam.raptor.cluster.redis.jedis.cache.ByteUtils;
 
 public class Put <T> extends AbstractUpdateCommand{
 	
@@ -24,19 +23,16 @@ public class Put <T> extends AbstractUpdateCommand{
 
 	@Override
 	public void doCommandWithTransaction(Transaction jedisTransaction) {
-		byte[] keyBytes = SafeEncoder.encode(key);
-		jedisTransaction.set(keyBytes, SerializerUtil.serialize(value));
+		jedisTransaction.set(ByteUtils.toBytes(key), ByteUtils.serialize(value));
 		
 	}
 
 
 	@Override
-	public void doCommandWithoutTransaction(Jedis jedis) {
+	public Object doCommandWithoutTransaction(Jedis jedis) {
 		
-		byte[] keyBytes = SafeEncoder.encode(key);
-		
-		jedis.set(keyBytes, SerializerUtil.serialize(value));
-			
+		jedis.set(ByteUtils.toBytes(key), ByteUtils.serialize(value));
+		return null;
 	}
 
 	

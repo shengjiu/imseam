@@ -13,6 +13,7 @@ import com.imseam.common.util.ExceptionUtil;
 public class SerializerUtil {
 	
 	public static byte[] serialize(Object object){
+		if(object == null) return null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutput out = null;
 		byte[] bytes = null;
@@ -34,6 +35,7 @@ public class SerializerUtil {
 	}
 	
 	public static Object deserialize(byte [] bytes){
+		if(bytes == null) return null;
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		ObjectInput in = null;
 		Object object = null; 
