@@ -34,8 +34,8 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 				return null;
 			}
 			@Override
-			public Response<Long> doInTransaction(Transaction transaction) {
-				return transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
+			public void doInTransaction(Transaction transaction) {
+				void transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
 			}
 		}, collectionKey);
 	}
@@ -55,8 +55,8 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 				
 			}
 			@Override
-			public Response<Long> doInTransaction(Transaction transaction) {
-				return transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
+			public void doInTransaction(Transaction transaction) {
+				transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
 			}
 		}, collectionKey);
 	}
@@ -71,12 +71,10 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 				return null;
 			}
 			@Override
-			public List<Response<Long>> doInTransaction(Transaction transaction) {
-				List<Response<Long>> responseList = new ArrayList<Response<Long>>();
+			public void doInTransaction(Transaction transaction) {
 				for(String key : keys){
-					responseList.add(transaction.hdel(collectionKey, key));
+					transaction.hdel(collectionKey, key);
 				}
-				return responseList; 
 			}
 		}, collectionKey);
 
@@ -109,7 +107,7 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 
 		final String collectionKey = getCollectionKey();
 
-		return AbstractFutureResult.getObjectInFuture(this.getCache(), new AbstractFutureGetCommand<Response<String>>(){
+		return AbstractFutureResult.getObjectInFuture(this.getCache(), new IJedisFutureGetCommand<String>(){
 			@Override
 			public Response<String> doInTransaction(Transaction transaction) {
 				return transaction.hget(collectionKey, key);
@@ -122,7 +120,7 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 		
 		final String collectionKey = getCollectionKey();
 
-		return AbstractFutureResult.getMapInFuture(this.getCache(), new AbstractFutureGetCommand<Response<Map<String, String>>>(){
+		return AbstractFutureResult.getMapInFuture(this.getCache(), new IJedisFutureGetCommand<Map<String, String>>(){
 			@Override
 			public Response<Map<String, String>> doInTransaction(Transaction transaction) {
 				return transaction.hgetAll(collectionKey);
@@ -137,7 +135,7 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 		
 		final String collectionKey = getCollectionKey();
 		
-		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new AbstractFutureGetCommand<Response<Long>>(){
+		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new IJedisFutureGetCommand<Long>(){
 			@Override
 			public Response<Long> doInTransaction(Transaction transaction) {
 				
