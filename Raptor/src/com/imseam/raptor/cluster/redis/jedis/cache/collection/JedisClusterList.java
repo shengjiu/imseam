@@ -36,12 +36,10 @@ public class JedisClusterList<T> extends AbstractCollection implements IClusterL
 				return null;
 			}
 			@Override
-			public List<Response<Long>> doInTransaction(Transaction transaction) {
-				List<Response<Long>> responseList = new ArrayList<Response<Long>>();
+			public void doInTransaction(Transaction transaction) {
 				for(T t :ts){
-					responseList.add(transaction.lpush(collectionKey, ByteUtils.serializeToString(t)));
+				   add(transaction.lpush(collectionKey, ByteUtils.serializeToString(t)));
 				}
-				return responseList; 
 			}
 		}, collectionKey);
 	}
@@ -64,12 +62,12 @@ public class JedisClusterList<T> extends AbstractCollection implements IClusterL
 				return null;
 			}
 			@Override
-			public Response<Long> doInTransaction(Transaction transaction) {
+			public void doInTransaction(Transaction transaction) {
 				String uniqueValue = UUID.randomUUID().toString();
 				for(int index : indexes){
 					transaction.lset(collectionKey, index, uniqueValue);
 				}
-				return transaction.lrem(collectionKey, 0, uniqueValue);
+				transaction.lrem(collectionKey, 0, uniqueValue);
 			}
 		}, collectionKey);
 
@@ -94,7 +92,7 @@ public class JedisClusterList<T> extends AbstractCollection implements IClusterL
 	public IFutureResult<T> getInFuture(final int i) {
 		final String collectionKey = getCollectionKey();
 
-		return AbstractFutureResult.getObjectInFuture(this.getCache(), new AbstractFutureGetCommand<Response<String>>(){
+		return AbstractFutureResult.getObjectInFuture(this.getCache(), new IJedisFutureGetCommand<String>(){
 			@Override
 			public Response<String> doInTransaction(Transaction transaction) {
 				return transaction.lindex(collectionKey, i);
@@ -106,7 +104,7 @@ public class JedisClusterList<T> extends AbstractCollection implements IClusterL
 	public IFutureResult<List<T>> getAllInFuture() {
 		final String collectionKey = getCollectionKey();
 		
-		return AbstractFutureResult.getListInFuture(this.getCache(), new AbstractFutureGetCommand<Response<? extends Collection<String>>>(){
+		return AbstractFutureResult.getListInFuture(this.getCache(), new IJedisFutureGetCommand<? extends Collection<String>(){
 			@Override
 			public Response<? extends Collection<String>> doInTransaction(Transaction transaction) {
 				
@@ -119,7 +117,7 @@ public class JedisClusterList<T> extends AbstractCollection implements IClusterL
 	public IFutureResult<Integer> sizeInFuture() {
 		final String collectionKey = getCollectionKey();
 		
-		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new AbstractFutureGetCommand<Response<Long>>(){
+		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new IJedisFutureGetCommand<Long>(){
 			@Override
 			public Response<Long> doInTransaction(Transaction transaction) {
 				
