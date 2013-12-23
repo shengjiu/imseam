@@ -6,13 +6,12 @@ import java.util.List;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
+import com.imseam.cluster.ClusterLockException;
 import com.imseam.cluster.IClusterTransaction;
-import com.imseam.cluster.LockException;
-import com.imseam.raptor.cluster.redis.jedis.cache.commands.Put;
-import com.imseam.raptor.cluster.redis.jedis.cache.commands.Remove;
 
 public class JedisTransaction implements IClusterTransaction{
-	private List<AbstractUpdateCommand> pendingCommandList = new ArrayList<AbstractUpdateCommand>();
+	private List<IJedisCommand<?>> pendingCommandList = new ArrayList<IJedisCommand<?>>();
+//	private Map<IJedisCommand<?>, FutureResult<?>> commandFutureResultMap = new HashMap<IJedisCommand<?>, FutureResult<?>>();
 	private final JedisLockHolder lockHolder;
 	
 	private final Jedis jedis;
@@ -28,7 +27,7 @@ public class JedisTransaction implements IClusterTransaction{
 		return this.lockHolder;
 	}
 	
-	public JedisActiveLocks lock(String... keys) throws LockException {
+	public JedisActiveLocks lock(String... keys) throws ClusterLockException {
 		return lockHolder.lock(keys);
 	}
 
@@ -37,24 +36,31 @@ public class JedisTransaction implements IClusterTransaction{
 		lockHolder.unlock(keys);
 	}
 	
-	void onCommand(AbstractUpdateCommand command) throws LockException{
-		lock(command.getKeys());
+	
+	
+	void onCommand(IJedisCommand<?> command) {
 		pendingCommandList.add(command);
 	}
+//	void onCommand(FutureResult<?> futureResult, IJedisCommand<?> command) throws ClusterLockException{
+//		pendingCommandList.add(command);
+//		commandFutureResultMap.put(command, futureResult);
+//	}
+
 	
 //	private void lockKeys(String[] keys){
 //		lockHolder.lock(keys);
 //	}
 	
 	
-	public void commit() throws LockException{
+	public void commit() throws ClusterLockException{
 		if(pendingCommandList.size() > 0){
 			if(!lockHolder.checkAndWatchHoldingLocks()){
-				throw new LockException("Lost lock exception before commit.");
+				throw new ClusterLockException("Lost lock exception before commit.");
 			}
 			Transaction jedisTransaction = jedis.multi();	
-			for(AbstractUpdateCommand command : pendingCommandList){
-				command.doCommandWithTransaction(jedisTransaction);
+			for(IJedisCommand<?> command : pendingCommandList){
+				
+				command.doInTransaction(jedisTransaction);
 			}
 			jedisTransaction.exec();
 		}

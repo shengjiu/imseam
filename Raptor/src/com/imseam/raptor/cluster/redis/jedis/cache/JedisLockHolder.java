@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
-import com.imseam.cluster.LockException;
+import com.imseam.cluster.ClusterLockException;
 import com.imseam.common.util.ExceptionUtil;
 
 
@@ -75,7 +75,7 @@ public class JedisLockHolder {
 		return filteredLockKeyList.toArray(new String[filteredLockKeyList.size()]);
 	}
 
-	public JedisActiveLocks lock(String... keys) throws LockException {
+	public JedisActiveLocks lock(String... keys) throws ClusterLockException {
 		
 		if (keys == null || keys.length == 0)
 			return null;

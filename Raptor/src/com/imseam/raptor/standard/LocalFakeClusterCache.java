@@ -3,7 +3,7 @@ package com.imseam.raptor.standard;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.imseam.cluster.IClusterTransaction;
-import com.imseam.cluster.LockException;
+import com.imseam.cluster.ClusterLockException;
 import com.imseam.raptor.IChatletApplication;
 import com.imseam.raptor.cluster.IRaptorClustercache;
 
@@ -108,7 +108,7 @@ public class LocalFakeClusterCache implements IRaptorClustercache {
 
 
 @Override
-public void lock(String... keys) throws LockException {
+public void lock(String... keys) throws ClusterLockException {
 	// TODO Auto-generated method stub
 	
 }

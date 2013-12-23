@@ -1,5 +1,7 @@
 package com.imseam.raptor.cluster.redis.jedis.cache;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -7,13 +9,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
+import com.imseam.cluster.ClusterLockException;
 import com.imseam.cluster.IClusterCache;
+import com.imseam.cluster.IClusterList;
+import com.imseam.cluster.IClusterMap;
+import com.imseam.cluster.IClusterSet;
 import com.imseam.cluster.IClusterTransaction;
-import com.imseam.cluster.LockException;
-import com.imseam.raptor.cluster.redis.jedis.cache.commands.Put;
-import com.imseam.raptor.cluster.redis.jedis.cache.commands.PutIfAbsent;
-import com.imseam.raptor.cluster.redis.jedis.cache.commands.Remove;
+import com.imseam.cluster.IFutureResult;
+import com.imseam.common.util.ExceptionUtil;
+import com.imseam.raptor.cluster.redis.jedis.cache.collection.JedisClusterList;
+import com.imseam.raptor.cluster.redis.jedis.cache.collection.JedisClusterMap;
+import com.imseam.raptor.cluster.redis.jedis.cache.collection.JedisClusterSet;
 
 public class JedisClusterCache implements IClusterCache {
 	
@@ -67,18 +76,60 @@ public class JedisClusterCache implements IClusterCache {
 	}
 
 	@Override
-	public <T> void put(String key, T obj) throws LockException {
-		Put.at(key, obj).doCommand(this);
+	public <T> void put(final String key, final T value) throws ClusterLockException {
+		
+		doUpdateCommand(new IJedisCommand<T>(){
+			@Override
+			public T doImmediate(Jedis jedis) {
+				jedis.set(ByteUtils.toBytes(key), ByteUtils.serialize(value));
+				return null;
+			}
+			@Override
+			public T doInTransaction(Transaction transaction) {
+				transaction.set(ByteUtils.toBytes(key), ByteUtils.serialize(value));
+				return null;
+			}
+			
+		}, key);
 	}
 
 	@Override
-	public <T> T putIfAbsent(String key, T value) throws LockException{
-		return (T) PutIfAbsent.at(key, value).doCommand(this);
+	public <T> T putIfAbsent(final String key, final T value) throws ClusterLockException{
+		
+		return doUpdateCommand(new IJedisCommand<T>(){
+			@Override
+			public T doImmediate(Jedis jedis) {
+				if(jedis.setnx(ByteUtils.toBytes(key), ByteUtils.serialize(value)) == 1){
+					return null;
+				}
+				return ByteUtils.deserialize(jedis.get(ByteUtils.toBytes(key)));
+			}
+			@Override
+			public T doInTransaction(Transaction transaction) {
+				transaction.setnx(ByteUtils.toBytes(key), ByteUtils.serialize(value));
+				return null;
+			}
+			
+		}, key);
+		
 	}
 
 	@Override
-	public void remove(String...key) {
-		Remove.at(key).doCommandWithoutTransaction(jedis);
+	public void remove(final String...keys) throws ClusterLockException {
+//		Remove.at(key).doCommandWithoutTransaction(jedis);
+		
+		doUpdateCommand(new IJedisCommand<Object>(){
+			@Override
+			public Object doImmediate(Jedis jedis) {
+				jedis.del(keys);
+				return null;
+			}
+			@Override
+			public Response<Long> doInTransaction(Transaction transaction) {
+				return transaction.del(keys);
+			}
+			
+		}, keys);
 	}
 
 	@Override
@@ -103,9 +154,39 @@ public class JedisClusterCache implements IClusterCache {
 
 		return ByteUtils.deserialize(bytes);
 	}
+	
 
 	@Override
-	public void lock(String... keys) throws LockException {
+	public <T> List<IFutureResult<T>> getInFuture(String... keys) {
+		List<IFutureResult<T>> resultList = new ArrayList<IFutureResult<T>>();
+
+		for(final String key : keys){
+			resultList.add( AbstractFutureResult.<T>getObjectInFuture(this, new AbstractFutureGetCommand<Response<String>>(){
+				@Override
+				public Response<String> doInTransaction(Transaction transaction) {
+					return transaction.get(key);
+				}
+			}));
+		}
+		return resultList;
+
+		
+	}
+
+	@Override
+	public <T> IFutureResult<T> getInFuture(final String key) {
+		return AbstractFutureResult.<T>getObjectInFuture(this, new AbstractFutureGetCommand<Response<String>>(){
+			@Override
+			public Response<String> doInTransaction(Transaction transaction) {
+				return transaction.get(key);
+			}
+		});
+		
+	}
+
+	
+	@Override
+	public void lock(String... keys) throws ClusterLockException {
 		currentLockHolder().lock(keys);
 	}
 
@@ -122,5 +203,48 @@ public class JedisClusterCache implements IClusterCache {
 		this.transactionStack.add(newTransaction);
 		return newTransaction;
 	}
+	
+	public <T> T doUpdateCommand(IJedisCommand<T> updateCommand, String... key) throws ClusterLockException{
+		JedisLockHolder lockHolder = currentLockHolder();
+		
+		lockHolder.lock(key);
+		JedisTransaction transaction = currentTransaction();
+		if(transaction == null){
+			try{
+				return updateCommand.doImmediate(jedis);
+			}finally{
+				lockHolder.unlock(key);
+			}
+		}else{
+			transaction.onCommand(updateCommand);
+		}
+		return null;
+	}
+
+	public <T> void doFutureGetCommand(IJedisCommand<T> getCommand){
+		
+		JedisTransaction transaction = currentTransaction();
+		
+		if(transaction == null) ExceptionUtil.createRuntimeException("The future get command must be in a transaction");
+		
+		transaction.onCommand(getCommand);
+		
+	}
+
+	@Override
+	public <T> IClusterSet<T> getSet(String key) {
+		return new JedisClusterSet<T>(this, key);
+	}
+
+	@Override
+	public <T> IClusterMap<T> getMap(String key) {
+		return new JedisClusterMap<T>(this, key);
+	}
+
+	@Override
+	public <T> IClusterList<T> getList(String key) {
+		return new JedisClusterList<T>(this, key);
+	}
+
 	
 }
