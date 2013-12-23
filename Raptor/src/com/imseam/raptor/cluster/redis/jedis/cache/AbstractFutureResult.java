@@ -11,14 +11,16 @@ import redis.clients.jedis.Transaction;
 
 import com.imseam.cluster.IFutureResult;
 
-public abstract class AbstractFutureResult<T> implements IFutureResult<T> {
+public abstract class AbstractFutureResult<T, W> implements IFutureResult<T> {
 	
 	private boolean transactionCommitted = false;
 	private boolean resultBuilt = false;
 	private T result;
+	private Response<W> jedisResponse = null;
 	
-	public void transactionCommitted(){
+	public void transactionCommitted(Response<W> jedisResponse){
 		transactionCommitted = true;
+		this.jedisResponse = jedisResponse;
 	}
 
 	public T get()throws ResultIsNotReadyException{
@@ -35,126 +37,118 @@ public abstract class AbstractFutureResult<T> implements IFutureResult<T> {
 	public abstract T buildResult();
 	
 	
-	public static IFutureResult<Integer> getIntegerInFuture(final JedisClusterCache cache, final IJedisCommand<Response<Long>> command) {
-		final List<Response<Long>> responseList = new ArrayList<Response<Long>>();
+	public static IFutureResult<Integer> getIntegerInFuture(final JedisClusterCache cache, final IJedisFutureGetCommand<Long> command) {
 
-		final AbstractFutureResult<Integer> futureResult = new AbstractFutureResult<Integer>(){
-			@Override
-			public Integer buildResult(){
-				return responseList.get(0).get().intValue();
-			}
-		};
+        final AbstractFutureResult<Integer, Long> futureResult = new AbstractFutureResult<Integer, Long>(){
+                @Override
+                public Integer buildResult(){
+                	if(jedisResponse != null){
+                        	return jedisResponse.get().intValue();
+                	}
+                	return null;
+                }
+        };
 
-		cache.doFutureGetCommand(new AbstractFutureGetCommand<Response<Long>>(){
-			@Override
-			public Response<Long> doInTransaction(Transaction transaction) {
-				futureResult.transactionCommitted();
-				Response<Long> response = command.doInTransaction(transaction); 
-				responseList.add(response);
-				return response;
-			}
-		});
-		
-		return futureResult;	
+        addFutureGetCommand(cache, getCommand, futureResult)
+        
+        return futureResult;        
 	}
 
-	public static IFutureResult<Boolean> getBooleanInFuture(final JedisClusterCache cache, final IJedisCommand<Response<Boolean>> command) {
-		final List<Response<Boolean>> responseList = new ArrayList<Response<Boolean>>();
+	public static IFutureResult<Boolean> getBooleanInFuture(final JedisClusterCache cache, final IJedisFutureGetCommand<Boolean> command) {
+		
 
-		final AbstractFutureResult<Boolean> futureResult = new AbstractFutureResult<Boolean>(){
+		final AbstractFutureResult<Boolean, Boolean> futureResult = new AbstractFutureResult<Boolean, Boolean>(){
 			@Override
 			public Boolean buildResult(){
-				return responseList.get(0).get();
-			}
+			if(jedisResponse != null){
+                        	return jedisResponse.get();
+                	}				
+			return null;
+			
 		};
 
-		cache.doFutureGetCommand(new AbstractFutureGetCommand<Response<Boolean>>(){
-			@Override
-			public Response<Boolean> doInTransaction(Transaction transaction) {
-				futureResult.transactionCommitted();
-				Response<Boolean> response = command.doInTransaction(transaction); 
-				responseList.add(response);
-				return response;
-			}
-		});
+		addFutureGetCommand(cache, getCommand, futureResult)
 		
 		return futureResult;	
 	}
 	
-	public static <T> IFutureResult<List<T>> getListInFuture(final JedisClusterCache cache, final IJedisCommand<Response<? extends Collection<String>>> command) {
-		final List<Response<? extends Collection<String>>> responseList = new ArrayList<Response<? extends Collection<String>>>();
-		
-		final AbstractFutureResult<List<T>> futureResult = new AbstractFutureResult<List<T>>(){
+	public static <T> IFutureResult<List<T>> getListInFuture(final JedisClusterCache cache, final IJedisFutureGetCommand<? extends Collection<String>> command) {
+		final AbstractFutureResult<List<T>, ? extends Collection<String>> futureResult = new AbstractFutureResult<List<T>, ? extends Collection<String>>(){
 			@Override
 			public List<T> buildResult(){
-				List<T> result = ByteUtils.deserializeString(responseList.get(0).get());
-				return result;
-			}
+			if(jedisResponse != null){
+                        	return ByteUtils.deserializeString(jedisResponse.get());
+				
+                	}				
+			return null;
+			
 		};
+
+		addFutureGetCommand(cache, getCommand, futureResult)
 		
-		cache.doFutureGetCommand(new AbstractFutureGetCommand<Response<? extends Collection<String>>>(){
-			@Override
-			public Response<? extends Collection<String>> doInTransaction(Transaction transaction) {
-				futureResult.transactionCommitted();
-				Response<? extends Collection<String>> response = command.doInTransaction(transaction); 
-				responseList.add(response);
-				return response;
-			}
-		});
+		return futureResult;		
 		
-		return futureResult;
 	}
 
-	public static <T> IFutureResult<Map<String, T>> getMapInFuture(final JedisClusterCache cache, final IJedisCommand<Response<Map<String, String>>> command) {
-		final List<Response<Map<String, String>>> responseList = new ArrayList<Response<Map<String, String>>>();
-		final AbstractFutureResult<Map<String, T>> futureResult = new AbstractFutureResult<Map<String, T>>(){
+	public static <T> IFutureResult<Map<String, T>> getMapInFuture(final JedisClusterCache cache, final IJedisFutureGetCommand<Map<String, String>> command) {
+
+		
+		final AbstractFutureResult<Map<String, T>, Map<String, String>> futureResult = new AbstractFutureResult<Map<String, T>, Map<String, String>>(){
 			@Override
 			public Map<String, T> buildResult(){
-				Map<String, String> stringMap = responseList.get(0).get();
+			if(jedisResponse != null){
+                        	Map<String, String> stringMap = jedisResponse.get();
 				if(stringMap == null || stringMap.size() == 0) return null;
 				Map<String, T> tMap = new HashMap<String, T>();
 				for(String key : stringMap.keySet()){
 					tMap.put(key, ByteUtils.<T>deserializeString(stringMap.get(key)));
 				}
 				return tMap;
-			}
+				
+                	}				
+			return null;
+			
 		};
 
-		cache.doFutureGetCommand(new AbstractFutureGetCommand<Response<Map<String, String>>>(){
-			@Override
-			public Response<Map<String, String>> doInTransaction(Transaction transaction) {
-				futureResult.transactionCommitted();
-				Response<Map<String, String>> response = command.doInTransaction(transaction);
-				responseList.add(response);
-				return response;
-			}
-		});
+		addFutureGetCommand(cache, getCommand, futureResult)
+		
 		return futureResult;
 
 	}
 	
-	public static <T> IFutureResult<T> getObjectInFuture(final JedisClusterCache cache, final IJedisCommand<Response<String>> command) {
+	public static <T> IFutureResult<T> getObjectInFuture(final JedisClusterCache cache, final IJedisFutureGetCommand<String> command) {
 
-		final List<Response<String>> responseList = new ArrayList<Response<String>>();
-		
-		final AbstractFutureResult<T> futureResult = new AbstractFutureResult<T>(){
-			@Override
-			public T buildResult(){
-				return ByteUtils.deserializeString(responseList.get(0).get());
-			}
-		};
 
-		cache.doFutureGetCommand(new AbstractFutureGetCommand<Response<String>>(){
-			@Override
-			public Response<String> doInTransaction(Transaction transaction) {
-				futureResult.transactionCommitted();
-				Response<String> response = command.doInTransaction(transaction); 
-				responseList.add(response);
-				return response;
-			}
-		});
 		
-		return futureResult;
+        final AbstractFutureResult<T, String> futureResult = new AbstractFutureResult<T, String>(){
+                @Override
+                public T buildResult(){
+                	if(jedisResponse != null){
+                        	return ByteUtils.deserializeString(jedisResponse.get());
+                	}
+                	return null;
+                }
+        };
+
+        addFutureGetCommand(cache, getCommand, futureResult)
+        
+        return futureResult;        
+		
+	}
+	
+	
+
+	public static <W>void addFutureGetCommand(final JedisClusterCache cache,final IJedisFutureGetCommand<W> getCommand, final AbstractFutureResult<?, W> futureResult) {
+
+        cache.doFutureGetCommand(new AbstractFutureGetCommand<?, W>(){
+                @Override
+                public void doInTransaction(Transaction transaction) {
+                        Response<W> response = getCommand.doInTransaction(transaction);
+                        futureResult.transactionCommitted(response);
+                }
+        });
+        
+        return futureResult;        
 	}
 	
 }
