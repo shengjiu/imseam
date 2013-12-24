@@ -7,6 +7,6 @@ public interface IJedisCommand<T>{
 
 	T doImmediate(Jedis jedis);
 	
-	T doInTransaction(Transaction transaction);
+	void doInTransaction(Transaction transaction);
 	
 }

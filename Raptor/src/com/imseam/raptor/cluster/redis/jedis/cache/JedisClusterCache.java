@@ -85,9 +85,9 @@ public class JedisClusterCache implements IClusterCache {
 				return null;
 			}
 			@Override
-			public T doInTransaction(Transaction transaction) {
+			public void doInTransaction(Transaction transaction) {
 				transaction.set(ByteUtils.toBytes(key), ByteUtils.serialize(value));
-				return null;
+				
 			}
 			
 		}, key);
@@ -105,9 +105,9 @@ public class JedisClusterCache implements IClusterCache {
 				return ByteUtils.deserialize(jedis.get(ByteUtils.toBytes(key)));
 			}
 			@Override
-			public T doInTransaction(Transaction transaction) {
+			public void doInTransaction(Transaction transaction) {
 				transaction.setnx(ByteUtils.toBytes(key), ByteUtils.serialize(value));
-				return null;
+				
 			}
 			
 		}, key);
@@ -125,8 +125,8 @@ public class JedisClusterCache implements IClusterCache {
 				return null;
 			}
 			@Override
-			public Response<Long> doInTransaction(Transaction transaction) {
-				return transaction.del(keys);
+			public void doInTransaction(Transaction transaction) {
+				transaction.del(keys);
 			}
 			
 		}, keys);
@@ -161,7 +161,7 @@ public class JedisClusterCache implements IClusterCache {
 		List<IFutureResult<T>> resultList = new ArrayList<IFutureResult<T>>();
 
 		for(final String key : keys){
-			resultList.add( AbstractFutureResult.<T>getObjectInFuture(this, new AbstractFutureGetCommand<Response<String>>(){
+			resultList.add( AbstractFutureResult.<T>getObjectInFuture(this, new IJedisFutureGetCommand<String>(){
 				@Override
 				public Response<String> doInTransaction(Transaction transaction) {
 					return transaction.get(key);
@@ -175,7 +175,7 @@ public class JedisClusterCache implements IClusterCache {
 
 	@Override
 	public <T> IFutureResult<T> getInFuture(final String key) {
-		return AbstractFutureResult.<T>getObjectInFuture(this, new AbstractFutureGetCommand<Response<String>>(){
+		return AbstractFutureResult.<T>getObjectInFuture(this, new IJedisFutureGetCommand<String>(){
 			@Override
 			public Response<String> doInTransaction(Transaction transaction) {
 				return transaction.get(key);

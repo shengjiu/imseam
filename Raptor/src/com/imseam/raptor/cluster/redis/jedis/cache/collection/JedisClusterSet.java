@@ -11,10 +11,10 @@ import redis.clients.jedis.Transaction;
 import com.imseam.cluster.ClusterLockException;
 import com.imseam.cluster.IClusterSet;
 import com.imseam.cluster.IFutureResult;
-import com.imseam.raptor.cluster.redis.jedis.cache.AbstractFutureGetCommand;
 import com.imseam.raptor.cluster.redis.jedis.cache.AbstractFutureResult;
 import com.imseam.raptor.cluster.redis.jedis.cache.ByteUtils;
 import com.imseam.raptor.cluster.redis.jedis.cache.IJedisCommand;
+import com.imseam.raptor.cluster.redis.jedis.cache.IJedisFutureGetCommand;
 import com.imseam.raptor.cluster.redis.jedis.cache.JedisClusterCache;
 
 public class JedisClusterSet<T> extends AbstractCollection implements IClusterSet<T> {
@@ -33,12 +33,10 @@ public class JedisClusterSet<T> extends AbstractCollection implements IClusterSe
 				return null;
 			}
 			@Override
-			public List<Response<Long>> doInTransaction(Transaction transaction) {
-				List<Response<Long>> responseList = new ArrayList<Response<Long>>();
+			public void doInTransaction(Transaction transaction) {
 				for(T t :ts){
-					responseList.add(transaction.sadd(collectionKey, ByteUtils.serializeToString(t)));
+					transaction.sadd(collectionKey, ByteUtils.serializeToString(t));
 				}
-				return responseList;
 			}
 		}, collectionKey);
 	}
@@ -53,12 +51,11 @@ public class JedisClusterSet<T> extends AbstractCollection implements IClusterSe
 				return null;
 			}
 			@Override
-			public List<Response<Long>> doInTransaction(Transaction transaction) {
+			public void doInTransaction(Transaction transaction) {
 				List<Response<Long>> responseList = new ArrayList<Response<Long>>();
 				for(T t :ts){
-					responseList.add(transaction.srem(collectionKey, ByteUtils.serializeToString(t)));
+					transaction.srem(collectionKey, ByteUtils.serializeToString(t));
 				}
-				return responseList;
 			}
 		}, collectionKey);
 
@@ -88,7 +85,7 @@ public class JedisClusterSet<T> extends AbstractCollection implements IClusterSe
 
 		final String collectionKey = getCollectionKey();
 		
-		return AbstractFutureResult.getBooleanInFuture(this.getCache(), new AbstractFutureGetCommand<Response<Boolean>>(){
+		return AbstractFutureResult.getBooleanInFuture(this.getCache(), new IJedisFutureGetCommand<Boolean>(){
 			@Override
 			public Response<Boolean> doInTransaction(Transaction transaction) {
 				
@@ -104,7 +101,7 @@ public class JedisClusterSet<T> extends AbstractCollection implements IClusterSe
 		
 		final String collectionKey = getCollectionKey();
 		
-		return AbstractFutureResult.getListInFuture(this.getCache(), new AbstractFutureGetCommand<Response<? extends Collection<String>>>(){
+		return AbstractFutureResult.getListInFuture(this.getCache(), new IJedisFutureGetCommand<Collection<String>>(){
 			@Override
 			public Response<? extends Collection<String>> doInTransaction(Transaction transaction) {
 				
@@ -119,7 +116,7 @@ public class JedisClusterSet<T> extends AbstractCollection implements IClusterSe
 		
 		final String collectionKey = getCollectionKey();
 		
-		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new AbstractFutureGetCommand<Response<Long>>(){
+		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new IJedisFutureGetCommand<Long>(){
 			@Override
 			public Response<Long> doInTransaction(Transaction transaction) {
 				

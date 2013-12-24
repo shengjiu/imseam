@@ -1,8 +1,6 @@
 package com.imseam.raptor.cluster.redis.jedis.cache.collection;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import redis.clients.jedis.Jedis;
@@ -12,10 +10,10 @@ import redis.clients.jedis.Transaction;
 import com.imseam.cluster.ClusterLockException;
 import com.imseam.cluster.IClusterMap;
 import com.imseam.cluster.IFutureResult;
-import com.imseam.raptor.cluster.redis.jedis.cache.AbstractFutureGetCommand;
 import com.imseam.raptor.cluster.redis.jedis.cache.AbstractFutureResult;
 import com.imseam.raptor.cluster.redis.jedis.cache.ByteUtils;
 import com.imseam.raptor.cluster.redis.jedis.cache.IJedisCommand;
+import com.imseam.raptor.cluster.redis.jedis.cache.IJedisFutureGetCommand;
 import com.imseam.raptor.cluster.redis.jedis.cache.JedisClusterCache;
 
 public class JedisClusterMap<T> extends AbstractCollection implements IClusterMap<T> {
@@ -34,8 +32,8 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 				return null;
 			}
 			@Override
-			public Response<Long> doInTransaction(Transaction transaction) {
-				return transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
+			public void doInTransaction(Transaction transaction) {
+				transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
 			}
 		}, collectionKey);
 	}
@@ -55,8 +53,8 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 				
 			}
 			@Override
-			public Response<Long> doInTransaction(Transaction transaction) {
-				return transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
+			public void doInTransaction(Transaction transaction) {
+				transaction.hset(collectionKey, key, ByteUtils.serializeToString(t));
 			}
 		}, collectionKey);
 	}
@@ -71,12 +69,10 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 				return null;
 			}
 			@Override
-			public List<Response<Long>> doInTransaction(Transaction transaction) {
-				List<Response<Long>> responseList = new ArrayList<Response<Long>>();
+			public void doInTransaction(Transaction transaction) {
 				for(String key : keys){
-					responseList.add(transaction.hdel(collectionKey, key));
+					transaction.hdel(collectionKey, key);
 				}
-				return responseList; 
 			}
 		}, collectionKey);
 
@@ -109,7 +105,7 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 
 		final String collectionKey = getCollectionKey();
 
-		return AbstractFutureResult.getObjectInFuture(this.getCache(), new AbstractFutureGetCommand<Response<String>>(){
+		return AbstractFutureResult.getObjectInFuture(this.getCache(), new IJedisFutureGetCommand<String>(){
 			@Override
 			public Response<String> doInTransaction(Transaction transaction) {
 				return transaction.hget(collectionKey, key);
@@ -122,7 +118,7 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 		
 		final String collectionKey = getCollectionKey();
 
-		return AbstractFutureResult.getMapInFuture(this.getCache(), new AbstractFutureGetCommand<Response<Map<String, String>>>(){
+		return AbstractFutureResult.getMapInFuture(this.getCache(), new IJedisFutureGetCommand<Map<String, String>>(){
 			@Override
 			public Response<Map<String, String>> doInTransaction(Transaction transaction) {
 				return transaction.hgetAll(collectionKey);
@@ -137,7 +133,7 @@ public class JedisClusterMap<T> extends AbstractCollection implements IClusterMa
 		
 		final String collectionKey = getCollectionKey();
 		
-		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new AbstractFutureGetCommand<Response<Long>>(){
+		return AbstractFutureResult.getIntegerInFuture(this.getCache(), new IJedisFutureGetCommand<Long>(){
 			@Override
 			public Response<Long> doInTransaction(Transaction transaction) {
 				
