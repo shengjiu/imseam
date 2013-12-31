@@ -66,7 +66,6 @@ public class LocalFakeClusterCache implements IRaptorClustercache {
 		
 		/**
 		 * option 1 only one global lock
-		 * 
 		 * option 2 use putifabsent
 		 * like the redis
 		 * 
