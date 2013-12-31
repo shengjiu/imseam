@@ -1,58 +1,40 @@
 package com.imseam.raptor.standard;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
-import com.imseam.cluster.IClusterTransaction;
 import com.imseam.cluster.ClusterLockException;
+import com.imseam.cluster.IClusterList;
+import com.imseam.cluster.IClusterMap;
+import com.imseam.cluster.IClusterSet;
+import com.imseam.cluster.IClusterTransaction;
+import com.imseam.cluster.IFutureResult;
 import com.imseam.raptor.IChatletApplication;
 import com.imseam.raptor.cluster.IRaptorClustercache;
 
-
 public class LocalFakeClusterCache implements IRaptorClustercache {
-	
+
 	private ConcurrentHashMap<String, Object> clusterObjectMap = new ConcurrentHashMap<String, Object>();
-	
-//	private ArrayList<EventListener> elementCreatedListenerList = new ArrayList<EventListener>();
-//	private ArrayList<EventListener> elementRemovedListenerList = new ArrayList<EventListener>();
-//	private ArrayList<EventListener> elementUpdatedListenerList = new ArrayList<EventListener>();
-//
-//
-//
-//	
-//	private void invokeListeners(ArrayList<EventListener> listenerList, ElementEvent event){
-//		for(EventListener listener : listenerList){
-//			listener.invokeListener(event);
-//		}
-//	}
-	
+	private ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<String, ReentrantLock>();
+
 	@Override
-	public <T>void put(String key, T obj) {
+	public <T> void put(String key, T obj) {
 		@SuppressWarnings("unchecked")
-		T oldObj = (T)clusterObjectMap.put(key, obj);
-//		if(oldObj == null){
-//			invokeListeners(elementCreatedListenerList, new ElementEvent(key));
-//		}else{
-//			invokeListeners(elementUpdatedListenerList, new ElementEvent(key));
-//		}
-//		return oldObj;
+		T oldObj = (T) clusterObjectMap.put(key, obj);
 	}
 
 	@Override
 	public <T> T putIfAbsent(String key, T obj) {
-		
-		T oldObj = (T)clusterObjectMap.putIfAbsent(key, obj);
-		if(oldObj == null){
-//			invokeListeners(elementCreatedListenerList, new ElementEvent(key));
-		}
+
+		T oldObj = (T) clusterObjectMap.putIfAbsent(key, obj);
 		return oldObj;
 	}
 
 	@Override
-	public void remove(String key) {
-		
-		clusterObjectMap.remove(key);
-//		invokeListeners(elementRemovedListenerList, new ElementEvent(key));
-//		return oldObj;
+	public void remove(String... keys) {
+
+		clusterObjectMap.remove(keys);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -61,89 +43,93 @@ public class LocalFakeClusterCache implements IRaptorClustercache {
 		return (T) clusterObjectMap.get(key);
 	}
 
-//	@Override
-//	public void addListner(Object listener) {
-//		assert(listener != null);
-//		Method[] methods = listener.getClass().getMethods();
-//		
-//		for(Method method : methods){
-//			if(method.getParameterTypes().length == 1 && method.getParameterTypes()[0].equals(ElementEvent.class)){
-//				if(method.isAnnotationPresent(ElementCreated.class)){
-//					this.elementCreatedListenerList.add(new EventListener(method, listener));
-//				}
-//				if(method.isAnnotationPresent(ElementRemoved.class)){
-//					this.elementRemovedListenerList.add(new EventListener(method, listener));					
-//				}
-//
-//				if(method.isAnnotationPresent(ElementUpdated.class)){
-//					this.elementUpdatedListenerList.add(new EventListener(method, listener));
-//				}
-//			}
-//		}
-//	}
-//
-//	private class EventListener{
-//		private Method method = null;
-//		private Object listener = null;
-//		
-//		EventListener(Method method, Object listener){
-//			this.method = method;
-//			this.listener = listener;
-//		}
-//		
-//		void invokeListener(ElementEvent event){
-//			try{
-//				method.invoke(listener, event);
-//			}catch(Exception exp){
-//				ExceptionUtil.wrapRuntimeException(exp);
-//			}
-//		}
-//		
-//	}
-
 	@Override
 	public void init(IChatletApplication application) {
 	}
 
+	@Override
+	public void lock(String... keys) throws ClusterLockException {
+		for(String key : keys){
+			ReentrantLock lock = null;
+			ReentrantLock existingLock = this.lockMap.get(key);
+			if(existingLock != null){
+				lock = new ReentrantLock();
+				existingLock = this.lockMap.putIfAbsent(key, lock);
+				if(existingLock != null){
+					lock = existingLock;
+				}
+			}else{
+				lock = existingLock;
+			}
+			lock.lock();
+		}
+		
+		/**
+		 * option 1 only one global lock
+		 * 
+		 * option 2 use putifabsent
+		 * like the redis
+		 * 
+		 * option 3 lock for each key
+		 * 	putifabsent, and then lock
+		**/
 
+	}
 
-@Override
-public void lock(String... keys) throws ClusterLockException {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public void unlock(String... keys) {
+		for(String key : keys){
+			ReentrantLock existingLock = this.lockMap.get(key);
+			existingLock.unlock();
+		}
+	}
 
-@Override
-public void optimisticLock(String... keys) {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public IClusterTransaction startTransaction() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public void unlock(String... keys) {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public <T> List<T> get(String... keys) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public IClusterTransaction startTransaction() {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public <T> List<IFutureResult<T>> getInFuture(String... keys) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public void releaseToPoolWithRollback() {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public <T> IFutureResult<T> getInFuture(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public void releaseToPoolWithCommit() {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public <T> IClusterSet<T> getSet(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public <T> IClusterMap<T> getMap(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public <T> IClusterList<T> getList(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public void releaseToPool() {
+		// TODO Auto-generated method stub
+
+	}
 
 }
