@@ -11,6 +11,7 @@ import javax.enterprise.inject.Instance;
 import com.imseam.cdi.chatlet.ext.annotation.BuddySignIn;
 import com.imseam.cdi.chatlet.ext.annotation.WindowStarted;
 import com.imseam.cdi.context.IMRequestScoped;
+import com.imseam.chatlet.IApplication;
 import com.imseam.chatlet.listener.event.BuddyEvent;
 import com.imseam.chatlet.listener.event.WindowEvent;
 import com.imseam.cluster.IClusterCache;
